@@ -9,6 +9,12 @@ have not run; the pinned runtime image download did not complete. The raw-imager
 Phase 1's existing-scene conversions remain incomplete; Phase 0 is committed and
 pushed. The user explicitly confirmed proceeding directly to Phase 2.
 
+## Revised priority: recent imagery first
+
+The 2015 CORE3D group is now a historical validation fixture only. Its approved 13-day span applies to that benchmark, not to a current-city dataset. Preserve the prepared inputs, initial cameras and regression results.
+
+Before full reconstruction training for a current-city model, qualify a recent overlapping imagery group with RPC metadata and date-compatible independent validation. The proposed freshness target and source-selection criteria are in [PLAN_V2.md §5](PLAN_V2.md#5-imagery-details); availability, provider and budget are unconfirmed.
+
 ## Run the implemented checks
 
 Python 3.10+ is sufficient for the preflight command; it uses the standard library.
@@ -112,12 +118,12 @@ Local reports are ignored by Git.
 
 ## Remaining Phase 2 work
 
-Confirm the proposed raw CORE3D block, select suitable overlapping acquisitions
-and matched MSI inputs, and implement SatelliteSfM preprocessing; retain the ENU observer and normalization at runtime;
-run measured Stage 1 training within the memory budget; fuse and export the real
-scene; compare registration and DSM heights against independent lidar evidence.
-A working GPU environment and the actual input/validation datasets are required
-before the end-to-end acceptance gate can pass.
+1. Qualify recent imagery for a small AOI: capture age, within-group span, overlap, RPCs, clouds, usable color, rights and cost.
+2. Select date-compatible independent validation and freeze acquisition-level holdouts. Historical lidar can be used only with a documented epoch/unchanged-area justification.
+3. Resolve the SfM runtime, perform matching and bundle adjustment on the qualified recent inputs, and preserve the ENU observer and normalization at runtime.
+4. Run measured Stage 1 training within the GPU budget, fuse/export the scene, and verify placement and accuracy before expanding coverage.
+
+The existing 2015 pipeline artifacts support bounded regression checks. Completing a full reconstruction of that historical group is no longer a prerequisite for the current-city data selection, and it must not be presented as a current model.
 
 ## Tests
 

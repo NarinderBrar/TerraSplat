@@ -1,5 +1,7 @@
 # SatelliteSfM handoff for the Jacksonville pilot
 
+Planning update: the 2015 CORE3D inputs below are historical validation fixtures only. For a current-city model, qualify recent imagery and date-compatible validation before full training; see [the revised plan](../docs/PLAN_V2.md).
+
 The approved pilot uses April 19–May 2, 2015: three training acquisitions and a
 separate May 2 holdout. No four-view group satisfied the initial seven-day
 policy. The user approved the shortest qualifying group, spanning 13.0035 days;

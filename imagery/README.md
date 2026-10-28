@@ -1,5 +1,7 @@
 # CORE3D imagery preparation
 
+Planning update: the 2015 CORE3D inputs below are historical validation fixtures only. For a current-city model, qualify recent imagery and date-compatible validation before full training; see [the revised plan](../docs/PLAN_V2.md).
+
 This implements the first raw-imagery step of Phase 2: catalogue the public
 Jacksonville WorldView-3 sources and extract sensor-pixel crops while preserving
 RPC camera geometry. It does not run SfM or generate calibrated RGB training data.

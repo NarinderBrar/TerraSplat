@@ -6,13 +6,15 @@ The design below is an engineering proposal. Current upstream capabilities and l
 
 ## 1. Product and first scope
 
+Updated imagery decision: the 2015 CORE3D pilot and existing Skyfall research inputs are historical validation fixtures. A current-city reconstruction requires separately qualified recent multi-view imagery and date-compatible validation before full training. [PLAN_V2.md](PLAN_V2.md) records the proposed freshness target and revised input gate.
+
 Build a system that accepts a geographic area and an imagery collection, reconstructs a scene, preserves its geographic registration, creates a hierarchy of splat tiles, and publishes a versioned dataset that a browser streams directly. Add basic semantic layers, then language search, once reconstruction and streaming pass validation.
 
-Start with one existing JAX/NYC scene and a second contrasting scene. The local dataset download manifest already lists twelve scenes. Reuse existing artifacts where their provenance is verifiable. Do not assume the scenes are contiguous or combine their camera frames without registration evidence.
+For historical regression, reuse existing JAX/NYC scenes where their provenance is verifiable; the local download manifest lists twelve scenes. Do not assume those scenes are contiguous or combine their camera frames without registration evidence. Current-city work starts with recent imagery qualification before a full reconstruction run.
 
-Confirmed first input: the existing Skyfall-GS JAX/NYC datasets, selected by the user. Remaining working assumptions:
+Historical benchmark inputs: the existing Skyfall-GS JAX/NYC datasets and prepared 2015 CORE3D pilot. Current-city imagery remains unselected. Working assumptions:
 
-- The first milestone uses the confirmed local research data; the proposed production input is overlapping high-resolution satellite acquisitions with RPC camera metadata.
+- Local research data validates the pipeline. The current-city dataset must pass freshness, overlap, high-resolution sensor/RPC, rights and date-compatible validation checks before long reconstruction training.
 - Geographic accuracy takes priority over generated visual detail.
 - Output and the viewer can be self-hosted. Cesium ion is an optional comparison/managed processing path.
 - Start with buildings, vegetation, roads, water, and unknown. Small vehicles and rooftop equipment require a resolution and accuracy study before becoming supported classes.
@@ -50,7 +52,7 @@ The output relationship is `tileset.json → tile.glb → splat attributes / emb
 ## 4. Pipeline stages and artifacts
 
 1. **Ingest.** Register the AOI, acquisition epoch, image URIs, hashes, rights/provenance, CRS, vertical datum, RPCs/poses, GSD, masks, and optional DEM/DSM/control points. Preserve original files. Use a STAC-shaped catalog record; keep reconstruction metadata in a versioned job manifest.
-2. **Preflight.** Check geographic overlap and calibration, remove invalid/cloud-covered observations, identify stable acquisition groups, and choose whole-view holdouts before fitting. Record crop/resampling transforms so RPCs and intrinsics remain correct.
+2. **Preflight.** Confirm the required acquisition-age window and distinguish historical benchmark inputs from current-city candidates. Check geographic overlap and calibration, remove invalid/cloud-covered observations, identify stable acquisition groups, and choose whole-view holdouts before fitting. Record crop/resampling transforms so RPCs and intrinsics remain correct.
 3. **Calibrate and initialize.** Run an adapter for prepared data or SatelliteSfM. Produce cameras, sparse geometry or depth prior, calibration residuals, and the complete coordinate conversion chain. Check local perspective/affine approximation error against RPC projection; split blocks or evaluate RPC-native training if it is excessive.
 4. **Plan training blocks.** For the pilot use a whole small scene. For larger AOIs choose metric blocks with overlapping halos. Select all cameras that see each block, rather than splitting image pixels into independent XYZ map tiles. Preserve a common geographic frame and shared calibration.
 5. **Train reconstruction.** Run Stage 1 in a pinned GPU environment. Save resumable checkpoints, source hashes, settings, losses, and view/geometry quality metrics. Keep generated refinement disabled in the accuracy baseline.
@@ -159,7 +161,7 @@ docs/
 | --- | --- | --- |
 | 0. Evidence and profile | One-scene inventory; original registration; exact exporter, Cesium, extension and SPZ versions | Recover placement or explicitly mark unregistered; tiny fixture and one real splat load correctly |
 | 1. Streaming slice | Existing fused model → small multi-level tileset → local static viewer | Correct scale/orientation/placement; network traces prove LOD requests; no duplicate opacity |
-| 2. Reproducible pipeline | One job from prepared images through Stage 1, fusion, tiling, quality report | Resume after interruption; rerun reuses matching stages; holdout and coordinate checks pass |
+| 2. Reproducible pipeline | One job from qualified recent inputs through Stage 1, fusion, tiling, quality report | Resume after interruption; rerun reuses matching stages; holdout and coordinate checks pass |
 | 3. Spatial scale | Two adjacent blocks from a continuous source AOI | Boundary and mixed-LOD checks pass; browser memory stays bounded |
 | 4. Semantic pilot | Buildings/vegetation/roads/water/unknown; compact display assets and query API | Independent annotation results reported; unknown supported; mapping survives all LODs |
 | 5. Product workflow | Catalog, jobs, releases, epoch selection, staged publication and rollback | End-to-end restart/retry and private/static delivery checks pass |
@@ -173,6 +175,6 @@ Estimate cost using measured GPU-hours × selected rate, plus preprocessing, sto
 
 ## 10. Decisions still requiring project input
 
-Choose the production imagery source and access/derivative rights; target AOI size and GSD; available GPU/VRAM; horizontal/vertical accuracy requirement; hosting and access model; and whether generated detail is a desired product mode. Resolve these when needed by the phase gates. No purchases, external uploads, or deployments are part of this planning work.
+Choose and verify a recent imagery source, acceptable capture age, within-group acquisition span, date-compatible validation evidence and access/derivative rights; target AOI size and GSD; available GPU/VRAM; horizontal/vertical accuracy requirement; hosting and access model; and whether generated detail is a desired product mode. Resolve these when needed by the phase gates. No purchases, external uploads, or deployments are part of this planning work.
 
-First implementation task: inventory one existing fused scene and its registration, pin a format profile, then prove it streams as an LOD tileset in Cesium. This isolates the delivery and geographic risks before spending on new model training.
+Next implementation priority: qualify recent multi-view inputs and date-compatible validation, then complete a measured one-block pipeline. Keep historical scene/LOD checks as regression coverage for delivery and registration.

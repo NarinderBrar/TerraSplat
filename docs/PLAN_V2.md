@@ -8,14 +8,19 @@ This revision builds on [PLAN.md](PLAN.md) and [RESEARCH.md](RESEARCH.md). Those
 
 ## 1. Prototype goal
 
-**1 km² of Jacksonville, from raw WorldView-3 images to georeferenced Gaussian splat 3D Tiles that load on the CesiumJS globe automatically, checked against DFC2019 lidar heights.**
+**Build and validate the pipeline, then reconstruct a recent 250×250 m block before scaling toward 1 km².** The current-city model must use a newly qualified, recent multi-view dataset with RPC metadata. Jacksonville remains the initial candidate AOI; the usable recent imagery source is not selected yet.
+
+**Recency decision:** the April 19–May 2, 2015 CORE3D pilot is a historical validation dataset only. Keep its crops, camera initialization, holdout and checksums for regression tests. Its earlier approval does not make it suitable for a current-city release.
+
+Proposed freshness target: acquisitions from the preceding 12 months (2025-10-28–2026-10-28 as of this revision). This is a planning target, not a claim that suitable imagery is available or that a provider, coverage or price has been verified. Record the chosen capture window and maximum acceptable age before selecting the actual dataset.
 
 ## 2. Decisions
 
 | Topic | Decision | Reason |
 | --- | --- | --- |
-| Imagery | CORE3D public WorldView-3, Jacksonville | Free, no login, ~0.31 m panchromatic, 26 multi-date views with RPCs |
-| Validation data | DFC2019 / US3D lidar DSMs for Jacksonville | Same city; independent height and placement check (IEEE DataPort login, free) |
+| Historical benchmark | Existing 2015 CORE3D WorldView-3 pilot, Jacksonville | Pipeline diagnostics and regression only; all outputs retain their 2015 capture dates |
+| Current-city imagery | Recent overlapping high-resolution acquisitions with RPCs; source pending qualification | Freshness, coverage, calibration, rights and processing cost must pass the input gate before full training |
+| Validation data | Date-compatible independent DSM/lidar/control for the recent dataset; source pending | Avoid treating real scene changes as reconstruction error; older DFC2019/US3D references remain historical benchmark candidates |
 | Delivery format | 3D Tiles + glTF `KHR_gaussian_splatting` + SPZ compression | Open standard; renderer-independent; "load directly in a map" |
 | First viewer | CesiumJS (pinned version) | Globe, terrain, imagery and 3D Tiles streaming built in |
 | Later viewer (optional) | WebGPU viewer reading the same tiles | Only if Cesium frame rate fails the target |
@@ -44,9 +49,22 @@ SatelliteSfM writes `enu_observer_latlonalt.json`; Skyfall's `evaluate_gs_geomet
 tileset.root.transform = eastNorthUpToFixedFrame(lon, lat, alt) · inverse(Skyfall normalization)
 ```
 
-Record this chain in `georeference.json` (see PLAN.md §5). Validate with DFC2019 lidar DSMs using Skyfall's `dsmr.py`, and compare against TerraScope's registration where the AOI overlaps an existing JAX scene.
+Record this chain in `georeference.json` (see PLAN.md §5). For the historical benchmark, evaluate suitable DFC2019 lidar DSMs using Skyfall's `dsmr.py` and compare against TerraScope's registration where the AOIs overlap. For recent imagery, verify reference acquisition dates and use date-compatible evidence or documented unchanged checkpoints.
 
 ## 5. Imagery details
+
+### Recent imagery qualification — next priority
+
+1. Confirm the AOI, desired capture window and maximum acceptable age. Use the preceding 12 months as the proposed freshness target, subject to explicit dataset selection.
+2. Check source availability, native GSD, overlapping viewing geometry, RPC delivery, cloud coverage, matched color inputs, usage/derivative rights and acquisition/processing cost. Do not assume a recent map baselayer supplies reconstructable sensor imagery.
+3. Prefer a group within seven days. A wider span needs documented change screening and dataset-specific approval; the 13-day exception was for the 2015 pilot only. Freshness and within-group time span are separate checks.
+4. Reserve whole acquisitions as holdouts before calibration/appearance fitting; retain at least three training views and one holdout for the initial pilot, with usable angular diversity.
+5. Select date-compatible independent validation evidence, or identify verified unchanged check areas and record that limitation. An older DSM must not be treated as contemporary ground truth by default.
+6. Record a source manifest with capture dates, hashes, access/derivative rights, camera metadata and the recency decision. Only then proceed to full SfM, long Stage 1 training or larger coverage for a current-city model.
+
+This is the revised planning gate. Automated maximum-age enforcement is not implemented yet.
+
+### Historical benchmark retained
 
 Public bucket (no credentials, `--no-sign-request`):
 
@@ -57,7 +75,7 @@ s3://spacenet-dataset/Hosted-Datasets/CORE3D-Public-Data/Satellite-Images/
   UCSD/WV2, Richmond/WV2, Tampa/WV2
 ```
 
-Do not download everything. Choose an AOI of about 1 km², then read only that window from each PAN image. GDAL `/vsicurl/` windowed reads of these NITF files are untested; if they are impractical, download PAN files only. Crops must update RPC offsets. Pan-sharpen MSI (~1.24 m) to ~0.3 m for colour. Choose the AOI to overlap an existing Skyfall JAX scene.
+The implemented historical pilot is a 250 m square with a 20 m halo. Eight selected PAN/MSI sources were downloaded and hashed after the remote NITF window-read test proved too slow; local crops preserve RPC offsets. RGB inputs and initial ENU cameras are prepared for three training views and one holdout. These results validate preprocessing, not present-day coverage or a completed reconstruction. See [SatelliteSfM handoff](../sfm/README.md). Do not expand this historical collection for a current-city model.
 
 ## 6. Hardware budget
 
@@ -107,12 +125,12 @@ Sequence: laptop + Kaggle until one block runs end to end. Then activate OVH (th
 ## 8. Pipeline
 
 ```
-CORE3D WV3 PAN/MSI + RPCs (STAC record)
+Qualified recent PAN/MSI + RPCs (versioned source/epoch manifest)
  → Preflight: overlap, angles, clouds, dates          ── fail → imagery/terrain only
  → AOI crop (RPC-aware) + pan-sharpen
  → SatelliteSfM → cameras, sparse points, enu_observer_latlonalt.json
  → Skyfall Stage 1 per block (halo) → fused PLY + normalization record
- → georeference.json + DSM report (DFC2019 lidar)
+ → georeference.json + date-compatible independent validation report
  → LangSplat features → class voxels / per-splat class IDs
  → Tiler: quadtree → LOD merge → SPZ → glb → tileset.json
  → Validate (3d-tiles-validator, LOD continuity, DSM error) → immutable release
@@ -128,19 +146,22 @@ Semantics as tiles: start with a 3D Tiles voxel tileset rendered by Cesium `Voxe
 | Phase | Deliverable | Effort |
 | --- | --- | --- |
 | 0 | Pin CesiumJS, SPZ and extension versions; tiny test glb renders with correct placement, scale and orientation | days |
-| 1 | Convert TerraScope's 12 registered scenes to 3D Tiles; view on the Cesium globe | 1–2 weeks |
-| 2 | Full pipeline on one block of the Jacksonville AOI with the ENU anchor kept; compare with TerraScope registration and lidar | 2–4 weeks |
+| 1 | Historical benchmark: convert TerraScope's 12 registered scenes to 3D Tiles; view on the Cesium globe | 1–2 weeks |
+| 2 | Qualify recent imagery and date-compatible validation first; run the full pipeline on one block with its ENU anchor preserved. Keep the 2015 pilot as a historical benchmark only | 2–4 weeks after input qualification |
 | 3 | All blocks of the 1 km² AOI; no seams or doubled opacity between tiles or LOD levels | 2–3 weeks |
 | 4 | Semantic voxel tiles + query API | 2–3 weeks |
 | 5 | Job runner (resume/retry), versioned releases, catalogue UI | 3+ weeks |
 
 Estimates are planning guesses, not measurements. Stack and layout follow PLAN.md §8.
 
-## 10. First tasks
+## 10. Next tasks
 
-1. Phase 0 test glb in a pinned CesiumJS build. Initialize Skyfall submodules and build its CUDA extensions.
-2. Test a windowed `/vsicurl/` read from one Jacksonville PAN NITF.
-3. Pick the 1 km² AOI overlapping an existing JAX scene; request DFC2019 access.
+1. Qualify a recent multi-view imagery source for a small AOI, including capture dates, RPCs, rights and cost. Source availability and cost remain unverified.
+2. Choose date-compatible independent validation data and freeze whole-view holdouts for that dataset.
+3. Resolve and verify the SfM runtime, then preprocess the qualified recent block while retaining the ENU observer and all normalization/pixel transforms.
+4. Run a measured one-block Stage 1 reconstruction, fuse/export it, and validate its placement and accuracy before scale-up.
+
+Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation and RPC-derived initial cameras. Full historical SfM and full training remain unexecuted. Bounded historical regression checks may continue; they are not a substitute for the recent-imagery gate.
 
 ## Sources
 
