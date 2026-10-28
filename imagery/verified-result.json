@@ -1,0 +1,61 @@
+{
+  "status": "passed",
+  "scope": "single PAN acquisition sensor crop I/O gate",
+  "source": {
+    "key": "Hosted-Datasets/CORE3D-Public-Data/Satellite-Images/Jacksonville/WV3/PAN/01MAY15WV031200015MAY01160357-P1BS-500648062030_01_P001_________AAE_0AAAAABPABQ0.NTF",
+    "uri": "https://spacenet-dataset.s3.amazonaws.com/Hosted-Datasets/CORE3D-Public-Data/Satellite-Images/Jacksonville/WV3/PAN/01MAY15WV031200015MAY01160357-P1BS-500648062030_01_P001_________AAE_0AAAAABPABQ0.NTF",
+    "bytes": 866900574,
+    "etag": "93f00fd6706b28a2ffcdf020ac36b7f2-104",
+    "last_modified": "2018-10-15T15:11:18.000Z",
+    "sensor_product": "PAN",
+    "downloaded_bytes": 866900574,
+    "sha256": "44c2e4d9ed65dbdb045fe6274f7f8a335ace8a4c496a2a957ac0e7bad04d954b",
+    "elapsed_seconds": 96.61166521999985
+  },
+  "crop": {
+    "block": {
+      "longitude": -81.66376054127814,
+      "latitude": 30.34881972282938,
+      "side_m": 250,
+      "halo_m": 20,
+      "ellipsoidal_height_range_m": [
+        -50,
+        300
+      ],
+      "selection_note": "Pilot block centred on TerraScope's visual JAX_068 baseline. The height bracket is a conservative crop hypothesis, not a measured elevation or ENU origin."
+    },
+    "source_shape": [
+      44032,
+      43008
+    ],
+    "output_shape": [
+      1,
+      908,
+      1242
+    ],
+    "window": {
+      "col_off": 14662,
+      "row_off": 5306,
+      "width": 1242,
+      "height": 908
+    },
+    "estimated_uncompressed_block_bytes": 8388608,
+    "rpc_pixel_error_max": 0.0,
+    "source_metadata": {
+      "NITF_ICAT": "VIS",
+      "NITF_IDATIM": "20150501160357",
+      "NITF_IID1": "P10AB10600",
+      "NITF_IREP": "MONO"
+    },
+    "sha256": "a331cea92df9fecd9f855a17dc43b33add64a306161c7805da5b908f2a503a70",
+    "gdal": "3.10.3",
+    "rasterio": "1.4.4"
+  },
+  "pixel_range": [
+    128,
+    2047
+  ],
+  "remote_read_result": "NITF header and RPC inspection passed, but window read was slow and terminated. Used the explicit one-PAN download fallback.",
+  "companion_tiff_result": "Quick window read, but image is warped and has no RPC metadata; rejected as raw reconstruction input.",
+  "next": "Select suitable overlapping acquisitions and matched MSI products, then integrate RPC-aware preprocessing and SatelliteSfM. No SfM run or ENU origin recovery is claimed."
+}

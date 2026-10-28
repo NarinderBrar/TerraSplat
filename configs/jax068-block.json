@@ -1,0 +1,8 @@
+{
+  "longitude": -81.66376054127814,
+  "latitude": 30.34881972282938,
+  "side_m": 250,
+  "halo_m": 20,
+  "ellipsoidal_height_range_m": [-50, 300],
+  "selection_note": "Pilot block centred on TerraScope's visual JAX_068 baseline. The height bracket is a conservative crop hypothesis, not a measured elevation or ENU origin."
+}

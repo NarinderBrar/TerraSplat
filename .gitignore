@@ -25,3 +25,4 @@ public/cesium/
 .venv-stage1/
 .toolchains/
 .cache/
+.venv-imagery/

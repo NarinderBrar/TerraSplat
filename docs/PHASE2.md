@@ -1,7 +1,8 @@
 # Phase 2: one-block reconstruction
 
-Status: started. The first implementation is prepared-input preflight and explicit
-coordinate-transform preservation. The raw-imagery-to-tiles pipeline has not run.
+Status: started. Prepared-input preflight, explicit coordinate-transform
+preservation, isolated Stage 1 training, and raw RPC-aware crop tooling are
+implemented. See [imagery preparation](../imagery/README.md) for I/O results. The raw-imagery-to-tiles pipeline has not run.
 Phase 1's existing-scene conversions remain incomplete; Phase 0 is committed and
 pushed. The user explicitly confirmed proceeding directly to Phase 2.
 
@@ -108,8 +109,8 @@ Local reports are ignored by Git.
 
 ## Remaining Phase 2 work
 
-Select the raw CORE3D block and acquisitions; implement RPC-aware cropping and
-SatelliteSfM preprocessing; retain the ENU observer and normalization at runtime;
+Confirm the proposed raw CORE3D block, select suitable overlapping acquisitions
+and matched MSI inputs, and implement SatelliteSfM preprocessing; retain the ENU observer and normalization at runtime;
 run measured Stage 1 training within the memory budget; fuse and export the real
 scene; compare registration and DSM heights against independent lidar evidence.
 A working GPU environment and the actual input/validation datasets are required
