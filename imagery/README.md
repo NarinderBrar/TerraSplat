@@ -1,6 +1,8 @@
 # CORE3D imagery preparation
 
-Planning update: the 2015 CORE3D inputs below are historical validation fixtures only. For a current-city model, qualify recent imagery and date-compatible validation before full training; see [the revised plan](../docs/PLAN_V2.md).
+Latest decision (2026-10-29): use the approved 2015 CORE3D inputs below for the end-to-end historical demonstration. Complete SfM and measured Stage 1 training next; recent imagery selection is deferred. See [the revised plan](../docs/PLAN_V2.md).
+
+The [29 October source qualification](qualification/2026-10-29/README.md) retains the earlier free-source search and unresolved recent-data findings. It is background evidence, not a prerequisite for the selected historical pilot.
 
 This implements the first raw-imagery step of Phase 2: catalogue the public
 Jacksonville WorldView-3 sources and extract sensor-pixel crops while preserving

@@ -6,13 +6,13 @@ The design below is an engineering proposal. Current upstream capabilities and l
 
 ## 1. Product and first scope
 
-Updated imagery decision: the 2015 CORE3D pilot and existing Skyfall research inputs are historical validation fixtures. A current-city reconstruction requires separately qualified recent multi-view imagery and date-compatible validation before full training. [PLAN_V2.md](PLAN_V2.md) records the proposed freshness target and revised input gate.
+Latest imagery decision (2026-10-29): complete the approved April–May 2015 CORE3D pilot as an end-to-end historical demonstration. Recent source selection is deferred. A future current-city release requires separately qualified recent imagery and date-compatible validation. [PLAN_V2.md](PLAN_V2.md) records the active reconstruction sequence and later freshness gate.
 
 Build a system that accepts a geographic area and an imagery collection, reconstructs a scene, preserves its geographic registration, creates a hierarchy of splat tiles, and publishes a versioned dataset that a browser streams directly. Add basic semantic layers, then language search, once reconstruction and streaming pass validation.
 
-For historical regression, reuse existing JAX/NYC scenes where their provenance is verifiable; the local download manifest lists twelve scenes. Do not assume those scenes are contiguous or combine their camera frames without registration evidence. Current-city work starts with recent imagery qualification before a full reconstruction run.
+Use the prepared raw 2015 Jacksonville block for the active reconstruction milestone. Existing JAX/NYC scenes support diagnostics and regression where their provenance is verifiable; the local download manifest lists twelve scenes. Do not assume those scenes are contiguous or combine their camera frames without registration evidence.
 
-Historical benchmark inputs: the existing Skyfall-GS JAX/NYC datasets and prepared 2015 CORE3D pilot. Current-city imagery remains unselected. Working assumptions:
+Active inputs: the approved 2015 CORE3D pilot, with three training acquisitions and a May 2 holdout. Prepared Skyfall-GS JAX/NYC datasets remain separate diagnostic inputs. Current-city imagery is deferred and unselected. Working assumptions:
 
 - Local research data validates the pipeline. The current-city dataset must pass freshness, overlap, high-resolution sensor/RPC, rights and date-compatible validation checks before long reconstruction training.
 - Geographic accuracy takes priority over generated visual detail.
@@ -161,7 +161,7 @@ docs/
 | --- | --- | --- |
 | 0. Evidence and profile | One-scene inventory; original registration; exact exporter, Cesium, extension and SPZ versions | Recover placement or explicitly mark unregistered; tiny fixture and one real splat load correctly |
 | 1. Streaming slice | Existing fused model → small multi-level tileset → local static viewer | Correct scale/orientation/placement; network traces prove LOD requests; no duplicate opacity |
-| 2. Reproducible pipeline | One job from qualified recent inputs through Stage 1, fusion, tiling, quality report | Resume after interruption; rerun reuses matching stages; holdout and coordinate checks pass |
+| 2. Reproducible pipeline | One job from the approved 2015 inputs through SfM, Stage 1, fusion, tiling and quality report | Resume after interruption; rerun reuses matching stages; holdout and coordinate checks pass; output labelled historical |
 | 3. Spatial scale | Two adjacent blocks from a continuous source AOI | Boundary and mixed-LOD checks pass; browser memory stays bounded |
 | 4. Semantic pilot | Buildings/vegetation/roads/water/unknown; compact display assets and query API | Independent annotation results reported; unknown supported; mapping survives all LODs |
 | 5. Product workflow | Catalog, jobs, releases, epoch selection, staged publication and rollback | End-to-end restart/retry and private/static delivery checks pass |
@@ -177,4 +177,4 @@ Estimate cost using measured GPU-hours × selected rate, plus preprocessing, sto
 
 Choose and verify a recent imagery source, acceptable capture age, within-group acquisition span, date-compatible validation evidence and access/derivative rights; target AOI size and GSD; available GPU/VRAM; horizontal/vertical accuracy requirement; hosting and access model; and whether generated detail is a desired product mode. Resolve these when needed by the phase gates. No purchases, external uploads, or deployments are part of this planning work.
 
-Next implementation priority: qualify recent multi-view inputs and date-compatible validation, then complete a measured one-block pipeline. Keep historical scene/LOD checks as regression coverage for delivery and registration.
+Next implementation priority: resolve the SatelliteSfM runtime and complete the prepared 2015 one-block reconstruction, then measured Stage 1 training, export and validation. Recent imagery qualification resumes only for later current-city work.

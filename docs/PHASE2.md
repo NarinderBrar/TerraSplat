@@ -9,11 +9,13 @@ have not run; the pinned runtime image download did not complete. The raw-imager
 Phase 1's existing-scene conversions remain incomplete; Phase 0 is committed and
 pushed. The user explicitly confirmed proceeding directly to Phase 2.
 
-## Revised priority: recent imagery first
+## Active priority: approved 2015 historical demonstration
 
-The 2015 CORE3D group is now a historical validation fixture only. Its approved 13-day span applies to that benchmark, not to a current-city dataset. Preserve the prepared inputs, initial cameras and regression results.
+The user confirmed on 2026-10-29 that we will use the 2015 data. Complete the approved April 19–May 2 CORE3D pilot as an end-to-end historical demonstration, retaining its three training acquisitions, independent May 2 holdout, checksums and initial ENU cameras. Its approved 13-day span applies to this pilot. Outputs must retain their 2015 capture dates.
 
-Before full reconstruction training for a current-city model, qualify a recent overlapping imagery group with RPC metadata and date-compatible independent validation. The proposed freshness target and source-selection criteria are in [PLAN_V2.md §5](PLAN_V2.md#5-imagery-details); availability, provider and budget are unconfirmed.
+Recent imagery selection is deferred and does not block training on this historical pilot. Before a future current-city release, qualify recent imagery and date-compatible independent validation using [PLAN_V2.md §5](PLAN_V2.md#5-imagery-details).
+
+The [29 October qualification report](../imagery/qualification/2026-10-29/README.md) preserves the earlier free-source search and its unresolved recent-input gate. The subsequent 2015 decision changes the immediate work to resolving the SfM runtime and completing the existing block. Feature matching, bundle adjustment and full training are still unexecuted.
 
 ## Run the implemented checks
 
@@ -118,12 +120,12 @@ Local reports are ignored by Git.
 
 ## Remaining Phase 2 work
 
-1. Qualify recent imagery for a small AOI: capture age, within-group span, overlap, RPCs, clouds, usable color, rights and cost.
-2. Select date-compatible independent validation and freeze acquisition-level holdouts. Historical lidar can be used only with a documented epoch/unchanged-area justification.
-3. Resolve the SfM runtime, perform matching and bundle adjustment on the qualified recent inputs, and preserve the ENU observer and normalization at runtime.
+1. Resolve the SfM runtime and complete feature matching, bundle adjustment and sparse reconstruction on the prepared 2015 training views; retain the May 2 holdout.
+2. Verify independent validation for the historical pilot, including reference capture dates, coverage and vertical datum; document any epoch/unchanged-area limitation.
+3. Prepare the SfM output for Skyfall, preserving the ENU observer, pixel transforms and normalization at runtime.
 4. Run measured Stage 1 training within the GPU budget, fuse/export the scene, and verify placement and accuracy before expanding coverage.
 
-The existing 2015 pipeline artifacts support bounded regression checks. Completing a full reconstruction of that historical group is no longer a prerequisite for the current-city data selection, and it must not be presented as a current model.
+The 2015 block is the active reconstruction milestone. Recent source qualification is deferred; the completed demonstration must be described as historical.
 
 ## Tests
 

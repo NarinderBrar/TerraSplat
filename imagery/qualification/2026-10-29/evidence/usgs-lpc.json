@@ -1,0 +1,84 @@
+{
+  "url": "https://tnmaccess.nationalmap.gov/api/v1/products?bbox=-81.66526866782712%2C30.3475117384588%2C-81.66225241472915%2C30.350127689542944&datasets=Lidar+Point+Cloud+%28LPC%29&max=100&outputFormat=JSON",
+  "retrieved_at": "2026-10-28T23:41:58.994957+00:00",
+  "http_status": 200,
+  "data": {
+    "total": 2,
+    "items": [
+      {
+        "title": "USGS Lidar Point Cloud FL_DUVALCO_2007 000456",
+        "moreInfo": "Lidar (Light detection and ranging) discrete-return point cloud data are available in the American Society for Photogrammetry and Remote Sensing (ASPRS) LAS format. The LAS format is a standardized binary format for storing 3-dimensional point cloud data and point attributes along with header information and variable length records specific to the data. Millions of data points are stored as a 3-dimensional data cloud as a series of x (longitude), y (latitude) and z (elevation) points. A few older projects in this collection are in ASCII format. Please refer to http://www.asprs.org/Committee-General/LASer-LAS-File-Format-Exchange-Activities.html for additional information. This data set is a LAZ (compressed LAS) format file containing [...]",
+        "sourceId": "6433310fd34ee8d4add88da7",
+        "sourceName": "ScienceBase",
+        "sourceOriginId": null,
+        "sourceOriginName": "gda",
+        "metaUrl": "https://www.sciencebase.gov/catalog/item/6433310fd34ee8d4add88da7",
+        "vendorMetaUrl": "https://prd-tnm.s3.amazonaws.com/index.html?prefix=StagedProducts/Elevation/metadata/legacy/FL_DUVALCO_2007",
+        "publicationDate": "2014-09-29",
+        "lastUpdated": "2023-04-09T15:44:51.333-06:00",
+        "dateCreated": "2023-04-09T15:41:35.804-06:00",
+        "sizeInBytes": 46962044,
+        "extent": "Varies",
+        "format": "LAZ",
+        "downloadURL": "https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/legacy/FL_DUVALCO_2007/LAZ/USGS_LPC_FL_DUVALCO_2007_000456.laz",
+        "downloadURLRaster": null,
+        "previewGraphicURL": "https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/LPC/Projects/legacy/FL_DUVALCO_2007/browse/USGS_LPC_FL_DUVALCO_2007_000456.jpg",
+        "downloadLazURL": "https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/legacy/FL_DUVALCO_2007/LAZ/USGS_LPC_FL_DUVALCO_2007_000456.laz",
+        "urls": {
+          "LAZ": "https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/legacy/FL_DUVALCO_2007/LAZ/USGS_LPC_FL_DUVALCO_2007_000456.laz"
+        },
+        "datasets": [],
+        "boundingBox": {
+          "minX": -81.6695416,
+          "maxX": -81.6535277,
+          "minY": 30.342161,
+          "maxY": 30.3560472
+        },
+        "bestFitIndex": 0.0,
+        "body": "Lidar (Light detection and ranging) discrete-return point cloud data are available in the American Society for Photogrammetry and Remote Sensing (ASPRS) LAS format. The LAS format is a standardized binary format for storing 3-dimensional point cloud data and point attributes along with header information and variable length records specific to the data. Millions of data points are stored as a 3-dimensional data cloud as a series of x (longitude), y (latitude) and z (elevation) points. A few older projects in this collection are in ASCII format. Please refer to http://www.asprs.org/Committee-General/LASer-LAS-File-Format-Exchange-Activities.html for additional information. This data set is a LAZ (compressed LAS) format file containing lidar point cloud data. Compression to an LAZ file was done with the LAStools 'laszip' program and can be unzipped with the same free program (laszip.org).",
+        "processingUrl": "processingUrl",
+        "modificationInfo": "2023-04-09"
+      },
+      {
+        "title": "USGS Lidar Point Cloud FL_Peninsular_FDEM_2018_D19_DRRA LID2019_218756_E",
+        "moreInfo": "Lidar (Light detection and ranging) discrete-return point cloud data are available in the American Society for Photogrammetry and Remote Sensing (ASPRS) LAS format. The LAS format is a standardized binary format for storing 3-dimensional point cloud data and point attributes along with header information and variable length records specific to the data. Millions of data points are stored as a 3-dimensional data cloud as a series of x (longitude), y (latitude) and z (elevation) points. A few older projects in this collection are in ASCII format. Please refer to http://www.asprs.org/Committee-General/LASer-LAS-File-Format-Exchange-Activities.html for additional information. This data set is a LAZ (compressed LAS) format file containing [...]",
+        "sourceId": "60caad3cd34e86b938a1584a",
+        "sourceName": "ScienceBase",
+        "sourceOriginId": null,
+        "sourceOriginName": "gda",
+        "metaUrl": "https://www.sciencebase.gov/catalog/item/60caad3cd34e86b938a1584a",
+        "vendorMetaUrl": "https://prd-tnm.s3.amazonaws.com/index.html?prefix=StagedProducts/Elevation/metadata/FL_Peninsular_FDEM_2018_D19_DRRA/FL_Peninsular_FDEM_Duval_2018",
+        "publicationDate": "2021-05-12",
+        "lastUpdated": "2021-06-30T13:14:37.602-06:00",
+        "dateCreated": "2021-06-16T20:02:36.681-06:00",
+        "sizeInBytes": 293331045,
+        "extent": "Varies",
+        "format": "LAZ",
+        "downloadURL": "https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/FL_Peninsular_FDEM_2018_D19_DRRA/FL_Peninsular_FDEM_Duval_2018/LAZ/USGS_LPC_FL_Peninsular_FDEM_2018_D19_DRRA_LID2019_218756_E.laz",
+        "downloadURLRaster": null,
+        "previewGraphicURL": "https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/LPC/Projects/FL_Peninsular_FDEM_2018_D19_DRRA/FL_Peninsular_FDEM_Duval_2018/browse/USGS_LPC_FL_Peninsular_FDEM_2018_D19_DRRA_LID2019_218756_E.jpg",
+        "downloadLazURL": "https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/FL_Peninsular_FDEM_2018_D19_DRRA/FL_Peninsular_FDEM_Duval_2018/LAZ/USGS_LPC_FL_Peninsular_FDEM_2018_D19_DRRA_LID2019_218756_E.laz",
+        "urls": {
+          "LAZ": "https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/FL_Peninsular_FDEM_2018_D19_DRRA/FL_Peninsular_FDEM_Duval_2018/LAZ/USGS_LPC_FL_Peninsular_FDEM_2018_D19_DRRA_LID2019_218756_E.laz"
+        },
+        "datasets": [],
+        "boundingBox": {
+          "minX": -81.66951034030086,
+          "maxX": -81.65356732434978,
+          "minY": 30.342193998501486,
+          "maxY": 30.35602125237967
+        },
+        "bestFitIndex": 0.0,
+        "body": "Lidar (Light detection and ranging) discrete-return point cloud data are available in the American Society for Photogrammetry and Remote Sensing (ASPRS) LAS format. The LAS format is a standardized binary format for storing 3-dimensional point cloud data and point attributes along with header information and variable length records specific to the data. Millions of data points are stored as a 3-dimensional data cloud as a series of x (longitude), y (latitude) and z (elevation) points. A few older projects in this collection are in ASCII format.  Please refer to http://www.asprs.org/Committee-General/LASer-LAS-File-Format-Exchange-Activities.html for additional information.  This data set is a LAZ (compressed LAS) format file containing lidar point cloud data. Compression to an LAZ file was done with the LAStools 'laszip' program and can be unzipped with the same free program (laszip.org). ",
+        "processingUrl": "processingUrl",
+        "modificationInfo": "2021-06-16"
+      }
+    ],
+    "errors": [],
+    "messages": [
+      "Retrieved 2 item(s) Retrieved (1 through 100)"
+    ],
+    "sciencebaseQuery": "https://www.sciencebase.gov/catalog/items?filter=tagslq%3Dtags.scheme%3A%22The+National+Map+Collection+Thesaurus%22+AND+%28tags.name%3A+%22Lidar+Point+Cloud+%28LPC%29%22%29&filter=spatialQuery%3D%7B%22wkt%22%3A%22POLYGON%28%28-81.66526866782712+30.3475117384588%2C-81.66225241472915+30.3475117384588%2C-81.66225241472915+30.350127689542944%2C-81.66526866782712+30.350127689542944%2C-81.66526866782712+30.3475117384588%29%29%22%2C%22relation%22%3A%22intersects%22%7D&max=100&offset=0&fields=id%2Ctitle%2Csummary%2Cbody%2Ctags%2CwebLinks%2Cdates%2Cspatial%2Cidentifiers&format=json&sort=title&order=asc",
+    "filteredOut": 0
+  }
+}

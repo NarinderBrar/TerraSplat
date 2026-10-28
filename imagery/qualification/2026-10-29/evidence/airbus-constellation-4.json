@@ -1,0 +1,179 @@
+{
+  "url": "https://portal.intelligence-airbusds.com/arcgis/rest/services/OneAtlas/OADConstellationArchive/MapServer/4/query?geometry=-81.66526866782712%2C30.3475117384588%2C-81.66225241472915%2C30.350127689542944&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=1000&f=json&where=acquisitiondate+%3E%3D+TIMESTAMP+%272025-10-29+00%3A00%3A00%27+AND+acquisitiondate+%3C%3D+TIMESTAMP+%272026-10-29+23%3A59%3A59%27",
+  "retrieved_at": "2026-10-28T23:42:19.424109+00:00",
+  "http_status": 200,
+  "data": {
+    "displayFieldName": "acquisitionidentifier",
+    "fieldAliases": {
+      "objectid": "objectid",
+      "acquisitionidentifier": "parentIdentifier",
+      "cloudcover": "cloudCover",
+      "incidenceangle": "incidenceAngle",
+      "processinglevel": "processingLevel",
+      "publicationdate": "publicationDate",
+      "surface_m2": "surface_m2",
+      "acquisitiondate": "acquisitiondate",
+      "oneyear_acquisitiondate": "oneyear_acquisitiondate",
+      "snowcover": "snowCover",
+      "st_area(shape)": "st_area(shape)",
+      "st_length(shape)": "st_length(shape)"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "objectid",
+        "type": "esriFieldTypeOID",
+        "alias": "objectid"
+      },
+      {
+        "name": "acquisitionidentifier",
+        "type": "esriFieldTypeString",
+        "alias": "parentIdentifier",
+        "length": 254
+      },
+      {
+        "name": "cloudcover",
+        "type": "esriFieldTypeDouble",
+        "alias": "cloudCover"
+      },
+      {
+        "name": "incidenceangle",
+        "type": "esriFieldTypeDouble",
+        "alias": "incidenceAngle"
+      },
+      {
+        "name": "processinglevel",
+        "type": "esriFieldTypeString",
+        "alias": "processingLevel",
+        "length": 254
+      },
+      {
+        "name": "publicationdate",
+        "type": "esriFieldTypeDate",
+        "alias": "publicationDate",
+        "length": 8
+      },
+      {
+        "name": "surface_m2",
+        "type": "esriFieldTypeDouble",
+        "alias": "surface_m2"
+      },
+      {
+        "name": "acquisitiondate",
+        "type": "esriFieldTypeDate",
+        "alias": "acquisitiondate",
+        "length": 8
+      },
+      {
+        "name": "oneyear_acquisitiondate",
+        "type": "esriFieldTypeSmallInteger",
+        "alias": "oneyear_acquisitiondate"
+      },
+      {
+        "name": "snowcover",
+        "type": "esriFieldTypeDouble",
+        "alias": "snowCover"
+      },
+      {
+        "name": "st_area(shape)",
+        "type": "esriFieldTypeDouble",
+        "alias": "st_area(shape)"
+      },
+      {
+        "name": "st_length(shape)",
+        "type": "esriFieldTypeDouble",
+        "alias": "st_length(shape)"
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "objectid": 2022531,
+          "acquisitionidentifier": "ACQ_PNEO3_06504903263900",
+          "cloudcover": 0.0,
+          "incidenceangle": 29.72294811,
+          "processinglevel": "SENSOR",
+          "publicationdate": 1763745615000,
+          "surface_m2": 282418013.277954,
+          "acquisitiondate": 1763654938000,
+          "oneyear_acquisitiondate": 1,
+          "snowcover": 0.0,
+          "st_area(shape)": 0.02650052375920147,
+          "st_length(shape)": 0.6554975688562097
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                -81.66367555638118,
+                30.450142483589616
+              ],
+              [
+                -81.6639937122394,
+                30.299196480733883
+              ],
+              [
+                -81.83890799660611,
+                30.27756112784465
+              ],
+              [
+                -81.83905402672133,
+                30.429246037075814
+              ],
+              [
+                -81.66367555638118,
+                30.450142483589616
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "objectid": 2194814,
+          "acquisitionidentifier": "ACQ_PNEO3_07012305023853",
+          "cloudcover": 0.0,
+          "incidenceangle": 20.90078482,
+          "processinglevel": "SENSOR",
+          "publicationdate": 1775493781000,
+          "surface_m2": 235301323.293,
+          "acquisitiondate": 1775318754000,
+          "oneyear_acquisitiondate": 1,
+          "snowcover": 0.0,
+          "st_area(shape)": 0.02207932695312551,
+          "st_length(shape)": 0.5980016182065886
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                -81.70079041804269,
+                30.431208775065784
+              ],
+              [
+                -81.53450472761045,
+                30.429614283373382
+              ],
+              [
+                -81.53483205925147,
+                30.29692121844039
+              ],
+              [
+                -81.70041780104003,
+                30.297782462291707
+              ],
+              [
+                -81.70079041804269,
+                30.431208775065784
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

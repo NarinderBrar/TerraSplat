@@ -1,0 +1,75 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "core",
+        "side_m": 250,
+        "construction": "WGS84 geodesic diagonals; approximate metric square"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -81.66506061817637,
+              30.347692151145825
+            ],
+            [
+              -81.6624604643799,
+              30.347692151145825
+            ],
+            [
+              -81.66246043456914,
+              30.349947281390886
+            ],
+            [
+              -81.66506064798713,
+              30.349947281390886
+            ],
+            [
+              -81.66506061817637,
+              30.347692151145825
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "with-halo",
+        "side_m": 290,
+        "construction": "WGS84 geodesic diagonals; approximate metric square"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -81.66526862771376,
+              30.3475117384588
+            ],
+            [
+              -81.66225245484252,
+              30.3475117384588
+            ],
+            [
+              -81.66225241472915,
+              30.350127689542944
+            ],
+            [
+              -81.66526866782712,
+              30.350127689542944
+            ],
+            [
+              -81.66526862771376,
+              30.3475117384588
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

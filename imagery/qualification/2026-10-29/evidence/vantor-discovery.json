@@ -1,0 +1,5 @@
+{
+  "url": "https://api.maxar.com/discovery/v1/catalogs/imagery/search?bbox=-81.66526866782712%2C30.3475117384588%2C-81.66225241472915%2C30.350127689542944&datetime=2025-10-29T00%3A00%3A00Z%2F2026-10-29T23%3A59%3A59Z&limit=10",
+  "retrieved_at": "2026-10-28T23:41:58.995248+00:00",
+  "error": "HTTP Error 401: Unauthorized"
+}

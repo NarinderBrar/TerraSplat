@@ -1,0 +1,26 @@
+[
+  {
+    "asset": "pan_analytic",
+    "crs": "EPSG:32644",
+    "shape": [
+      1,
+      7493,
+      7493
+    ],
+    "rpc_tag_count": 0,
+    "has_rpcs": false,
+    "metadata_only": true
+  },
+  {
+    "asset": "visual",
+    "crs": "EPSG:32644",
+    "shape": [
+      1,
+      17408,
+      17408
+    ],
+    "rpc_tag_count": 0,
+    "has_rpcs": false,
+    "metadata_only": true
+  }
+]

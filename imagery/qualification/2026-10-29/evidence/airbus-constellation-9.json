@@ -1,0 +1,137 @@
+{
+  "url": "https://portal.intelligence-airbusds.com/arcgis/rest/services/OneAtlas/OADConstellationArchive/MapServer/9/query?geometry=-81.66526866782712%2C30.3475117384588%2C-81.66225241472915%2C30.350127689542944&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=1000&f=json&where=acquisitiondate+%3E%3D+TIMESTAMP+%272025-10-29+00%3A00%3A00%27+AND+acquisitiondate+%3C%3D+TIMESTAMP+%272026-10-29+23%3A59%3A59%27",
+  "retrieved_at": "2026-10-28T23:42:19.424837+00:00",
+  "http_status": 200,
+  "data": {
+    "displayFieldName": "parentidentifier",
+    "fieldAliases": {
+      "objectid": "objectid",
+      "parentidentifier": "parentIdentifier",
+      "cloudcover": "cloudCover",
+      "incidenceangle": "incidenceAngle",
+      "processinglevel": "processingLevel",
+      "publicationdate": "publicationDate",
+      "surface_m2": "surface_m2",
+      "acquisitiondate": "acquisitiondate",
+      "oneyear_acquisitiondate": "oneyear_acquisitiondate",
+      "snowcover": "snowCover",
+      "st_area(shape)": "st_area(shape)",
+      "st_length(shape)": "st_length(shape)"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "objectid",
+        "type": "esriFieldTypeOID",
+        "alias": "objectid"
+      },
+      {
+        "name": "parentidentifier",
+        "type": "esriFieldTypeString",
+        "alias": "parentIdentifier",
+        "length": 254
+      },
+      {
+        "name": "cloudcover",
+        "type": "esriFieldTypeDouble",
+        "alias": "cloudCover"
+      },
+      {
+        "name": "incidenceangle",
+        "type": "esriFieldTypeDouble",
+        "alias": "incidenceAngle"
+      },
+      {
+        "name": "processinglevel",
+        "type": "esriFieldTypeString",
+        "alias": "processingLevel",
+        "length": 254
+      },
+      {
+        "name": "publicationdate",
+        "type": "esriFieldTypeDate",
+        "alias": "publicationDate",
+        "length": 8
+      },
+      {
+        "name": "surface_m2",
+        "type": "esriFieldTypeDouble",
+        "alias": "surface_m2"
+      },
+      {
+        "name": "acquisitiondate",
+        "type": "esriFieldTypeDate",
+        "alias": "acquisitiondate",
+        "length": 8
+      },
+      {
+        "name": "oneyear_acquisitiondate",
+        "type": "esriFieldTypeSmallInteger",
+        "alias": "oneyear_acquisitiondate"
+      },
+      {
+        "name": "snowcover",
+        "type": "esriFieldTypeDouble",
+        "alias": "snowCover"
+      },
+      {
+        "name": "st_area(shape)",
+        "type": "esriFieldTypeDouble",
+        "alias": "st_area(shape)"
+      },
+      {
+        "name": "st_length(shape)",
+        "type": "esriFieldTypeDouble",
+        "alias": "st_length(shape)"
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "objectid": 4961624,
+          "parentidentifier": "DS_PHR1A_202511111613124_FR1_PX_W082N30_0407_06110",
+          "cloudcover": 0.0,
+          "incidenceangle": 19.05899165,
+          "processinglevel": "SENSOR",
+          "publicationdate": 1762986030000,
+          "surface_m2": 1577844084.53404,
+          "acquisitiondate": 1762877592000,
+          "oneyear_acquisitiondate": 1,
+          "snowcover": 0.0,
+          "st_area(shape)": 0.14790224368043928,
+          "st_length(shape)": 1.7885395441912832
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                -81.79692336811831,
+                30.600081136036465
+              ],
+              [
+                -81.57624637277121,
+                30.59250970056314
+              ],
+              [
+                -81.57800135028145,
+                29.918485700155827
+              ],
+              [
+                -81.79549632299626,
+                29.923939570355742
+              ],
+              [
+                -81.79692336811831,
+                30.600081136036465
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

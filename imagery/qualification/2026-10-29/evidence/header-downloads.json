@@ -1,0 +1,16 @@
+[
+  {
+    "asset": "pan_analytic",
+    "url": "https://maxar-opendata.s3.amazonaws.com/events/Cyclone-Ditwah-Sri-Lanka-Nov-2025/ard/44/033313300132/2025-12-05/102001011D2F3500-pan.tif",
+    "status": 206,
+    "bytes": 262144,
+    "content_range": "bytes 0-262143/41366369"
+  },
+  {
+    "asset": "visual",
+    "url": "https://maxar-opendata.s3.amazonaws.com/events/Cyclone-Ditwah-Sri-Lanka-Nov-2025/ard/44/033313300132/2025-12-05/102001011D2F3500-visual.tif",
+    "status": 206,
+    "bytes": 262144,
+    "content_range": "bytes 0-262143/24418178"
+  }
+]

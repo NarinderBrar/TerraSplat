@@ -1,6 +1,6 @@
 # TerraSplat plan v2
 
-Date: 2026-10-28. Status: Phase 0 compatibility fixture passes; Phase 2 prepared-input validation started. See [PHASE0.md](PHASE0.md) and [PHASE2.md](PHASE2.md). Phase 1 remains incomplete.
+Updated: 2026-10-29. Status: Phase 0 compatibility fixture passes; Phase 2 proceeds with the approved 2015 pilot. See [PHASE0.md](PHASE0.md) and [PHASE2.md](PHASE2.md). Phase 1 remains incomplete.
 
 Current implementation scope: pipeline tooling and a minimal validation viewer. Product web app features are deferred.
 
@@ -8,19 +8,19 @@ This revision builds on [PLAN.md](PLAN.md) and [RESEARCH.md](RESEARCH.md). Those
 
 ## 1. Prototype goal
 
-**Build and validate the pipeline, then reconstruct a recent 250×250 m block before scaling toward 1 km².** The current-city model must use a newly qualified, recent multi-view dataset with RPC metadata. Jacksonville remains the initial candidate AOI; the usable recent imagery source is not selected yet.
+**Reconstruct the approved 250×250 m Jacksonville block from April–May 2015 CORE3D imagery, validate the pipeline, and export georeferenced splat tiles for CesiumJS.** Scale toward 1 km² only after the one-block checks pass.
 
-**Recency decision:** the April 19–May 2, 2015 CORE3D pilot is a historical validation dataset only. Keep its crops, camera initialization, holdout and checksums for regression tests. Its earlier approval does not make it suitable for a current-city release.
+**Latest user decision (2026-10-29): use the 2015 data for the end-to-end historical demonstration.** Resume from the prepared crops and initial cameras, keeping the three training acquisitions and May 2 holdout. The approved 13-day acquisition-span exception applies to this pilot. Label outputs with their 2015 capture dates.
 
-Proposed freshness target: acquisitions from the preceding 12 months (2025-10-28–2026-10-28 as of this revision). This is a planning target, not a claim that suitable imagery is available or that a provider, coverage or price has been verified. Record the chosen capture window and maximum acceptable age before selecting the actual dataset.
+Recent imagery qualification is deferred and does not block this demonstration. For a future current-city release, separately qualify recent inputs and date-compatible validation. The preceding-12-month freshness target remains provisional for that later work.
 
 ## 2. Decisions
 
 | Topic | Decision | Reason |
 | --- | --- | --- |
-| Historical benchmark | Existing 2015 CORE3D WorldView-3 pilot, Jacksonville | Pipeline diagnostics and regression only; all outputs retain their 2015 capture dates |
-| Current-city imagery | Recent overlapping high-resolution acquisitions with RPCs; source pending qualification | Freshness, coverage, calibration, rights and processing cost must pass the input gate before full training |
-| Validation data | Date-compatible independent DSM/lidar/control for the recent dataset; source pending | Avoid treating real scene changes as reconstruction error; older DFC2019/US3D references remain historical benchmark candidates |
+| Active pilot imagery | Approved April 19–May 2, 2015 CORE3D WorldView-3 group, Jacksonville | Complete the historical end-to-end pipeline using already prepared inputs |
+| Current-city imagery | Deferred; no recent dataset selected | A future current-city release requires separate input qualification |
+| Validation data | Independent DSM/lidar/control appropriate to the 2015 pilot; exact epoch, coverage and datum still require verification | Avoid treating scene changes or datum differences as reconstruction error; DFC2019/US3D references are candidates, not accepted ground truth |
 | Delivery format | 3D Tiles + glTF `KHR_gaussian_splatting` + SPZ compression | Open standard; renderer-independent; "load directly in a map" |
 | First viewer | CesiumJS (pinned version) | Globe, terrain, imagery and 3D Tiles streaming built in |
 | Later viewer (optional) | WebGPU viewer reading the same tiles | Only if Cesium frame rate fails the target |
@@ -53,7 +53,13 @@ Record this chain in `georeference.json` (see PLAN.md §5). For the historical b
 
 ## 5. Imagery details
 
-### Recent imagery qualification — next priority
+### Active historical pilot
+
+Use the existing 250 m block with a 20 m halo, three training acquisitions (April 19, April 26 and May 1, 2015), and the May 2 holdout. Crops, RGB preparation and RPC-derived initial cameras already exist. Next resolve the SfM runtime, complete matching/bundle adjustment and sparse reconstruction, and preserve the ENU origin and pixel/normalization transforms through training. Keep the holdout out of calibration and fitting.
+
+### Recent imagery qualification — deferred
+
+Search constraints confirmed on 2026-10-29: free sources only; a future recent pilot may change location; no research affiliation or existing programme access. The [source qualification report](../imagery/qualification/2026-10-29/README.md) retains the initial findings. No recent dataset qualified. The subsequent decision to use 2015 imagery supersedes that search as the immediate priority; the following gate applies only when current-city work resumes.
 
 1. Confirm the AOI, desired capture window and maximum acceptable age. Use the preceding 12 months as the proposed freshness target, subject to explicit dataset selection.
 2. Check source availability, native GSD, overlapping viewing geometry, RPC delivery, cloud coverage, matched color inputs, usage/derivative rights and acquisition/processing cost. Do not assume a recent map baselayer supplies reconstructable sensor imagery.
@@ -64,7 +70,7 @@ Record this chain in `georeference.json` (see PLAN.md §5). For the historical b
 
 This is the revised planning gate. Automated maximum-age enforcement is not implemented yet.
 
-### Historical benchmark retained
+### Historical source and preparation
 
 Public bucket (no credentials, `--no-sign-request`):
 
@@ -125,7 +131,7 @@ Sequence: laptop + Kaggle until one block runs end to end. Then activate OVH (th
 ## 8. Pipeline
 
 ```
-Qualified recent PAN/MSI + RPCs (versioned source/epoch manifest)
+Approved 2015 PAN/MSI + RPCs (versioned source/epoch manifest)
  → Preflight: overlap, angles, clouds, dates          ── fail → imagery/terrain only
  → AOI crop (RPC-aware) + pan-sharpen
  → SatelliteSfM → cameras, sparse points, enu_observer_latlonalt.json
@@ -147,7 +153,7 @@ Semantics as tiles: start with a 3D Tiles voxel tileset rendered by Cesium `Voxe
 | --- | --- | --- |
 | 0 | Pin CesiumJS, SPZ and extension versions; tiny test glb renders with correct placement, scale and orientation | days |
 | 1 | Historical benchmark: convert TerraScope's 12 registered scenes to 3D Tiles; view on the Cesium globe | 1–2 weeks |
-| 2 | Qualify recent imagery and date-compatible validation first; run the full pipeline on one block with its ENU anchor preserved. Keep the 2015 pilot as a historical benchmark only | 2–4 weeks after input qualification |
+| 2 | Complete the approved 2015 one-block pipeline with its ENU anchor preserved, measured Stage 1 training, export and independent validation | 2–4 weeks; runtime and validation prerequisites remain |
 | 3 | All blocks of the 1 km² AOI; no seams or doubled opacity between tiles or LOD levels | 2–3 weeks |
 | 4 | Semantic voxel tiles + query API | 2–3 weeks |
 | 5 | Job runner (resume/retry), versioned releases, catalogue UI | 3+ weeks |
@@ -156,12 +162,12 @@ Estimates are planning guesses, not measurements. Stack and layout follow PLAN.m
 
 ## 10. Next tasks
 
-1. Qualify a recent multi-view imagery source for a small AOI, including capture dates, RPCs, rights and cost. Source availability and cost remain unverified.
-2. Choose date-compatible independent validation data and freeze whole-view holdouts for that dataset.
-3. Resolve and verify the SfM runtime, then preprocess the qualified recent block while retaining the ENU observer and all normalization/pixel transforms.
-4. Run a measured one-block Stage 1 reconstruction, fuse/export it, and validate its placement and accuracy before scale-up.
+1. Resolve and verify the SatelliteSfM runtime, then complete matching, bundle adjustment and sparse reconstruction on the prepared 2015 training views. Preserve the ENU observer and pixel transforms; retain the May 2 holdout.
+2. Verify independent validation data for the pilot's capture epoch, coverage and vertical datum. Document any unchanged-area or time-gap limitation.
+3. Run measured one-block Skyfall-GS Stage 1 training within the 6 GB GPU budget, preserving normalization and resumable checkpoints.
+4. Fuse/export the result, verify geographic placement and quality, then view the historical tiles in CesiumJS before scale-up.
 
-Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation and RPC-derived initial cameras. Full historical SfM and full training remain unexecuted. Bounded historical regression checks may continue; they are not a substitute for the recent-imagery gate.
+Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation and RPC-derived initial cameras. Full historical SfM and full training remain unexecuted. The prepared Skyfall JAX_068 diagnostic is separate from this raw-imagery block and does not replace its geographic reconstruction checks.
 
 ## Sources
 

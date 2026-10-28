@@ -1,0 +1,128 @@
+{
+  "url": "https://maxar-opendata.s3.amazonaws.com/events/Cyclone-Ditwah-Sri-Lanka-Nov-2025/collection.json",
+  "retrieved_at": "2026-10-28T23:43:03.697840+00:00",
+  "http_status": 200,
+  "data": {
+    "type": "Collection",
+    "id": "Cyclone-Ditwah-Sri-Lanka-Nov-2025",
+    "stac_version": "1.0.0",
+    "links": [
+      {
+        "rel": "root",
+        "href": "../collection.json",
+        "type": "application/json"
+      },
+      {
+        "rel": "child",
+        "href": "./ard/acquisition_collections/102001011D2F3500_collection.json",
+        "type": "application/json"
+      },
+      {
+        "rel": "child",
+        "href": "./ard/acquisition_collections/103001010C195B00_collection.json",
+        "type": "application/json"
+      },
+      {
+        "rel": "child",
+        "href": "./ard/acquisition_collections/103001010C477F00_collection.json",
+        "type": "application/json"
+      },
+      {
+        "rel": "child",
+        "href": "./ard/acquisition_collections/10400100AFC26500_collection.json",
+        "type": "application/json"
+      },
+      {
+        "rel": "child",
+        "href": "./ard/acquisition_collections/10400100B06C8A00_collection.json",
+        "type": "application/json"
+      },
+      {
+        "rel": "child",
+        "href": "./ard/acquisition_collections/10400100B1570400_collection.json",
+        "type": "application/json"
+      },
+      {
+        "rel": "child",
+        "href": "./ard/acquisition_collections/1050010045765700_collection.json",
+        "type": "application/json"
+      },
+      {
+        "rel": "child",
+        "href": "./ard/acquisition_collections/105001004581DC00_collection.json",
+        "type": "application/json"
+      }
+    ],
+    "extent": {
+      "spatial": {
+        "bbox": [
+          [
+            79.75553145667077,
+            5.969530444919521,
+            80.19893590806898,
+            7.528870833079978
+          ],
+          [
+            79.82741411377788,
+            5.969530444919521,
+            80.08963947124808,
+            7.08269186352128
+          ],
+          [
+            79.78600443182727,
+            6.492676291323971,
+            79.93929466069838,
+            7.306030996387237
+          ],
+          [
+            79.921745506613,
+            6.493621920090499,
+            80.07118102854596,
+            7.305177952132508
+          ],
+          [
+            79.91342672358583,
+            6.968617980244532,
+            80.05347323160666,
+            7.528870833079978
+          ],
+          [
+            79.75553145667077,
+            6.856284586710776,
+            79.90878432059435,
+            6.981582498675604
+          ],
+          [
+            79.83228115301891,
+            7.088964755209143,
+            79.97833199415237,
+            7.25247080578198
+          ],
+          [
+            80.05026191117216,
+            7.274999591713704,
+            80.19893590806898,
+            7.47275297079976
+          ],
+          [
+            79.76388280564446,
+            6.866437879621523,
+            79.91224982834895,
+            7.018283134754824
+          ]
+        ]
+      },
+      "temporal": {
+        "interval": [
+          [
+            "2025-01-17 05:06:44Z",
+            "2025-12-05 08:00:38Z"
+          ]
+        ]
+      }
+    },
+    "title": "Cyclone Ditwah Sri Lanka November 2025",
+    "description": "Cyclone Ditwah caused severe flooding in Sri Lanka, affecting nearly 1 million residents. Hundreds are reported missing or dead. The rainfall also triggered multiple fatal landslides.",
+    "license": "CC-BY-NC-4.0"
+  }
+}

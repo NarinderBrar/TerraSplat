@@ -1,0 +1,76 @@
+{
+  "status": "no_qualified_dataset_found",
+  "review_date": "2026-10-29",
+  "scope": "Bounded source qualification; not an exhaustive global availability assertion",
+  "user_constraints": {
+    "imagery_budget": "free sources only",
+    "pilot_location": "flexible",
+    "research_affiliation_or_program_access": false
+  },
+  "requirements": {
+    "capture_window_provisional": [
+      "2025-10-29",
+      "2026-10-29"
+    ],
+    "min_training_acquisitions": 3,
+    "min_holdout_acquisitions": 1,
+    "preferred_max_group_span_days": 7,
+    "rpc_camera_models_required": true,
+    "matched_color_required": true,
+    "date_compatible_independent_validation_required": true
+  },
+  "qualified_acquisitions": [],
+  "ready_for_training": false,
+  "candidates": [
+    {
+      "provider": "Airbus",
+      "identifier": "ACQ_PNEO3_06504903263900",
+      "acquired_at": "2025-11-20T16:08:58+00:00",
+      "reported_cloud_percent": 0.0,
+      "reported_incidence_deg": 29.72294811,
+      "reported_processing_level": "SENSOR",
+      "halo_bbox_covered_by_catalogue_footprint": false,
+      "qualification": "not_qualified",
+      "rpc_delivery_verified": false,
+      "imagery_license_verified": false,
+      "free_access_verified": false,
+      "evidence": "evidence/airbus-constellation-4.json"
+    },
+    {
+      "provider": "Airbus",
+      "identifier": "ACQ_PNEO3_07012305023853",
+      "acquired_at": "2026-04-04T16:05:54+00:00",
+      "reported_cloud_percent": 0.0,
+      "reported_incidence_deg": 20.90078482,
+      "reported_processing_level": "SENSOR",
+      "halo_bbox_covered_by_catalogue_footprint": true,
+      "qualification": "not_qualified",
+      "rpc_delivery_verified": false,
+      "imagery_license_verified": false,
+      "free_access_verified": false,
+      "evidence": "evidence/airbus-constellation-4.json"
+    },
+    {
+      "provider": "Airbus",
+      "identifier": "DS_PHR1A_202511111613124_FR1_PX_W082N30_0407_06110",
+      "acquired_at": "2025-11-11T16:13:12+00:00",
+      "reported_cloud_percent": 0.0,
+      "reported_incidence_deg": 19.05899165,
+      "reported_processing_level": "SENSOR",
+      "halo_bbox_covered_by_catalogue_footprint": true,
+      "qualification": "not_qualified",
+      "rpc_delivery_verified": false,
+      "imagery_license_verified": false,
+      "free_access_verified": false,
+      "evidence": "evidence/airbus-constellation-9.json"
+    }
+  ],
+  "findings": [
+    "Airbus public layers returned three intersecting recent records; two cover the pilot halo, one misses the center. They do not supply a four-acquisition group. Public preview is not proof of complete catalogue coverage or imagery access.",
+    "Unauthenticated Vantor discovery returned HTTP 401; availability remains unknown.",
+    "Sample Maxar Sri Lanka item from 2025-12-05 exposes map-grid pan/visual assets; both sampled TIFF headers contain no RPCs. The item has no RPC sidecar link and is panchromatic. Reject this item for the existing raw RGB+RPC reconstruction contract; do not generalize to all provider products.",
+    "EarthView launch documentation dates the advertised imagery to July-December 2022. A newer dataset version has not been verified.",
+    "USGS LPC query returned two older-project tiles. Publication/update timestamps are not lidar acquisition dates; current validation is unqualified.",
+    "No research affiliation or programme access is available; conditional research programmes are leads only, not selected sources."
+  ]
+}
