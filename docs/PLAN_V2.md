@@ -1,6 +1,6 @@
 # TerraSplat plan v2
 
-Date: 2026-10-28. Status: Phase 0 implementation started; see [PHASE0.md](PHASE0.md) for executed checks and remaining gates.
+Date: 2026-10-28. Status: Phase 0 compatibility fixture passes; Phase 2 prepared-input validation started. See [PHASE0.md](PHASE0.md) and [PHASE2.md](PHASE2.md). Phase 1 remains incomplete.
 
 Current implementation scope: pipeline tooling and a minimal validation viewer. Product web app features are deferred.
 

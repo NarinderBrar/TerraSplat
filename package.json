@@ -25,6 +25,8 @@
     "preview": "vite preview",
     "test": "node --test --test-isolation=none tests/*.test.mjs",
     "test:browser": "playwright test",
-    "inventory": "python3 pipeline/validation/inventory.py"
+    "inventory": "python3 pipeline/validation/inventory.py",
+    "phase2:preflight": "python3 -m pipeline.phase2 configs/phase2-jax068.json --output artifacts/phase2/preflight.json",
+    "test:python": "python3 -m pytest tests/python -q"
   }
 }

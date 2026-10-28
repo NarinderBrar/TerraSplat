@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "id": "jax068-prepared-input-audit",
+  "prepared_scene": "../../Ref/Skyfall-GS/data/datasets_JAX/JAX_068",
+  "skyfall": "../../Ref/Skyfall-GS",
+  "expected_skyfall_commit": "73194842a404910c5bbff006359eedfc56a98d60",
+  "python": "python3",
+  "georeference": null,
+  "note": "Audit of existing prepared inputs only. Not a raw CORE3D block and not an automatically registered scene. Supply a georeference record captured by preprocessing; do not use the Phase 0 synthetic anchor."
+}

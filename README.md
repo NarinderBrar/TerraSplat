@@ -2,7 +2,7 @@
 
 Pipeline for turning suitable satellite imagery into georeferenced, tiled Gaussian splats. Phase 0 includes a static Cesium diagnostic viewer.
 
-Phase 0 implementation is underway. Reconstruction, tiling at scale, and the product web app are not implemented.
+Phase 0 compatibility checks pass. Phase 2 prepared-input validation has started. Reconstruction, tiling at scale, and the product web app are not implemented.
 
 ```bash
 npm ci
@@ -12,7 +12,8 @@ npm run test:browser
 npm run dev
 ```
 
-See [Phase 0 instructions and compatibility contract](docs/PHASE0.md).
+See [Phase 0 instructions and compatibility contract](docs/PHASE0.md) and
+[Phase 2 input validation and remaining prerequisites](docs/PHASE2.md).
 
 - [Plan v2](docs/PLAN_V2.md): agreed prototype (Jacksonville CORE3D imagery, CesiumJS, 6 GB GPU budget, TerraScope reuse).
 - [Build plan](docs/PLAN.md): architecture, data contracts, implementation order, acceptance gates, and open decisions.

@@ -19,3 +19,4 @@ TerraScope/
 data/
 checkpoints/
 public/cesium/
+.pytest_cache/

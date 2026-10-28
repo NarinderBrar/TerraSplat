@@ -91,7 +91,8 @@ On the initial environment:
 - TerraScope has a visual registration and a representative flat ground datum;
   these do not establish surveyed ellipsoidal heights.
 - Skyfall CUDA submodules are uninitialized; PyTorch and `nvcc` are absent from
-  the active environment. `nvidia-smi` cannot communicate with the driver.
+  the active environment. The sandbox could not access the driver; a later host
+  check during Phase 2 confirmed the RTX 3060 Laptop GPU (6 GB) is available.
 
 Training setup cannot pass until the CUDA environment works. Reference projects
 are left untouched. Do not run training or treat synthetic placement as evidence
