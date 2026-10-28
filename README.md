@@ -1,8 +1,18 @@
 # TerraSplat
 
-Planning workspace for turning suitable satellite imagery into georeferenced, tiled Gaussian splats and viewing them on a web map.
+Pipeline for turning suitable satellite imagery into georeferenced, tiled Gaussian splats. Phase 0 includes a static Cesium diagnostic viewer.
 
-This repository currently contains a researched proposal, not an implemented pipeline.
+Phase 0 implementation is underway. Reconstruction, tiling at scale, and the product web app are not implemented.
+
+```bash
+npm ci
+npm run build
+npm test
+npm run test:browser
+npm run dev
+```
+
+See [Phase 0 instructions and compatibility contract](docs/PHASE0.md).
 
 - [Plan v2](docs/PLAN_V2.md): agreed prototype (Jacksonville CORE3D imagery, CesiumJS, 6 GB GPU budget, TerraScope reuse).
 - [Build plan](docs/PLAN.md): architecture, data contracts, implementation order, acceptance gates, and open decisions.

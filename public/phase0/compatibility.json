@@ -1,0 +1,47 @@
+{
+  "profile": "CesiumJS SPZ-v2 compatibility fixture; not a general production exporter",
+  "dependencies": {
+    "@adobe/spz": "0.2.3",
+    "cesium": "1.146.0"
+  },
+  "spzHeaderVersion": 2,
+  "shDegree": 0,
+  "extensions": {
+    "base": "KHR_gaussian_splatting",
+    "compression": "KHR_gaussian_splatting_compression_spz_2",
+    "cesiumProfileRevision": "511dbc90beacddd0085f7b6022a36da332a3b836"
+  },
+  "axes": "glTF (E,U,-N); Cesium glTF Y-up to tile Z-up; tile ENU to ECEF",
+  "kernel": "ellipse",
+  "colorSpace": "srgb_rec709_display",
+  "roundtrip": {
+    "positions": {
+      "maxAbsoluteError": 0,
+      "tolerance": 0.001
+    },
+    "scales": {
+      "maxAbsoluteError": 0.03046509623527527,
+      "tolerance": 0.04
+    },
+    "colors": {
+      "maxAbsoluteError": 0.012634515762329102,
+      "tolerance": 0.08
+    },
+    "alphas": {
+      "maxAbsoluteError": 0.02197885513305664,
+      "tolerance": 0.04
+    }
+  },
+  "hashes": {
+    "fixture.glb": "0e3bc41d9662072fa84b8df08e1e4a49c087fd9b8956b7b3b7d33c1b38f956fd",
+    "fixture.spz": "70084be6f7bd3810590ee56f452cb37b00f94443f0017917681584cefacc266d",
+    "tileset.json": "090eefe822decddc0a993f0f5b91a666406d0f7772516c87f6a14ef44e141ddb",
+    "fixture.json": "bbc5ceb50a4c7d9429a7abf8f304c703bba3c4afe4ee7e1e7f028e2ae3768b88"
+  },
+  "cesiumDecoderSha256": "530cb068ddd94b7267db1e1690ebdfcd94c552b2886d79398438841c42a1a14d",
+  "gates": {
+    "structure": "passed generator assertions",
+    "browserRendering": "run npm run test:browser",
+    "realScene": "pending Phase 1"
+  }
+}

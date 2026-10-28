@@ -1,0 +1,21 @@
+node_modules/
+dist/
+artifacts/
+test-results/
+playwright-report/
+.env
+.env.*
+!.env.example
+.aws/
+.codex/
+.claude/
+.agents/
+__pycache__/
+.venv/
+*.pyc
+# Research inputs and GPU outputs stay outside source control.
+Ref/
+TerraScope/
+data/
+checkpoints/
+public/cesium/

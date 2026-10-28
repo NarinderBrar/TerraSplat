@@ -1,0 +1,12 @@
+html, body { margin: 0; height: 100%; background: #0b0f14; color: #e4eaf0; font: 15px/1.5 system-ui, sans-serif; }
+body { display: grid; grid-template-columns: 310px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+aside { padding: 24px; overflow: auto; }
+h1 { font-size: 25px; margin: 0; }
+small { font-size: 14px; color: #91a2b5; }
+p { margin: 16px 0; }
+label { display: block; margin: 12px 0; }
+button { padding: 8px 14px; background: #24354a; border: 1px solid #718397; border-radius: 4px; color: white; cursor: pointer; }
+a { color: #8dc7ff; }
+#viewer { min-width: 0; min-height: 0; overflow: hidden; }
+#status { color: #b2d9ff; }
+@media (max-width: 680px) { body { grid-template-columns: 1fr; grid-template-rows: 280px 1fr; } aside { padding: 16px; } }

@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram id="architecture" name="TerraSplat architecture">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" page="1" pageWidth="1800" pageHeight="1500">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="Imagery + RPCs / prepared cameras&lt;br&gt;AOI, epoch, masks, control" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="80" width="280" height="100" />
+        </mxCell>
+        <mxCell id="3" value="Ingest and suitability gate&lt;br&gt;Catalog + immutable source manifest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="440" y="80" width="280" height="100" />
+        </mxCell>
+        <mxCell id="4" value="Calibration and registration&lt;br&gt;Cameras, points, transform chain" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="840" y="80" width="280" height="100" />
+        </mxCell>
+        <mxCell id="5" value="GPU reconstruction&lt;br&gt;Skyfall Stage 1; resumable blocks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="80" width="280" height="100" />
+        </mxCell>
+        <mxCell id="6" value="Canonical registered model&lt;br&gt;Fused attributes + georeference.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="380" width="280" height="100" />
+        </mxCell>
+        <mxCell id="7" value="Semantic adapter&lt;br&gt;Classes / language evidence / unknown" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="840" y="380" width="280" height="100" />
+        </mxCell>
+        <mxCell id="8" value="LOD and tile builder&lt;br&gt;Bounds, simplification, lineage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="440" y="380" width="280" height="100" />
+        </mxCell>
+        <mxCell id="9" value="Package and validate&lt;br&gt;GLB + tested SPZ profile + tileset.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="380" width="280" height="100" />
+        </mxCell>
+        <mxCell id="10" value="Versioned publication&lt;br&gt;Static object storage + catalog pointer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="680" width="280" height="100" />
+        </mxCell>
+        <mxCell id="11" value="CesiumJS web map&lt;br&gt;Stream LODs + source/semantic layers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="440" y="680" width="280" height="100" />
+        </mxCell>
+        <mxCell id="12" value="API and job service&lt;br&gt;Catalog, jobs, reports, spatial queries" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="840" y="680" width="280" height="100" />
+        </mxCell>
+        <mxCell id="13" value="Optional generated scene version&lt;br&gt;Skyfall Stage 2; labeled synthesized" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=10;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1240" y="680" width="280" height="100" />
+        </mxCell>
+        <mxCell id="20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;" edge="1" parent="1" source="2" target="3">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;" edge="1" parent="1" source="3" target="4">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;" edge="1" parent="1" source="4" target="5">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;" edge="1" parent="1" source="5" target="6">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;" edge="1" parent="1" source="6" target="7">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="25" value="optional semantic assets" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;" edge="1" parent="1" source="7" target="8">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;" edge="1" parent="1" source="8" target="9">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;" edge="1" parent="1" source="9" target="10">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="28" value="direct tile delivery" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;" edge="1" parent="1" source="10" target="11">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="29" value="catalog / queries" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;" edge="1" parent="1" source="11" target="12">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="30" value="optional" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;endArrow=block;labelBackgroundColor=#ffffff;fontSize=13;dashed=1;" edge="1" parent="1" source="6" target="13">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="31" value="geometry" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;entryX=0.5;entryY=1;endArrow=block;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="6" target="8">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1310" y="570" />
+              <mxPoint x="580" y="570" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="40" value="TerraSplat — proposed architecture" style="text;html=1;align=left;fontSize=26;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="10" width="1200" height="40" />
+        </mxCell>
+        <mxCell id="41" value="Cross-cutting: source hashes, explicit coordinate frames, checkpoints, quality reports, pinned versions.&lt;br&gt;Semantic and generated branches are optional. Generated versions re-enter packaging as separately labeled releases.&lt;br&gt;Proposed design; exporter compatibility, geographic registration, semantics, and performance require experiments." style="text;html=1;align=left;verticalAlign=top;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="860" width="1480" height="120" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

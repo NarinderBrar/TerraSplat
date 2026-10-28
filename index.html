@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>TerraSplat · Phase 0</title>
+  <link rel="stylesheet" href="/cesium/Widgets/widgets.css" />
+  <script>window.CESIUM_BASE_URL = '/cesium/';</script>
+  <script src="/cesium/Cesium.js"></script>
+</head>
+<body>
+  <aside>
+    <h1>TerraSplat <small>Phase 0</small></h1>
+    <p>SPZ / glTF compatibility experiment</p>
+    <p id="status" role="status">Loading fixture…</p>
+    <p>Five synthetic splats. Axis endpoints are 10 metres from the origin.</p>
+    <p>Red: east · Green: north · Blue: up<br>Amber: rotated 45°, half opacity</p>
+    <button id="reset" type="button">Reset camera</button>
+    <label><input id="globe" type="checkbox" /> Show ellipsoid</label>
+    <label><input id="bounds" type="checkbox" /> Show tile bounds</label>
+    <p>Synthetic Jacksonville anchor at 100 m ellipsoidal height. No terrain, imagery, or ion token required.</p>
+    <a href="/phase0/compatibility.json">Compatibility manifest</a>
+  </aside>
+  <main id="viewer" aria-label="Gaussian splat diagnostic viewer"></main>
+  <script type="module" src="/experiments/phase0/viewer.js"></script>
+</body>
+</html>

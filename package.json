@@ -1,0 +1,30 @@
+{
+  "name": "terrasplat",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Satellite Gaussian splat pipeline compatibility experiments",
+  "engines": {
+    "node": "^22.12.0 || >=24.0.0"
+  },
+  "dependencies": {
+    "@adobe/spz": "0.2.3",
+    "cesium": "1.146.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "vite": "8.3.5"
+  },
+  "scripts": {
+    "fixture": "node scripts/generate-fixture.mjs",
+    "prepare:cesium": "node scripts/prepare-cesium.mjs",
+    "predev": "npm run fixture && npm run prepare:cesium",
+    "dev": "vite --host 127.0.0.1",
+    "prebuild": "npm run fixture && npm run prepare:cesium",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --test --test-isolation=none tests/*.test.mjs",
+    "test:browser": "playwright test",
+    "inventory": "python3 pipeline/validation/inventory.py"
+  }
+}
