@@ -20,3 +20,8 @@ data/
 checkpoints/
 public/cesium/
 .pytest_cache/
+# Isolated Stage 1 dependencies and compiler toolchain.
+.external/
+.venv-stage1/
+.toolchains/
+.cache/

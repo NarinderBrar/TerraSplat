@@ -91,14 +91,17 @@ existing full prepared scene, not a newly cropped 250 m CORE3D block.
 The command correctly reports blocked because:
 
 1. Captured ENU/normalization evidence is missing.
-2. The selected `python3` interpreter has no PyTorch/CUDA extension stack.
+2. The audit manifest still selects the system `python3`, which has no training
+   stack. A separate `.venv-stage1` environment now passes CUDA kernel checks and
+   a bounded training diagnostic; see [Stage 1 setup](../training/README.md).
 3. Skyfall's submodules are uninitialized. Its `train.py` imports FlowEdit and
    MoGe even when the generative stage is disabled.
 
 A host check outside the sandbox confirms the RTX 3060 Laptop GPU has 6,144 MiB
 VRAM (driver 595.99.02). The earlier `nvidia-smi` failure was sandbox access, not
 a broken host driver. CUDA checks and eventual training must run with host GPU
-access. PyTorch/CUDA build tools still need an isolated training environment.
+access. The isolated Stage 1 environment is now available. The original audit manifest
+still describes the shared unmodified checkout and system interpreter.
 
 No reference checkout, images, CUDA installation, or system driver is modified.
 Local reports are ignored by Git.

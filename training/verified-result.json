@@ -1,0 +1,43 @@
+{
+  "environment": {
+    "status": "passed",
+    "python": "3.10.20",
+    "torch": "2.7.1+cu128",
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "gpu_bytes": 6088359936,
+    "capability": [
+      8,
+      6
+    ],
+    "checks": [
+      "CUDA nearest neighbours",
+      "SSIM forward/backward",
+      "rasterizer forward/backward",
+      "patched Stage 1 CLI import",
+      "optional model modes rejected"
+    ],
+    "source_commit": "73194842a404910c5bbff006359eedfc56a98d60",
+    "patch_sha256": "58067f6278fe341d338204b5f6814e0b2522efad46accfe87b7a2e3e4f852965"
+  },
+  "training_diagnostic": {
+    "status": "passed",
+    "purpose": "20-iteration environment diagnostic, not reconstruction quality validation",
+    "georeference": "unregistered: original ENU anchor is missing",
+    "source_commit": "73194842a404910c5bbff006359eedfc56a98d60",
+    "patch_sha256": "58067f6278fe341d338204b5f6814e0b2522efad46accfe87b7a2e3e4f852965",
+    "splat_count": 69027,
+    "peak_cuda_allocated_bytes": 267636224,
+    "validation": "checkpoint iteration 20 and finite PLY attributes",
+    "outputs": {
+      "model/point_cloud/iteration_20/point_cloud.ply": {
+        "bytes": 7455572,
+        "sha256": "2e96993e4a4055962ec292d5bbf2ebd28bb670174cfadd429b6112bb34028e63"
+      },
+      "model/chkpnt20.pth": {
+        "bytes": 40086259,
+        "sha256": "dc9095e28311e28a0de21867c69c478f78716b49965644a52e644cd65307ad1a"
+      }
+    }
+  }
+}

@@ -117,7 +117,7 @@ def preflight(manifest_path, check_environment=True):
     environment = None
     if check_environment:
         # Import in the selected training interpreter, not the CLI's environment.
-        probe = 'import torch, diff_gaussian_rasterization, simple_knn._C, fused_ssim; assert torch.cuda.is_available(), "CUDA unavailable"; print(torch.__version__, torch.cuda.get_device_name(0))'
+        probe = 'import torch, diff_gauss, simple_knn._C, fused_ssim; assert torch.cuda.is_available(), "CUDA unavailable"; print(torch.__version__, torch.cuda.get_device_name(0))'
         environment = run([manifest.get("python", sys.executable), "-c", probe], cwd=skyfall)
         if not environment["ok"]:
             failures.append("Training interpreter lacks a working CUDA/PyTorch extension stack")

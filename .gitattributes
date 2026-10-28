@@ -1,0 +1,2 @@
+# Unified diffs preserve upstream whitespace in context and removed lines.
+adapters/skyfall/*.patch -whitespace

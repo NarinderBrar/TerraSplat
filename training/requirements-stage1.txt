@@ -1,0 +1,14 @@
+# PyTorch is installed separately from the official CUDA 12.8 index.
+numpy==1.26.4
+matplotlib==3.10.1
+scipy==1.15.2
+torchmetrics==1.7.1
+lpips==0.1.4
+OpenEXR==3.3.3
+plyfile==1.1
+ninja==1.11.1.4
+tqdm==4.67.1
+tensorboardX==2.6.2.2
+packaging==24.2
+setuptools==75.8.2
+wheel==0.45.1
