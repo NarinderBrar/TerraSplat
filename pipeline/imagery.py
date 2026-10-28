@@ -141,6 +141,12 @@ def crop(source, output, block, max_bytes=64 * 1024**2):
         try:
             with rasterio.open(partial, "w", **profile) as dst:
                 dst.write(data)
+                dst.colorinterp = src.colorinterp
+                dst.update_tags(**{key: value for key, value in src.tags().items() if key in ("NITF_IDATIM", "NITF_IID1", "NITF_ICAT", "NITF_IREP")})
+                for band in range(1, src.count + 1):
+                    dst.update_tags(band, **src.tags(band))
+                    if src.descriptions[band - 1]:
+                        dst.set_band_description(band, src.descriptions[band - 1])
                 dst.update_tags(ns="RPC", **rpc.to_gdal())
             with rasterio.open(partial) as reread:
                 if not np.array_equal(reread.read(), data):

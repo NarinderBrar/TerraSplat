@@ -16,6 +16,7 @@ See [Phase 0 instructions and compatibility contract](docs/PHASE0.md) and
 [Phase 2 input validation and remaining prerequisites](docs/PHASE2.md).
 For the isolated GPU setup and bounded diagnostic, see [Stage 1 training](training/README.md).
 For raw sensor crops and RPC preservation, see [Imagery preparation](imagery/README.md).
+For the approved multi-view inputs and initial ENU cameras, see [SatelliteSfM handoff](sfm/README.md).
 
 - [Plan v2](docs/PLAN_V2.md): agreed prototype (Jacksonville CORE3D imagery, CesiumJS, 6 GB GPU budget, TerraScope reuse).
 - [Build plan](docs/PLAN.md): architecture, data contracts, implementation order, acceptance gates, and open decisions.

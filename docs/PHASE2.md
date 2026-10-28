@@ -2,7 +2,10 @@
 
 Status: started. Prepared-input preflight, explicit coordinate-transform
 preservation, isolated Stage 1 training, and raw RPC-aware crop tooling are
-implemented. See [imagery preparation](../imagery/README.md) for I/O results. The raw-imagery-to-tiles pipeline has not run.
+implemented. The approved 13-day pilot now has three training RGB views, one
+holdout and RPC-derived initial cameras with a preserved ENU origin. See
+[SatelliteSfM handoff](../sfm/README.md). Feature matching and bundle adjustment
+have not run; the pinned runtime image download did not complete. The raw-imagery-to-tiles pipeline has not run.
 Phase 1's existing-scene conversions remain incomplete; Phase 0 is committed and
 pushed. The user explicitly confirmed proceeding directly to Phase 2.
 

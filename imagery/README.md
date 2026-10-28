@@ -85,6 +85,12 @@ This verifies one PAN crop, not multi-view coverage, usable color, a successful
 SfM reconstruction, or georeferenced splats. Neither matched MSI crops nor a
 full imagery set have been prepared yet.
 
+## Multi-view continuation
+
+The approved 13-day pilot now has three training views and one holdout, with
+matched PAN/MSI crops, RGB inputs and RPC-derived initial cameras prepared. See
+[SatelliteSfM handoff](../sfm/README.md) for the executed result and reproduction.
+
 ## Next gates
 
 Validate acquisition epochs, overlap, cloud coverage and angular diversity before

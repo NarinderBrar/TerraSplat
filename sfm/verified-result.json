@@ -1,0 +1,100 @@
+{
+  "stage": "approved multi-view imagery and RPC camera initialization",
+  "status": "prepared_for_sfm",
+  "span_days": 13.003511287037036,
+  "train_catalog_ids": [
+    "104001000AB24A00",
+    "104001000A1B5F00",
+    "104001000AB10600"
+  ],
+  "holdout_catalog_ids": [
+    "104001000A22A000"
+  ],
+  "training_max_convergence_deg": 49.64779889662488,
+  "source_bytes": 6423799801,
+  "source_commit": "908c61937f6a16d6e1d50e98898db997e5e257bd",
+  "container": "ghcr.io/jayin92/satellitesfm@sha256:3c64997c9b2b4de5cdcad6d24972768423845fd7691015af1e4771c84fade9a5",
+  "observer_latlonalt": [
+    30.348819714393777,
+    -81.66376056134547,
+    -70
+  ],
+  "observer_note": "Exact numerical ENU origin defined from the crop bounds; altitude is lower bracket minus 20 m, not a ground-height measurement.",
+  "views": [
+    {
+      "catalog_id": "104001000AB24A00",
+      "role": "train",
+      "rpc_approximation": {
+        "sample_count": 2048,
+        "max_pixels": 0.10074829738487864,
+        "p95_pixels": 0.05161976026683073,
+        "median_pixels": 0.02191449053592787
+      },
+      "skew_pixels": -1781.2311548033504,
+      "metadata_sha256": "4cf9003203a0a7e4ad78dbfec5513f1a1638a2304a8438bec69ba9714aa1130f",
+      "rgb_sha256": "08d7dcd5383cfa5da620dd8f5e5590388a89dab0155eea1c5bae508a958a65e4",
+      "valid_fraction": 1.0,
+      "height_parallax_msi_pixels": 0.012327041973391033
+    },
+    {
+      "catalog_id": "104001000A1B5F00",
+      "role": "train",
+      "rpc_approximation": {
+        "sample_count": 2048,
+        "max_pixels": 0.0671478570109371,
+        "p95_pixels": 0.04523307710293582,
+        "median_pixels": 0.017061005986198863
+      },
+      "skew_pixels": 12226.086290016254,
+      "metadata_sha256": "f0b0f8ce80a95c25b9a11f4ba335cba68d77c5b60dc73244fdb2471af4db8979",
+      "rgb_sha256": "32130077401ee69dcd839634a14035a63620bcb8aad20ac2737a5fd6cff9eb8f",
+      "valid_fraction": 1.0,
+      "height_parallax_msi_pixels": 0.025390954080832306
+    },
+    {
+      "catalog_id": "104001000AB10600",
+      "role": "train",
+      "rpc_approximation": {
+        "sample_count": 2048,
+        "max_pixels": 0.06207528915352925,
+        "p95_pixels": 0.03846269535954261,
+        "median_pixels": 0.015782628113980648
+      },
+      "skew_pixels": 689128.3797386418,
+      "metadata_sha256": "6c9c20a79fe36b61a8cd738b887c8a4d9e5a89b1b6e7787613bbd0ef90108b73",
+      "rgb_sha256": "2396e09d7763a8bb899b5948dfd5fd254f748a0e1eec654ff3e5562a6bddd2e4",
+      "valid_fraction": 1.0,
+      "height_parallax_msi_pixels": 0.0025445992201391897
+    },
+    {
+      "catalog_id": "104001000A22A000",
+      "role": "holdout",
+      "rpc_approximation": {
+        "sample_count": 2048,
+        "max_pixels": 0.09229762198727133,
+        "p95_pixels": 0.05068074115490503,
+        "median_pixels": 0.0199984981412483
+      },
+      "skew_pixels": 52835.58429109962,
+      "metadata_sha256": "fe8b0be467f0e9d8ba3c24b389f2f084a069f06d09715cb51fef92f914016c14",
+      "rgb_sha256": "7728057828f7b22ba622cc3f60d167e8d91d1046181d570e32c7705aa17408e9",
+      "valid_fraction": 1.0,
+      "height_parallax_msi_pixels": 0.012415562691977034
+    }
+  ],
+  "visual_review": "Same urban block visible in all four RGB crops; no obvious cloud obstruction. Tint, shadows and vehicles differ. Screening only.",
+  "not_executed": [
+    "feature matching",
+    "bundle adjustment",
+    "sparse reconstruction",
+    "skew correction",
+    "Skyfall training on this new block"
+  ],
+  "reproduction": "scripts/prepare-jax068.sh completed from the hashed source cache in a fresh run directory",
+  "next_step": {
+    "stage": "feature matching and bundle adjustment",
+    "status": "blocked",
+    "reason": "Pinned container prefetch did not complete; an additional 180-second retry timed out.",
+    "gpu_container_runtime": "not configured; CPU path has not been verified"
+  }
+}
