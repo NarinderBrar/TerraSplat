@@ -27,6 +27,9 @@
     "test:browser": "playwright test",
     "inventory": "python3 pipeline/validation/inventory.py",
     "phase2:preflight": "python3 -m pipeline.phase2 configs/phase2-jax068.json --output artifacts/phase2/preflight.json",
-    "test:python": "python3 -m pytest tests/python -q"
+    "test:python": "python3 -m pytest tests/python -q",
+    "dev:app": "node scripts/dev-app.mjs",
+    "build:app": "npm --prefix apps/web run build",
+    "test:app": "npm --prefix apps/web test && npm --prefix apps/web run test:browser"
   }
 }

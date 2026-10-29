@@ -34,3 +34,5 @@ tasks.md
 .venv-moge/
 
 .venv-api/
+
+apps/web/public/cesium/
