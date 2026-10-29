@@ -4,11 +4,9 @@ import { gunzipSync } from 'node:zlib';
 import assert from 'node:assert/strict';
 import createSpzModule from '@adobe/spz';
 import { Cartesian3, Matrix4, Transforms } from 'cesium';
+import { C0, baseExtension, compressionExtension, packGlb, splatGltf, tilesetExtensions } from './lib/splat-glb.mjs';
 
 const output = new URL('../public/phase0/', import.meta.url);
-const C0 = 0.28209479177387814;
-const baseExtension = 'KHR_gaussian_splatting';
-const compressionExtension = 'KHR_gaussian_splatting_compression_spz_2';
 // glTF is right-handed Y-up: (east, north, up) -> (east, up, -north).
 const samples = [
   { name: 'origin', enu: [0, 0, 0], rgb: [0.8, 0.8, 0.8], scale: [0.35, 0.35, 0.35], rotation: [0, 0, 0, 1], opacity: 0.9 },
@@ -45,49 +43,16 @@ for (let i = 0; i < samples.length; i++) {
   const dot = Math.abs(q.reduce((sum, v, j) => sum + v * samples[i].rotation[j], 0));
   assert.ok(dot > 0.999, `quaternion ${i} changed orientation`);
 }
-const types = [
-  ['POSITION', 'VEC3', 5126], ['COLOR_0', 'VEC4', 5121],
-  [`${baseExtension}:SCALE`, 'VEC3', 5126], [`${baseExtension}:ROTATION`, 'VEC4', 5126],
-];
 const mins = [0, 1, 2].map(i => Math.min(...samples.map(s => s.gltf[i])));
 const maxs = [0, 1, 2].map(i => Math.max(...samples.map(s => s.gltf[i])));
-const gltf = {
-  asset: { version: '2.0', generator: 'TerraSplat Phase 0 / @adobe/spz 0.2.3' },
-  extensionsUsed: [baseExtension, compressionExtension], extensionsRequired: [baseExtension, compressionExtension],
-  scene: 0, scenes: [{ nodes: [0] }], nodes: [{ mesh: 0 }],
-  buffers: [{ byteLength: payload.length }], bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: payload.length }],
-  accessors: types.map(([name, type, componentType]) => ({
-    componentType, count: samples.length, type,
-    ...(name === 'POSITION' ? { min: mins, max: maxs } : {}),
-    ...(name === 'COLOR_0' ? { normalized: true } : {}),
-  })),
-  meshes: [{ primitives: [{ mode: 0, attributes: Object.fromEntries(types.map(([name], i) => [name, i])),
-    extensions: { [baseExtension]: { kernel: 'ellipse', colorSpace: 'srgb_rec709_display',
-      projection: 'perspective', sortingMethod: 'cameraDistance',
-      extensions: { [compressionExtension]: { bufferView: 0 } } } },
-  }] }],
-};
-function packGlb(json, bin) {
-  const text = Buffer.from(JSON.stringify(json));
-  const jsonSize = Math.ceil(text.length / 4) * 4;
-  const binSize = Math.ceil(bin.length / 4) * 4;
-  const result = Buffer.alloc(28 + jsonSize + binSize);
-  result.writeUInt32LE(0x46546c67, 0); result.writeUInt32LE(2, 4); result.writeUInt32LE(result.length, 8);
-  result.writeUInt32LE(jsonSize, 12); result.writeUInt32LE(0x4e4f534a, 16);
-  result.fill(0x20, 20, 20 + jsonSize); text.copy(result, 20);
-  result.writeUInt32LE(binSize, 20 + jsonSize); result.writeUInt32LE(0x004e4942, 24 + jsonSize);
-  result.set(bin, 28 + jsonSize);
-  return result;
-}
+const gltf = splatGltf({ count: samples.length, byteLength: payload.length, min: mins, max: maxs,
+  generator: 'TerraSplat Phase 0 / @adobe/spz 0.2.3' });
 const anchor = { longitude: -81.66376054127814, latitude: 30.34881972282938, ellipsoidalHeight: 100 };
 const transform = Matrix4.toArray(Transforms.eastNorthUpToFixedFrame(Cartesian3.fromDegrees(anchor.longitude, anchor.latitude, anchor.ellipsoidalHeight)));
 const tileset = {
   // Nonzero tileset error allows Cesium to select this leaf; the leaf has no finer LOD.
   asset: { version: '1.1' }, geometricError: 20,
-  extensionsUsed: ['3DTILES_content_gltf'], extensionsRequired: ['3DTILES_content_gltf'],
-  extensions: { '3DTILES_content_gltf': {
-    extensionsUsed: [baseExtension, compressionExtension], extensionsRequired: [baseExtension, compressionExtension],
-  } },
+  ...tilesetExtensions,
   root: { transform, boundingVolume: { sphere: [0, 0, 0, 20] }, geometricError: 0,
     refine: 'REPLACE', content: { uri: 'fixture.glb' } },
 };

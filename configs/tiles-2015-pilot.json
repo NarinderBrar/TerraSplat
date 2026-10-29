@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "id": "jax068-2015-tiles-baseline",
+  "block_half_extent_m": 125,
+  "leaf_max_splats": 8192,
+  "extent_sigma": 3,
+  "max_opacity": 0.99,
+  "note": "Crop to the 250 m core block (the 20 m halo is training context only). Leaves hold full-resolution splats; parents hold moment-matched voxel merges capped at leaf_max_splats."
+}

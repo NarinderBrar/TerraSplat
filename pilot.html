@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>TerraSplat · 2015 Pilot</title>
+  <link rel="stylesheet" href="/cesium/Widgets/widgets.css" />
+  <script>window.CESIUM_BASE_URL = '/cesium/';</script>
+  <script src="/cesium/Cesium.js"></script>
+</head>
+<body>
+  <aside>
+    <h1>TerraSplat <small>2015 pilot</small></h1>
+    <p>Jacksonville 250 m block, Skyfall-GS Stage 1, SPZ 3D Tiles</p>
+    <p id="status" role="status">Loading tiles…</p>
+    <p id="details"></p>
+    <button id="reset" type="button">Reset camera</button>
+    <button id="top" type="button">Top view</button>
+    <label><input id="bounds" type="checkbox" /> Show tile bounds</label>
+    <label><input id="osm" type="checkbox" /> OpenStreetMap overlay (network)</label>
+    <p>The ground sits about 17 m below the WGS84 ellipsoid here and no terrain is loaded, so the overlay globe is drawn translucent. Placement accuracy is unverified.</p>
+    <a href="/tiles/pilot-2015-04/tile-plan.json">Tile plan</a>
+  </aside>
+  <main id="viewer" aria-label="Gaussian splat pilot viewer"></main>
+  <script type="module" src="/experiments/pilot/viewer.js"></script>
+</body>
+</html>
