@@ -15,6 +15,11 @@ npm run test:app
 ```
 
 `dev:app` starts the API on port 8000 and web app on 5173; Ctrl+C stops both.
+
+To test from a phone on the same network, run `npm run dev:app:lan` and open
+`http://<laptop-LAN-IP>:5173` (`hostname -I` shows it). The web server then
+accepts LAN connections; the API stays on loopback behind the Vite proxy. A
+host firewall must allow TCP 5173 (for ufw: `sudo ufw allow 5173/tcp`).
 The existing `dev`, `build`, `test` and pilot browser commands remain separate.
 The app build is in `apps/web/dist`; serve it with `/api` and `/releases` routed to the API,
 or run `npm --prefix apps/web exec vite -- preview --host 127.0.0.1 --port 4173` locally.
