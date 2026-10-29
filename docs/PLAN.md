@@ -1,6 +1,6 @@
 # TerraSplat build plan
 
-Research date: 2026-10-28; status updated 2026-10-29: the 2015 pilot reaches Cesium tiles; static MoGe depth supervision regressed five-view lidar MAE 2.82 → 7.83 m and holdout PSNR 17.73 → 15.18 dB. Retain the baseline; product web app v1 is next.
+Research date: 2026-10-28; status updated 2026-10-29: the 2015 pilot reaches Cesium tiles. Authors' 17-view data gives 2.36 m registered lidar MAE with pilot settings, 1.38 m with their recipe; holdout PSNR falls 21.35 → 18.90 dB. Assumed anchor: shape only. [Comparison](../training/RESULT_2015.md#authors-jax_068-data).
 
 The design below is an engineering proposal. Current upstream capabilities and local evidence are documented separately in [RESEARCH.md](RESEARCH.md). Thresholds are proposed acceptance targets, not measured results.
 

@@ -1,6 +1,6 @@
 # 2015 pilot: verified Skyfall inputs
 
-The 2015 Jacksonville pilot has completed Stage 1, holdout evaluation and Cesium delivery. Five-view registered lidar MAE is 2.82 m; static MoGe depth supervision regressed it to 7.83 m and holdout PSNR from 17.73 to 15.18 dB. Retain the five-view baseline ([depth supervision](RESULT_2015.md#depth-supervision)); product web app v1 reading pipeline releases is next. This is one historical block with lidar of unknown date.
+The 2015 pilot reaches Cesium delivery; its five-view viewer baseline is retained. Authors' 17-view JAX_068 data measures 2.36 m registered lidar MAE with pilot settings and 1.38 m with their recipe; holdout PSNR falls 21.35 → 18.90 dB. These are assumed-anchor shape results on one block, with lidar date unknown ([comparison](RESULT_2015.md#authors-jax_068-data)); widen the pipeline view set and test the geometry recipe next.
 
 The current scene is `artifacts/imagery/skyfall-2015-02`.
 [pilot-verified.json](pilot-verified.json) records the result and artifact hashes.

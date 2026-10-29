@@ -339,6 +339,67 @@ Their pseudo-view variant was untested by this experiment. Retain the
 five-view baseline; no weight tuning used holdout or lidar. One block,
 lidar date unknown; no broader accuracy claim.
 
-Checks: 63 SfM/Python tests and 34 imagery tests pass; Ruff E/F passes. Next:
-product web app v1 reading pipeline releases; further height experiments
-require a separate protocol.
+Checks for the static-prior experiment: 63 SfM/Python tests and 34 imagery
+tests pass; Ruff E/F passes.
+
+## Authors' JAX_068 data
+
+The authors' prepared scene has 17 training views, two test views and 69,027
+initial points. `pipeline.reference_scene` copies it without changing `Ref/`.
+The legacy loader skips normalization because this scene has no `R`/`T`:
+centre `[0, 0, 0]`, scale 1, z-shift 0. The real-loader comparison found
+zero point/camera difference. The missing ENU anchor is **assumed** from the
+lidar AOI bounds centre, with altitude −70 m (pilot lower bracket minus 20 m).
+Only registered shape metrics are meaningful here.
+
+Both profiles were fixed before evaluation. The first uses the five-view
+pilot settings. The second uses the authors' README Stage 1 recipe: live
+MoGe pseudo views, appearance model, opacity weight 10 and SH 1; resolution 2
+and the 200k doubling-headroom cap adapt it to this GPU. Static depth is off.
+The original basic adapter is byte-identical and the pilot preflight passes.
+Compact evidence: [result-ref-jax068.json](result-ref-jax068.json).
+
+| Rendered-depth DSM, registered | Holdout PSNR (dB) | MAE all (m) | Ground | Buildings | Vegetation | RMSE (m) | NMAD (m) | Completeness |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Pipeline, 3 views | 17.57 | 3.32 | 2.93 | 3.70 | 3.75 | 5.04 | 2.99 | 99.0% |
+| Pipeline, 5 views | 17.73 | 2.82 | 2.77 | 2.87 | 2.78 | 4.17 | 2.82 | 99.6% |
+| Reference, 17 views, pilot settings | 21.35 | 2.36 | 2.67 | 2.06 | 1.93 | 4.03 | 1.87 | 99.9% |
+| Reference, 17 views, authors' recipe | 18.90 | **1.38** | 1.24 | 1.52 | 1.62 | 2.43 | 1.01 | 100.0% |
+
+The reference-data run lowers MAE by 0.46 m (16%) from five views, with the
+largest gain on buildings. This includes different cameras, images and sparse
+initialization, so it cannot be attributed to view count alone. The reference
+PSNR is the mean of its two test-frame PSNRs (22.44 and 20.27 dB); those are
+different holdouts from the pilot's May 2 frame.
+
+For the pilot-settings run, dsmr returns `(dx, dy) = (0, −2)` pixels and a
+`+24.68 m` z correction. The search covers ±300 pixels per axis at full grid
+resolution (±150 m); the solution is well inside it, with 99.9% overlap.
+These shifts are **not placement measurements**. The full-cloud extent is a
+diagnostic for the wider reference scene; the pilot extent gate stays enforced.
+The exported fused/raw renders agree to at least 103.4 dB.
+
+The recipe memory trial crossed pseudo-depth start at step 1,000 and completed
+1,500 steps: 2.53 GiB peak allocated, 3.22 GiB reserved. Pinned MoGe and cached
+weights import in `.venv-stage1` with torch unchanged. A warmup checkpoint
+validation import error was fixed, its evidence retained, and the full run
+restarted from scratch. The full recipe completed 30k steps in 53.4 minutes
+with 149,842 splats and 2.86 GiB peak allocated memory (3.43 GiB reserved).
+Its fused/raw renders agree to at least 113.9 dB with the authors' fixed
+appearance embedding; no holdout appearance fitting is performed.
+
+On the same 17 views, the joint recipe cuts another 0.97 m (41%) from MAE,
+with ground 2.67 → 1.24 m and buildings 2.06 → 1.52 m. This is a recipe
+comparison, not an isolated MoGe ablation. Holdout PSNR falls by 2.45 dB:
+the render is smoother and changes colour, despite better DSM shape.
+The recipe's registration is `(0, −1)` pixels and `+24.68 m` z correction,
+with 100% overlap; it also lies well inside the search and is not placement
+evidence. Widen the pipeline view set and test this recipe as a geometry
+profile, while retaining the known-anchor five-view viewer baseline.
+
+Checks: 68 SfM/Python tests pass (two pyproj-dependent tests skip there and
+pass in the imagery environment), 34 imagery tests pass, and Ruff E/F passes.
+All four reference-adapter tests pass in the imagery environment.
+
+One block, authors' cameras rather than pipeline cameras, assumed anchor and
+lidar date unknown; no placement-accuracy or production-readiness claim.

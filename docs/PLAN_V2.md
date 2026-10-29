@@ -1,6 +1,6 @@
 # TerraSplat plan v2
 
-Updated: 2026-10-29. Status: Phase 0 compatibility passes; the 2015 pilot reaches Cesium tiles. Static MoGe depth supervision regressed five-view registered lidar MAE 2.82 → 7.83 m and holdout PSNR 17.73 → 15.18 dB; retain the baseline ([result](../training/RESULT_2015.md#depth-supervision)). Phase 1 remains incomplete.
+Updated: 2026-10-29. Status: the 2015 pilot reaches Cesium tiles. Authors' 17-view reference data gives 2.36 m registered lidar MAE with pilot settings and 1.38 m with their recipe, at a holdout PSNR tradeoff of 21.35 → 18.90 dB. Assumed anchor: shape only ([result](../training/RESULT_2015.md#authors-jax_068-data)). Phase 1 remains incomplete.
 
 Current implementation scope: pipeline tooling and a minimal validation viewer. Product web app v1 (React/Vite/Cesium viewer + FastAPI for datasets, releases and quality reports) is planned next, reading only pipeline releases; jobs and semantics come later.
 
@@ -12,7 +12,7 @@ This revision builds on [PLAN.md](PLAN.md) and [RESEARCH.md](RESEARCH.md). Those
 
 **Latest user decision (2026-10-29): use the 2015 data for the end-to-end historical demonstration.** Resume from the prepared crops and initial cameras, keeping the three training acquisitions and May 2 holdout. The approved 13-day acquisition-span exception applies to this pilot. Label outputs with their 2015 capture dates.
 
-Status: five-view Stage 1 and the fixed-weight MoGe depth comparison are measured; depth regressed (MAE 2.82 → 7.83 m, holdout PSNR 17.73 → 15.18 dB). Retain the baseline; product web app v1 reading pipeline releases is next.
+Status: reference-data and recipe comparisons are measured: 17-view pilot settings give 2.36 m registered MAE; the authors' recipe gives 1.38 m with lower holdout PSNR. Widen the pipeline view set and test the geometry recipe; retain the five-view viewer baseline.
 
 Recent imagery qualification is deferred and does not block this demonstration. For a future current-city release, separately qualify recent inputs and date-compatible validation. The preceding-12-month freshness target remains provisional for that later work.
 

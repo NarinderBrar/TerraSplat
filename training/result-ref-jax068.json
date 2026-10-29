@@ -1,0 +1,1143 @@
+{
+  "schema_version": 1,
+  "status": "measured",
+  "assumed_anchor": true,
+  "purpose": "Compare authors prepared 17 train / 2 test views under pilot and authors Stage 1 settings.",
+  "holdout_used_for_training_priors_or_choices": false,
+  "reference_scene": {
+    "source": "/home/narinder/Documents/OrbitWorks/Ref/Skyfall-GS/data/datasets_JAX/JAX_068",
+    "source_sha256": {
+      "transforms_train.json": "3874e942c341812612e409c589e17f7a01d9e246c6ce8804eec2f975bfa2bbce",
+      "transforms_test.json": "638c8d61982c9828aaa0a4294286c8ad7694f2584bf159d64df6a90c0ccbffc0",
+      "points3D.txt": "c2726799d1ff49be43a9877912fba5c68485953a88a01098b3cecf6bbbc23ddc",
+      "./images/JAX_068_011_RGB.png": "c493dcbcfc27821151dee724d43a1c35de14ac1319de781fbf7437c666898077",
+      "masks/JAX_068_011_RGB.npy": "747da4be956387979e3af158083659105da797cfe145a3fd52a77c4177ce5671",
+      "cameras/JAX_068_011_RGB.json": "357256a68faccf847985ca66fe34e2969a8d0ff8b76552e596acc6fffc5908b1",
+      "./images/JAX_068_005_RGB.png": "15bde1a642f1434136755574af0b116f4d22c3fd659a4f1749b4e20cd682fd1c",
+      "masks/JAX_068_005_RGB.npy": "abeed6a24cd495d5c6dd346bb1e805df21b30ba760127f1ef5645d896ed30442",
+      "cameras/JAX_068_005_RGB.json": "27210ce86d6f34609493249218cfd21831aafcea6af5e1a634c4f05136191ca0",
+      "./images/JAX_068_002_RGB.png": "aa11a16e60e61e9f7ae834acccfbd3c8767141c89becde19ae09a0c336855a3b",
+      "masks/JAX_068_002_RGB.npy": "cc76926cd622374f127df9b19c379130ee1663e235fc72a39c43a46f7ef13f36",
+      "cameras/JAX_068_002_RGB.json": "aefc328340e172de0f07a7f22df57d7b6fa05661d977cb706a8cc45f9e46033d",
+      "./images/JAX_068_006_RGB.png": "48fad00b1410b2b6f920f9626549a36fab19bbd9e70f51aaa3a28ea9b6d813a2",
+      "masks/JAX_068_006_RGB.npy": "c81bba99467232c94c6f1b8099a45d18cacf8b087bceafcbcc1ac9ce9aeec3cc",
+      "cameras/JAX_068_006_RGB.json": "b82ab0a2d648d80d7a96794c637dfb2f29a5f6cf98c29f1bf5a058ec41ecc535",
+      "./images/JAX_068_010_RGB.png": "fe9021372b074be6f910e0d7398a5ba755456c153e4c7712c8b9bea5827f38fd",
+      "masks/JAX_068_010_RGB.npy": "eccabaec88662426bb1a4e52aee524888539cb23c46149d632e612327d33a967",
+      "cameras/JAX_068_010_RGB.json": "1236929a9397a26eb719041e6437ce5d394f52660b6b5cf31563a433fa47acfc",
+      "./images/JAX_068_007_RGB.png": "b585f7ee666a3b0d7dbc7d500648dda0765b5d3c2f341c035b704bdc139538d0",
+      "masks/JAX_068_007_RGB.npy": "daf34d2abb26a2abd6fa71d811fba378db1f227a7e7bf18905d14a070f4a5c76",
+      "cameras/JAX_068_007_RGB.json": "692ac0e89ecf93e52e8e37b33218c5624bfe632bf51fca20390d842fc9c88ec2",
+      "./images/JAX_068_020_RGB.png": "3a97e4622192416f126a01e54b68f951ec310192f9098071bcb368733d88509d",
+      "masks/JAX_068_020_RGB.npy": "36bc85d1543f248ca187f41144f61c7cc5733a5b823267d1015b57621d0a38f8",
+      "cameras/JAX_068_020_RGB.json": "b0bee39b01ecc345d02ccdd9e38868eda2e4e2f522360795f13f75d5ff415168",
+      "./images/JAX_068_016_RGB.png": "0895abc1ff6cf70952a7bb66e5559d44d8694a1282c95f3bddf2b05891b58b2b",
+      "masks/JAX_068_016_RGB.npy": "4b99018a0e34f9f38938c01976787619ae6785fd03304e6252764e1fc1cc631d",
+      "cameras/JAX_068_016_RGB.json": "2ddbc3556404dfab12f1dc15e14dfa79c3c646a5f220f75b2100c552276919c9",
+      "./images/JAX_068_019_RGB.png": "516c340d43387563c169dc93fe72cea227acdbdf91412318fcfe17db3b581505",
+      "masks/JAX_068_019_RGB.npy": "17038496b57abf5b314cade074f83ae3f43820ae39a223bdfd6e4bca7b4acdda",
+      "cameras/JAX_068_019_RGB.json": "4405e581f185be8e3c0fcb962c91ed6b1ac0a9088b07135ec2904bf725f83301",
+      "./images/JAX_068_001_RGB.png": "bf0a569356b3ee7e990e0df761cf0d1288027f9766c43a229ae1cf39ad634de6",
+      "masks/JAX_068_001_RGB.npy": "e6011923eaa154e4c96903d7662e47f456ddea2ecc0c7ea5e128eff40b596336",
+      "cameras/JAX_068_001_RGB.json": "917584bd9169b501d3c5900a0fbabcf10a74fd9a9001fdac4d777ca9379426f3",
+      "./images/JAX_068_013_RGB.png": "77d376cbb2ef12c88117a66755e02d1165a134e88e0c548d41dff823a7ae9646",
+      "masks/JAX_068_013_RGB.npy": "e9bfdcb942a5b45c86c7a9fb78cb1f594cab39b7526c493c384f481926283819",
+      "cameras/JAX_068_013_RGB.json": "7cd1e95a4337bb4c238e23372d2099e582e2438dc63d57c26feacf03250c84af",
+      "./images/JAX_068_009_RGB.png": "8088963b753d687b2dee64e6b9f3d555576190b291907a2fb9ee984982074718",
+      "masks/JAX_068_009_RGB.npy": "14cfbef2351d3345fcebceb5079b0020a97185bddac018a59ae79bb4d049c33a",
+      "cameras/JAX_068_009_RGB.json": "39f95c21417f24806012485811392ecae55bc881652cf3d86e818869ab0a888d",
+      "./images/JAX_068_015_RGB.png": "689ca075bc0577bad0355eb2137c4228f1d90aeb0f969774a6f1f8a27b7f7baf",
+      "masks/JAX_068_015_RGB.npy": "040a0f6b2af600892be361fd566dc91f7b7c0b9fda3423d9aa8da2e33ccc8d0f",
+      "cameras/JAX_068_015_RGB.json": "ea41c71cdfaec3262c9741134859c18c1f28ab09a717a21ea5288c581f07730d",
+      "./images/JAX_068_014_RGB.png": "902c99f586f0a15c14f60f971343661f81148c4fd558b51a07f4102aa50397e0",
+      "masks/JAX_068_014_RGB.npy": "000b3b45036a3d0940b0ead2ad059805b355c536272264f8baf043619160910a",
+      "cameras/JAX_068_014_RGB.json": "253127776993415b416c80aea7795a87e0950892f009ea138b3b44a30c4aa14a",
+      "./images/JAX_068_022_RGB.png": "6a255073a54e7144a3ea22a529655f514101121b38f0e83442371ce1f54547ec",
+      "masks/JAX_068_022_RGB.npy": "01cc118c23393b001a02426c3f4655472253cfd6275a988c521bcfb7a3ebdc12",
+      "cameras/JAX_068_022_RGB.json": "9c19c5b416fc7946bd0278bfb1803ba396dfa4b19949b3146ae7a0d52da25625",
+      "./images/JAX_068_004_RGB.png": "be105cc2d86f974710ee318aefadbac246425c82e17056eb832cc550d30903f0",
+      "masks/JAX_068_004_RGB.npy": "bd767dc13b0692dd6d03fe75f9133e06553792a5ab8320778875f93ab2bdce08",
+      "cameras/JAX_068_004_RGB.json": "c337a55087b5e80f19338c561060bb0b20c083e18cb5cefa00e27f281db11671",
+      "./images/JAX_068_018_RGB.png": "58df6d4bebae0d0fb907910b9c7905d34578c63fbcba69c8b8d53b027a026caa",
+      "masks/JAX_068_018_RGB.npy": "2b2f471a3afe4b46f800783fb55e5b8c4d4fa45211b4d4b77680dc2ceea51957",
+      "cameras/JAX_068_018_RGB.json": "8dfa96b3b723efe768d45bffec1e58cd0683e3e7d495de66b06ea07fb02be9b9",
+      "./images/JAX_068_003_RGB.png": "8fa0c8e17dfe2ae0921462867ade4caf244a2726707866bb61efa20db159802e",
+      "masks/JAX_068_003_RGB.npy": "2707c08076af8a71a186178fd37b2db3d226bc6f909cf61a1bdec0b76f0891f5",
+      "cameras/JAX_068_003_RGB.json": "9d5ba58932208c5bbb1e46069eeb775573150fd7be57fc9161ca370fff8029fa",
+      "./images/JAX_068_012_RGB.png": "b0da412efe2c05eb5fb79075e31c534f8b63ddd6d6db8e570e099d3c656e9faa",
+      "masks/JAX_068_012_RGB.npy": "d3672f9fffe5a321d25040f4e942071a4524a394eca1502b9e2d07b9e81e85c8",
+      "cameras/JAX_068_012_RGB.json": "3ece637dfbf381d86f3ac9f4025b137246ba214b9a6b2d0e6f441d86507ca4c4"
+    },
+    "contract_sha256": "981b9624ab006caba22a3d15726f62e302baaa2ace4a421441d100294f00b265",
+    "georeference_sha256": "c2f0a4397267df03af634cacbf0c5d6d76c75717da82512f2f3bfbb7374a8682",
+    "normalization": {
+      "rotation": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "translation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": 1.0,
+      "z_shift": 0.0
+    },
+    "anchor": {
+      "latitude": 30.348809462216508,
+      "longitude": -81.66375222217565,
+      "ellipsoidal_height_m": -70,
+      "assumed_anchor": true
+    },
+    "assumed_anchor": true,
+    "legacy_loader_verification": {
+      "status": "passed",
+      "assumed_anchor": true,
+      "point_max_error": 0.0,
+      "camera_max_error": 0.0,
+      "train": 17,
+      "test": 2
+    },
+    "source_hashes_unchanged_after_runs": true
+  },
+  "adapter_sha256": {
+    "prepared-enu.patch": "c844e176afda8e6bbe0ebd56a18e2ed3b3a3521cc297590f5f00352c70bb959f",
+    "stage1-only.patch": "139472b44487e310f1739ad5d0bfab37b9083b646794ad34dc762956cac98089",
+    "stage1-pseudo-depth.patch": "c2d7d57e737da3a723004a3a0a700871eb6f1cf40465dbcefdffbb3ca826ddbf"
+  },
+  "runs": {
+    "more_views": {
+      "run": "artifacts/stage1/ref-jax068-01",
+      "assumed_anchor": true,
+      "training": {
+        "status": "trained",
+        "environment": {
+          "python": "3.10.20",
+          "torch": "2.7.1+cu128",
+          "cuda": "12.8",
+          "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+          "gpu_bytes": 6088359936
+        },
+        "profile": {
+          "version": 1,
+          "id": "ref-jax068-stage1",
+          "iterations": 30000,
+          "warmup_iterations": 1000,
+          "resolution": 2,
+          "sh_degree": 2,
+          "convert_sh_python": true,
+          "densify_from_iter": 1000,
+          "densify_until_iter": 20000,
+          "densification_interval": 100,
+          "max_gaussians": 200000,
+          "max_allocated_bytes": 4831838208,
+          "timeout_seconds": 1800,
+          "note": "Authors prepared 17 train / 2 test views; same pilot training settings. Assumed anchor; holdout excluded from training and choices.",
+          "lambda_depth": 0
+        },
+        "profile_sha256": "3dec85703d3b7df804088e02f58afab1164be01686e932029956e75f9c18a965",
+        "runner_sha256": "2c198ebc49d57ca4e7f8cbcc23b9747c8af564837577afceb81be722be987ce1",
+        "input_manifest_sha256": "981b9624ab006caba22a3d15726f62e302baaa2ace4a421441d100294f00b265",
+        "adapter_sha256": "139472b44487e310f1739ad5d0bfab37b9083b646794ad34dc762956cac98089",
+        "final_splats": 144332,
+        "elapsed_seconds": 1548.4748467130012,
+        "peak_allocated_bytes": 484499968,
+        "peak_reserved_bytes": 1751121920,
+        "sampled_device_used_bytes": 1956904960,
+        "checkpoint_resume_verified": true,
+        "error": null
+      },
+      "training_commands": [
+        [
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/.venv-stage1/bin/python",
+          "train.py",
+          "-s",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-01/input",
+          "-m",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-01/model",
+          "--eval",
+          "--iterations",
+          "1000",
+          "--resolution",
+          "2",
+          "--sh_degree",
+          "2",
+          "--data_device",
+          "cpu",
+          "--port",
+          "0",
+          "--kernel_size",
+          "0.1",
+          "--lambda_depth",
+          "0",
+          "--lambda_opacity",
+          "0",
+          "--lambda_pseudo_depth",
+          "0",
+          "--position_lr_max_steps",
+          "30000",
+          "--densify_from_iter",
+          "1000",
+          "--densify_until_iter",
+          "20000",
+          "--densification_interval",
+          "100",
+          "--test_iterations",
+          "-1",
+          "--terrasplat_metrics",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-01/metrics.jsonl",
+          "--terrasplat_max_gaussians",
+          "200000",
+          "--terrasplat_max_allocated_bytes",
+          "4831838208",
+          "--checkpoint_iterations",
+          "1000",
+          "--save_iterations",
+          "1000",
+          "--convert_SHs_python"
+        ],
+        [
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/.venv-stage1/bin/python",
+          "train.py",
+          "-s",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-01/input",
+          "-m",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-01/model",
+          "--eval",
+          "--iterations",
+          "30000",
+          "--resolution",
+          "2",
+          "--sh_degree",
+          "2",
+          "--data_device",
+          "cpu",
+          "--port",
+          "0",
+          "--kernel_size",
+          "0.1",
+          "--lambda_depth",
+          "0",
+          "--lambda_opacity",
+          "0",
+          "--lambda_pseudo_depth",
+          "0",
+          "--position_lr_max_steps",
+          "30000",
+          "--densify_from_iter",
+          "1000",
+          "--densify_until_iter",
+          "20000",
+          "--densification_interval",
+          "100",
+          "--test_iterations",
+          "-1",
+          "--terrasplat_metrics",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-01/metrics.jsonl",
+          "--terrasplat_max_gaussians",
+          "200000",
+          "--terrasplat_max_allocated_bytes",
+          "4831838208",
+          "--checkpoint_iterations",
+          "10000",
+          "20000",
+          "30000",
+          "--save_iterations",
+          "10000",
+          "20000",
+          "30000",
+          "--start_checkpoint",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-01/model/chkpnt1000.pth",
+          "--convert_SHs_python"
+        ]
+      ],
+      "report_sha256": {
+        "artifacts/stage1/ref-jax068-01/training-report.json": "d88a1cc106a2672dfc742438989a251625c3200d2569d15c7210f5d418298061",
+        "artifacts/stage1/ref-jax068-01/evaluation/evaluation-report.json": "fcb51c93a5ef092cb836a812fd8b08332887b9a875e36bb63afb78147aa7598f",
+        "artifacts/stage1/ref-jax068-01/export/export-manifest.json": "f30589cea445dce61534e3dd766fd0d69ee8eb2dc828e365fe8f5b772fd33180",
+        "artifacts/validation/ref-jax068-01-depth/depth-report.json": "0222d8f53ee9adb33980adb8cbb4a69e33191f330344f778378ae21cf19ff97c",
+        "artifacts/validation/ref-jax068-01-depth/lidar/dsm-validation.json": "125a8db32033d216e5e5571b936c65d903d1cf9fca029cf542ecb8f0a7780709"
+      },
+      "evaluation": [
+        {
+          "catalog_id": "JAX_068_011_RGB",
+          "role": "train",
+          "psnr_db": 23.681552994901423,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_005_RGB",
+          "role": "train",
+          "psnr_db": 24.871943877676102,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_002_RGB",
+          "role": "train",
+          "psnr_db": 28.863161022790354,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_006_RGB",
+          "role": "train",
+          "psnr_db": 23.307349150110536,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_010_RGB",
+          "role": "train",
+          "psnr_db": 23.362595593106107,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_007_RGB",
+          "role": "train",
+          "psnr_db": 21.75495079512773,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_020_RGB",
+          "role": "train",
+          "psnr_db": 28.902122969492087,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_016_RGB",
+          "role": "train",
+          "psnr_db": 24.170371283438513,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_019_RGB",
+          "role": "train",
+          "psnr_db": 21.503677340681314,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_001_RGB",
+          "role": "train",
+          "psnr_db": 30.009193586255076,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_013_RGB",
+          "role": "train",
+          "psnr_db": 29.982497317538584,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_009_RGB",
+          "role": "train",
+          "psnr_db": 26.49774226031569,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_015_RGB",
+          "role": "train",
+          "psnr_db": 28.615175308722222,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_014_RGB",
+          "role": "train",
+          "psnr_db": 32.275384985112574,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_022_RGB",
+          "role": "train",
+          "psnr_db": 26.658581627313033,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_004_RGB",
+          "role": "train",
+          "psnr_db": 26.533353193181412,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_018_RGB",
+          "role": "train",
+          "psnr_db": 22.09597905713509,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_003_RGB",
+          "role": "holdout",
+          "psnr_db": 22.439241139493447,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_012_RGB",
+          "role": "holdout",
+          "psnr_db": 20.266330734640565,
+          "alpha_coverage_above_0_01": 1.0
+        }
+      ],
+      "holdout_mean_psnr_db": 21.352785937067004,
+      "export": {
+        "status": "exported",
+        "fused_ply": {
+          "path": "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-01/export/ref-jax068-01-fused.ply",
+          "sha256": "bde28de5523dbf72cdbb281ff014441c439a2d3d5f3786a6842e088e08ceae2d",
+          "bytes": 23671454
+        },
+        "round_trip_max_error_m": 1.1870776112445564e-09,
+        "render_equivalence_min_psnr_db": 103.44167790680642,
+        "appearance_colour_mapping": false,
+        "extent_gate_required": false,
+        "enu_bbox_span_m": [
+          839.6768188476562,
+          830.6372375488281,
+          147.8520851135254
+        ]
+      },
+      "lidar": {
+        "registered": {
+          "all_labelled": {
+            "pixels": 235106,
+            "completeness": 0.9990608812418464,
+            "bias_m": -0.03787504576147565,
+            "median_m": -0.08648204803466797,
+            "mae_m": 2.357021226168307,
+            "rmse_m": 4.033731376514421,
+            "nmad_m": 1.8719370411872862
+          },
+          "ground": {
+            "pixels": 116987,
+            "completeness": 0.9993593138678649,
+            "bias_m": 0.027241412426052655,
+            "median_m": 0.2731761932373047,
+            "mae_m": 2.66578066924049,
+            "rmse_m": 4.412731139168339,
+            "nmad_m": 2.2328500980377197
+          },
+          "building": {
+            "pixels": 108989,
+            "completeness": 0.9986622073578595,
+            "bias_m": -0.12572506675710537,
+            "median_m": -0.32847464084625244,
+            "mae_m": 2.061742113228847,
+            "rmse_m": 3.696524959123014,
+            "nmad_m": 1.4096133997678757
+          },
+          "vegetation": {
+            "pixels": 9130,
+            "completeness": 1.0,
+            "bias_m": 0.17646305328653258,
+            "median_m": 0.3123154640197754,
+            "mae_m": 1.9256230085859685,
+            "rmse_m": 2.523824052594677,
+            "nmad_m": 2.167146056842804
+          }
+        },
+        "unregistered": {
+          "all_labelled": {
+            "pixels": 235106,
+            "completeness": 0.9990608812418464,
+            "bias_m": -24.6672970857362,
+            "median_m": -24.766505489125848,
+            "mae_m": 24.6757646109128,
+            "rmse_m": 25.004419255593344,
+            "nmad_m": 1.8438243644881993
+          },
+          "ground": {
+            "pixels": 116987,
+            "completeness": 0.9993593138678649,
+            "bias_m": -24.635492559485723,
+            "median_m": -24.428401407785714,
+            "mae_m": 24.645932631603518,
+            "rmse_m": 25.02517582973797,
+            "nmad_m": 2.2242740281362083
+          },
+          "building": {
+            "pixels": 108989,
+            "completeness": 0.9986622073578595,
+            "bias_m": -24.720972660149677,
+            "median_m": -24.992473190650344,
+            "mae_m": 24.728032209804457,
+            "rmse_m": 25.020547747569196,
+            "nmad_m": 1.3896672884831205
+          },
+          "vegetation": {
+            "pixels": 9130,
+            "completeness": 1.0,
+            "bias_m": -24.434073529626076,
+            "median_m": -24.376236612908542,
+            "mae_m": 24.434073529626076,
+            "rmse_m": 24.54146398306768,
+            "nmad_m": 1.9294926113842985
+          }
+        },
+        "registration": {
+          "placement_measurement": false,
+          "search_range_per_level_px": 20,
+          "dx_px": 0.0,
+          "dy_px": -2.0,
+          "z_offset_m": 24.684132956174828,
+          "splats_offset_from_lidar_m": {
+            "east": 0.0,
+            "north": 1.0,
+            "up": -24.684132956174828,
+            "horizontal": 1.0
+          },
+          "overlap_fraction": 0.9990608812418464,
+          "solution_inside_search_range": true
+        },
+        "reliability": "reliable overlap",
+        "placement_measurement": false
+      },
+      "training_log_sha256": {
+        "training-1000.log": "8d7da1670fefeaead6c4dba2528b7430c2d6b1582a2cdb3589a80aac2e0d0413",
+        "training-30000.log": "3a9b4808e5eb6ee1b7539197de90d893cf4e6e04fdf6acf18fd21ee67f7a3347"
+      }
+    },
+    "authors_recipe": {
+      "run": "artifacts/stage1/ref-jax068-recipe-01",
+      "assumed_anchor": true,
+      "training": {
+        "status": "trained",
+        "environment": {
+          "python": "3.10.20",
+          "torch": "2.7.1+cu128",
+          "cuda": "12.8",
+          "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+          "gpu_bytes": 6088359936
+        },
+        "profile": {
+          "version": 1,
+          "id": "ref-jax068-stage1-pseudo-depth",
+          "iterations": 30000,
+          "warmup_iterations": 1000,
+          "resolution": 2,
+          "sh_degree": 1,
+          "convert_sh_python": true,
+          "densify_from_iter": 1000,
+          "densify_until_iter": 21000,
+          "densification_interval": 100,
+          "max_gaussians": 200000,
+          "max_allocated_bytes": 4831838208,
+          "timeout_seconds": 7200,
+          "note": "Authors README Stage 1 flags; resolution 2 and 200k doubling-headroom cap for 6 GB. Pinned MoGe source and cached weights. Assumed anchor; holdout never used in training/priors/choices.",
+          "lambda_depth": 0,
+          "skyfall": ".external/skyfall-gs-pseudo",
+          "skyfall_patch_profile": "stage1-pseudo-depth",
+          "appearance_enabled": true,
+          "lambda_opacity": 10,
+          "lambda_pseudo_depth": 0.5,
+          "densify_grad_threshold": 0.0001,
+          "start_sample_pseudo": 1000,
+          "end_sample_pseudo": 21000,
+          "size_threshold": 20,
+          "scaling_lr": 0.001,
+          "rotation_lr": 0.001,
+          "opacity_reset_interval": 3000,
+          "sample_pseudo_interval": 10
+        },
+        "profile_sha256": "6dfdb30c75e28c0a488e2d139bb03949beeb3b5aac6e9b64ea413b7286d1d5cc",
+        "runner_sha256": "2117caf706aa41fce766c7b36f4c39f0e13ad1478159f74eb563ccb4a49efa25",
+        "input_manifest_sha256": "dfdf05acdcf60d3cd923a67533ef9e5fb9165781b25c15bf2826a2f7293bab0d",
+        "adapter_sha256": "c2d7d57e737da3a723004a3a0a700871eb6f1cf40465dbcefdffbb3ca826ddbf",
+        "final_splats": 149842,
+        "elapsed_seconds": 3205.4360619590007,
+        "peak_allocated_bytes": 3071959040,
+        "peak_reserved_bytes": 3684696064,
+        "sampled_device_used_bytes": 3905159168,
+        "checkpoint_resume_verified": true,
+        "error": null
+      },
+      "training_commands": [
+        [
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/.venv-stage1/bin/python",
+          "train.py",
+          "-s",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-01/input",
+          "-m",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-01/model",
+          "--eval",
+          "--iterations",
+          "1000",
+          "--resolution",
+          "2",
+          "--sh_degree",
+          "1",
+          "--data_device",
+          "cpu",
+          "--port",
+          "0",
+          "--kernel_size",
+          "0.1",
+          "--lambda_depth",
+          "0",
+          "--lambda_opacity",
+          "10",
+          "--lambda_pseudo_depth",
+          "0.5",
+          "--position_lr_max_steps",
+          "30000",
+          "--densify_from_iter",
+          "1000",
+          "--densify_until_iter",
+          "21000",
+          "--densification_interval",
+          "100",
+          "--test_iterations",
+          "-1",
+          "--terrasplat_metrics",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-01/metrics.jsonl",
+          "--terrasplat_max_gaussians",
+          "200000",
+          "--terrasplat_max_allocated_bytes",
+          "4831838208",
+          "--checkpoint_iterations",
+          "1000",
+          "--save_iterations",
+          "1000",
+          "--convert_SHs_python",
+          "--appearance_enabled",
+          "--densify_grad_threshold",
+          "0.0001",
+          "--start_sample_pseudo",
+          "1000",
+          "--end_sample_pseudo",
+          "21000",
+          "--size_threshold",
+          "20",
+          "--scaling_lr",
+          "0.001",
+          "--rotation_lr",
+          "0.001",
+          "--opacity_reset_interval",
+          "3000",
+          "--sample_pseudo_interval",
+          "10"
+        ],
+        [
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/.venv-stage1/bin/python",
+          "train.py",
+          "-s",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-01/input",
+          "-m",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-01/model",
+          "--eval",
+          "--iterations",
+          "30000",
+          "--resolution",
+          "2",
+          "--sh_degree",
+          "1",
+          "--data_device",
+          "cpu",
+          "--port",
+          "0",
+          "--kernel_size",
+          "0.1",
+          "--lambda_depth",
+          "0",
+          "--lambda_opacity",
+          "10",
+          "--lambda_pseudo_depth",
+          "0.5",
+          "--position_lr_max_steps",
+          "30000",
+          "--densify_from_iter",
+          "1000",
+          "--densify_until_iter",
+          "21000",
+          "--densification_interval",
+          "100",
+          "--test_iterations",
+          "-1",
+          "--terrasplat_metrics",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-01/metrics.jsonl",
+          "--terrasplat_max_gaussians",
+          "200000",
+          "--terrasplat_max_allocated_bytes",
+          "4831838208",
+          "--checkpoint_iterations",
+          "10000",
+          "20000",
+          "30000",
+          "--save_iterations",
+          "10000",
+          "20000",
+          "30000",
+          "--start_checkpoint",
+          "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-01/model/chkpnt1000.pth",
+          "--convert_SHs_python",
+          "--appearance_enabled",
+          "--densify_grad_threshold",
+          "0.0001",
+          "--start_sample_pseudo",
+          "1000",
+          "--end_sample_pseudo",
+          "21000",
+          "--size_threshold",
+          "20",
+          "--scaling_lr",
+          "0.001",
+          "--rotation_lr",
+          "0.001",
+          "--opacity_reset_interval",
+          "3000",
+          "--sample_pseudo_interval",
+          "10"
+        ]
+      ],
+      "report_sha256": {
+        "artifacts/stage1/ref-jax068-recipe-01/training-report.json": "5dae192440c2c6553968fddbd7ffa69b4c0abc555000e1fd260fbb436edf7908",
+        "artifacts/stage1/ref-jax068-recipe-01/evaluation/evaluation-report.json": "f1043730bc5bacd4ebc2ab47df73ea2920f80f6b457a430daddf10c2f8775b56",
+        "artifacts/stage1/ref-jax068-recipe-01/export/export-manifest.json": "4ca7264118fa087ca8d88a319d4b920dcde66fa96d03284e1d13636efd91be80",
+        "artifacts/validation/ref-jax068-recipe-01-depth/depth-report.json": "220ad51f65f9b91cc6b33086ebffc3bb2c1eb7d8e273e40bcf9d6768ade7cae8",
+        "artifacts/validation/ref-jax068-recipe-01-depth/lidar/dsm-validation.json": "84a3f9afdb7d177407304629cf715f6fbea8d1c84693535a107f74365fe80f41"
+      },
+      "evaluation": [
+        {
+          "catalog_id": "JAX_068_011_RGB",
+          "role": "train",
+          "psnr_db": 27.684486495528397,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_005_RGB",
+          "role": "train",
+          "psnr_db": 28.375190463323612,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_002_RGB",
+          "role": "train",
+          "psnr_db": 30.53578124269961,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_006_RGB",
+          "role": "train",
+          "psnr_db": 30.09073718241554,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_010_RGB",
+          "role": "train",
+          "psnr_db": 23.705938435728186,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_007_RGB",
+          "role": "train",
+          "psnr_db": 29.405761954670425,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_020_RGB",
+          "role": "train",
+          "psnr_db": 28.26279028977169,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_016_RGB",
+          "role": "train",
+          "psnr_db": 30.31890406737925,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_019_RGB",
+          "role": "train",
+          "psnr_db": 30.38883340676509,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_001_RGB",
+          "role": "train",
+          "psnr_db": 30.115527828398502,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_013_RGB",
+          "role": "train",
+          "psnr_db": 31.08821665706309,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_009_RGB",
+          "role": "train",
+          "psnr_db": 27.158782164550953,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_015_RGB",
+          "role": "train",
+          "psnr_db": 27.482370390789686,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_014_RGB",
+          "role": "train",
+          "psnr_db": 31.643345801557928,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_022_RGB",
+          "role": "train",
+          "psnr_db": 29.82016543495195,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_004_RGB",
+          "role": "train",
+          "psnr_db": 28.93516984056714,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_018_RGB",
+          "role": "train",
+          "psnr_db": 28.230655684258416,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_003_RGB",
+          "role": "holdout",
+          "psnr_db": 19.387438131257593,
+          "alpha_coverage_above_0_01": 1.0
+        },
+        {
+          "catalog_id": "JAX_068_012_RGB",
+          "role": "holdout",
+          "psnr_db": 18.41458611958227,
+          "alpha_coverage_above_0_01": 1.0
+        }
+      ],
+      "holdout_mean_psnr_db": 18.901012125419932,
+      "export": {
+        "status": "exported",
+        "fused_ply": {
+          "path": "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-01/export/ref-jax068-recipe-01-fused.ply",
+          "sha256": "6536420a8fd43345477d2e3a6a65ca6aac154b0e700552ad3ad75456b5cbc491",
+          "bytes": 15584200
+        },
+        "round_trip_max_error_m": 1.1931399767347455e-09,
+        "render_equivalence_min_psnr_db": 113.94152672045676,
+        "appearance_colour_mapping": true,
+        "extent_gate_required": false,
+        "enu_bbox_span_m": [
+          799.7637023925781,
+          847.7267456054688,
+          195.50785446166992
+        ]
+      },
+      "lidar": {
+        "registered": {
+          "all_labelled": {
+            "pixels": 235327,
+            "completeness": 1.0,
+            "bias_m": -0.01200084859929277,
+            "median_m": -0.2469654083251953,
+            "mae_m": 1.384292741497732,
+            "rmse_m": 2.425587256593529,
+            "nmad_m": 1.0142822319030762
+          },
+          "ground": {
+            "pixels": 117062,
+            "completeness": 1.0,
+            "bias_m": 0.2254083113860946,
+            "median_m": -0.11941146850585938,
+            "mae_m": 1.239100251946933,
+            "rmse_m": 2.0610868916303255,
+            "nmad_m": 1.023656505203247
+          },
+          "building": {
+            "pixels": 109135,
+            "completeness": 1.0,
+            "bias_m": -0.24938771996931922,
+            "median_m": -0.3633079528808594,
+            "mae_m": 1.520675008927988,
+            "rmse_m": 2.782905525086565,
+            "nmad_m": 0.9519708858489989
+          },
+          "vegetation": {
+            "pixels": 9130,
+            "completeness": 1.0,
+            "bias_m": -0.21839459221830504,
+            "median_m": -0.26299333572387695,
+            "mae_m": 1.6156667235124804,
+            "rmse_m": 2.1460535264496245,
+            "nmad_m": 1.7848722407341002
+          }
+        },
+        "unregistered": {
+          "all_labelled": {
+            "pixels": 235327,
+            "completeness": 1.0,
+            "bias_m": -24.673355837497855,
+            "median_m": -24.928329026326537,
+            "mae_m": 24.67473268564733,
+            "rmse_m": 24.79805239884491,
+            "nmad_m": 1.0027797696858645
+          },
+          "ground": {
+            "pixels": 117062,
+            "completeness": 1.0,
+            "bias_m": -24.460889981631407,
+            "median_m": -24.807579105254263,
+            "mae_m": 24.462461674364615,
+            "rmse_m": 24.54784868981563,
+            "nmad_m": 1.0225179860743694
+          },
+          "building": {
+            "pixels": 109135,
+            "completeness": 1.0,
+            "bias_m": -24.884409564150314,
+            "median_m": -25.038134618662298,
+            "mae_m": 24.885692599379492,
+            "rmse_m": 25.050425009192118,
+            "nmad_m": 0.9294219981489703
+          },
+          "vegetation": {
+            "pixels": 9130,
+            "completeness": 1.0,
+            "bias_m": -24.874706282319558,
+            "median_m": -24.968260124791414,
+            "mae_m": 24.874706282319558,
+            "rmse_m": 24.95731638678314,
+            "nmad_m": 1.6672588087247684
+          }
+        },
+        "registration": {
+          "placement_measurement": false,
+          "search_range_per_level_px": 20,
+          "dx_px": 0.0,
+          "dy_px": -1.0,
+          "z_offset_m": 24.67968575473977,
+          "splats_offset_from_lidar_m": {
+            "east": 0.0,
+            "north": 0.5,
+            "up": -24.67968575473977,
+            "horizontal": 0.5
+          },
+          "overlap_fraction": 1.0,
+          "solution_inside_search_range": true
+        },
+        "reliability": "reliable overlap",
+        "placement_measurement": false
+      },
+      "training_log_sha256": {
+        "training-1000.log": "57ea31a44d74b4e7f23e054b62ec0577d4e92606a561d666123266356ef5b30b",
+        "training-30000.log": "92265297ebf6a2dee84aad58c897947881275645ac4f65c4118d29bc4431fea2"
+      }
+    }
+  },
+  "commands": [
+    ".venv-imagery/bin/python -m pipeline.reference_scene",
+    "source scripts/stage1-env.sh && python -m pipeline.reference_scene --verify",
+    "python3 scripts/prepare-skyfall-pseudo.py",
+    "uv pip install --python .venv-stage1/bin/python --no-deps -r training/requirements-stage1-pseudo.txt",
+    ".venv-imagery/bin/python -m pipeline.reference_scene --patch-profile stage1-pseudo-depth --output artifacts/imagery/ref-jax068/scene-recipe",
+    "source scripts/stage1-env.sh && python scripts/trial-stage1-pseudo.py",
+    "source scripts/stage1-env.sh && python -m pipeline.training --scene artifacts/imagery/ref-jax068/scene --profile configs/train-ref-jax068.json --output artifacts/stage1/ref-jax068-01",
+    "source scripts/stage1-env.sh && python -m pipeline.evaluation --run artifacts/stage1/ref-jax068-01",
+    "source scripts/stage1-env.sh && python -m pipeline.export --run artifacts/stage1/ref-jax068-01 --gsd 0.5",
+    "source scripts/stage1-env.sh && python -m pipeline.render_depth --run artifacts/stage1/ref-jax068-01 --output artifacts/validation/ref-jax068-01-depth",
+    ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/ref-jax068-01/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/ref-jax068-01-depth/lidar --points artifacts/validation/ref-jax068-01-depth/depth-points.npz",
+    "source scripts/stage1-env.sh && python -m pipeline.training --scene artifacts/imagery/ref-jax068/scene-recipe --profile configs/train-ref-jax068-recipe.json --output artifacts/stage1/ref-jax068-recipe-01",
+    "source scripts/stage1-env.sh && python -m pipeline.evaluation --run artifacts/stage1/ref-jax068-recipe-01",
+    "source scripts/stage1-env.sh && python -m pipeline.export --run artifacts/stage1/ref-jax068-recipe-01 --gsd 0.5",
+    "source scripts/stage1-env.sh && python -m pipeline.render_depth --run artifacts/stage1/ref-jax068-recipe-01 --output artifacts/validation/ref-jax068-recipe-01-depth",
+    ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/ref-jax068-recipe-01/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/ref-jax068-recipe-01-depth/lidar --points artifacts/validation/ref-jax068-recipe-01-depth/depth-points.npz"
+  ],
+  "caveats": [
+    "ENU anchor assumed; registration shifts are NOT placement measurements.",
+    "Authors images, cameras and sparse points differ from the pilot, so the 5-to-17 comparison does not isolate view count alone.",
+    "Reference two-frame holdout differs from the pilot May 2 holdout; PSNR is not directly comparable across datasets.",
+    "One block; lidar acquisition date unknown; no production readiness claim.",
+    "Export --gsd 0.5 sets a nominal numerical round-trip tolerance; it is not a measured native GSD."
+  ],
+  "recipe_feasibility": {
+    "assumed_anchor": true,
+    "command": [
+      "/home/narinder/Documents/OrbitWorks/TerraSplat/.venv-stage1/bin/python",
+      "train.py",
+      "-s",
+      "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-trial-01/input",
+      "-m",
+      "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-trial-01/model",
+      "--eval",
+      "--iterations",
+      "1500",
+      "--resolution",
+      "2",
+      "--sh_degree",
+      "1",
+      "--data_device",
+      "cpu",
+      "--port",
+      "0",
+      "--kernel_size",
+      "0.1",
+      "--lambda_depth",
+      "0",
+      "--lambda_opacity",
+      "10",
+      "--lambda_pseudo_depth",
+      "0.5",
+      "--position_lr_max_steps",
+      "30000",
+      "--densify_from_iter",
+      "1000",
+      "--densify_until_iter",
+      "21000",
+      "--densification_interval",
+      "100",
+      "--test_iterations",
+      "-1",
+      "--terrasplat_metrics",
+      "/home/narinder/Documents/OrbitWorks/TerraSplat/artifacts/stage1/ref-jax068-recipe-trial-01/metrics.jsonl",
+      "--terrasplat_max_gaussians",
+      "200000",
+      "--terrasplat_max_allocated_bytes",
+      "4831838208",
+      "--checkpoint_iterations",
+      "1500",
+      "--save_iterations",
+      "1500",
+      "--convert_SHs_python",
+      "--appearance_enabled",
+      "--densify_grad_threshold",
+      "0.0001",
+      "--start_sample_pseudo",
+      "1000",
+      "--end_sample_pseudo",
+      "21000",
+      "--size_threshold",
+      "20",
+      "--scaling_lr",
+      "0.001",
+      "--rotation_lr",
+      "0.001",
+      "--opacity_reset_interval",
+      "3000",
+      "--sample_pseudo_interval",
+      "10"
+    ],
+    "profile_sha256": "6dfdb30c75e28c0a488e2d139bb03949beeb3b5aac6e9b64ea413b7286d1d5cc",
+    "memory": {
+      "status": "passed",
+      "peak_allocated_bytes": 2718035456,
+      "peak_reserved_bytes": 3456106496,
+      "torch": "2.7.1+cu128"
+    },
+    "returncode": 0,
+    "elapsed_seconds": 115.29890925800282,
+    "log_sha256": "9d31f175f81377455267d797be2e8b3d47e4d9742948b6bf1a5e5a879b193f21",
+    "report_sha256": "23585a523d8915182ed97778bce715a03012e395c347c79498a25b1a509d94f5"
+  },
+  "run_history": [
+    {
+      "status": "failed_validation_after_successful_1000_step_warmup",
+      "error": "No module named 'scene'",
+      "report_sha256": "d4aa9904e1102a226ce1b42c87d9345568108eefe82327c86f1e51cdf1c65cb6",
+      "path": "artifacts/stage1/ref-jax068-recipe-01-warmup-diagnostic/training-report.json",
+      "fix": "Expose the audited Skyfall module path when deserializing the appearance MLP; validate module state tensors. Warmup checkpoint then passed CPU validation; full run restarted fresh."
+    }
+  ],
+  "moge": {
+    "source_commit": "aca893a40faf6905cb722d6614cc37cb87ea06f7",
+    "source_clean": true,
+    "weights_revision": "ad326bfb61facd6c52b5a825bc1e34d7c97d9672",
+    "weights_sha256": "da96b09a0485a3c45a5aa455e67743c8b4efc4dd8437c1f2aa93c2b4303d957f",
+    "torch_unchanged": "2.7.1+cu128"
+  },
+  "pilot_compatibility": {
+    "pilot_preflight_status": "passed",
+    "failures": [],
+    "basic_adapter_unchanged": true,
+    "prepared_adapter_unchanged": true
+  },
+  "reference_lidar": {
+    "source": "DFC2019 Track 3 JAX_068; ellipsoidal heights, UTM 17N, 0.5 m; flight date unknown",
+    "files_sha256": {
+      "readme.txt": "b50af409243c8c875a61196603b9f4e882fdcc7db0786932840658c8eb1cfb01",
+      "JAX_068_DSM.txt": "b982868b9c13a776b1cd4c85af01246775808bd064545fde29c00d9f66c8f61b",
+      "JAX_068_DSM.tif": "ab128081136c07e34ee25df3dff5edf9db845b9cecdef8d991148ea9c0214529",
+      "JAX_068_CLS.tif": "e877941431cfa3b0b70fa6f5c7ada257108a3c73b3b0d75cdf83edb890e73e62"
+    }
+  },
+  "validation_protocol": {
+    "primary": "Registered rendered-depth DSM; dsmr translation plus z offset, no z scale",
+    "nadir_altitude_m": 17000,
+    "render_pixel_m": 0.25,
+    "half_extent_m": 145,
+    "min_alpha": 0.5,
+    "evaluated_extent": "Fixed 250 m ENU core; same core in both reference runs",
+    "registration_search_range_per_level_px": 20,
+    "maximum_axis_search_px_for_512_grid": 300,
+    "low_overlap_threshold": 0.9,
+    "placement_measurement": false
+  },
+  "baselines": {
+    "three_views": {
+      "holdout_psnr_db": 17.57,
+      "registered_mae_m": {
+        "all_labelled": 3.317,
+        "ground": 2.926,
+        "building": 3.699,
+        "vegetation": 3.752
+      },
+      "registered_rmse_m": 5.04,
+      "registered_nmad_m": 2.99,
+      "completeness": 0.99,
+      "source_sha256": "1bed61c3ea765e93b62e2f9020f2cf31b4cee14ef8a7aac7d24f83c6d559ab35"
+    },
+    "five_views": {
+      "holdout_psnr_db": 17.73,
+      "registered_mae_m": {
+        "all_labelled": 2.817,
+        "ground": 2.768,
+        "building": 2.872,
+        "vegetation": 2.777
+      },
+      "registered_rmse_m": 4.172,
+      "registered_nmad_m": 2.823,
+      "completeness": 0.996,
+      "source_sha256": "33219c0bf7c29b6a68090bf3adf7daa3b45902464ff035a5ba4d2bd2c1457c22"
+    }
+  },
+  "tests": {
+    "sfm_python": "68 passed, 2 skipped (pyproj unavailable in sfm interpreter)",
+    "imagery": "34 passed, 19 warnings",
+    "reference_geospatial": "4 passed in imagery interpreter (includes both skipped geospatial tests)",
+    "ruff": "E,F passed on new/changed Python files",
+    "commands": [
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-sfm/bin/python -m pytest -q tests/sfm tests/python",
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-imagery/bin/python -m pytest -q tests/imagery",
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-imagery/bin/python -m pytest -q tests/sfm/test_reference_scene.py",
+      "uvx ruff check --isolated --select E,F --line-length 120 pipeline/reference_scene.py pipeline/training.py pipeline/phase2.py pipeline/export.py pipeline/render_depth.py pipeline/dsm_validation.py pipeline/evaluation.py tests/sfm/test_reference_scene.py tests/sfm/test_training.py scripts/prepare-skyfall-pseudo.py scripts/trial-stage1-pseudo.py"
+    ]
+  },
+  "interpretation": {
+    "reference_data_gain_vs_five_view_mae_m": 0.4599787738316934,
+    "reference_data_gain_fraction": 0.16328674967401255,
+    "recipe_gain_on_same_17_views_mae_m": 0.9727284846705748,
+    "recipe_gain_fraction": 0.41269398589672085,
+    "recipe_holdout_psnr_change_db": -2.4517738116470724,
+    "conclusion": "Reference data improves registered MAE 2.82 to 2.36 m; camera/image/initialization changes confound view count alone. On the same 17 views, the authors joint recipe improves MAE further to 1.38 m while holdout PSNR drops 21.35 to 18.90 dB. Widen the pipeline view set and test the recipe as a geometry-focused profile; retain the known-anchor five-view viewer baseline. This is not an isolated MoGe ablation or placement result."
+  },
+  "visual_review": {
+    "baseline": "Recognizable roofs and roads in held-out render; border streaking and smeared structure remain. Registered DSM contains roof-scale residuals.",
+    "recipe": "Smoother ground and clearer roof structure in the registered DSM; substantial roof residuals remain. Holdout render is smoother and colour differs; lower holdout PSNR is a real tradeoff."
+  },
+  "skyfall_commit": "73194842a404910c5bbff006359eedfc56a98d60",
+  "skipped_parts": []
+}
