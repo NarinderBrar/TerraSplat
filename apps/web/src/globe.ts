@@ -7,6 +7,16 @@ import { groundPatches, heightmap } from './ground';
 
 declare global { interface Window { Cesium: typeof Cesium; terra?: Globe } }
 const C = window.Cesium;
+const PIN_NEAR_M = 4000, PIN_HIT_PX = 12;
+
+function insideRing(lon: number, lat: number, ring: number[][]) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i], [xj, yj] = ring[j];
+    if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
 export interface MapStats { loaded: number; visible: number; heading: number; height: number }
 const tileOptions = {
   maximumScreenSpaceError: 12, cacheBytes: 128 * 1024 * 1024,
@@ -59,10 +69,18 @@ export class Globe {
     this.handler.setInputAction((e: { position: Cesium.Cartesian2 }) => {
       const f = this.picked(e.position); if (f) this.onSelect(f);
     }, C.ScreenSpaceEventType.LEFT_CLICK);
+    // Hover runs at most once per animation frame and never renders: scene.pick() re-rendered the whole
+    // scene (splats included) into a pick buffer on every mouse move, ~110 ms each in a profiled session.
+    let pending: Cesium.Cartesian2 | undefined;
     this.handler.setInputAction((e: { endPosition: Cesium.Cartesian2 }) => {
-      const f = this.picked(e.endPosition);
-      this.highlight(f?.properties.release_id);
-      this.onHover(f ? footprintTooltip(f) : '', e.endPosition.x, e.endPosition.y);
+      if (!pending) requestAnimationFrame(() => {
+        const position = pending!; pending = undefined;
+        if (this.disposed) return;
+        const f = this.picked(position);
+        this.highlight(f?.properties.release_id);
+        this.onHover(f ? footprintTooltip(f) : '', position.x, position.y);
+      });
+      pending = C.Cartesian2.clone(e.endPosition);
     }, C.ScreenSpaceEventType.MOUSE_MOVE);
     // Splat decoding/sorting finishes on workers after camera movement has stopped.
     // Pinned 1.146 exposes this event at runtime but omits it from its declarations.
@@ -105,9 +123,25 @@ export class Globe {
     }
     this.viewer.scene.requestRender();
   }
+  /** Geometric hit test: pins by screen distance, outlines by the ground point under the cursor. No pick render. */
   private picked(position: Cesium.Cartesian2) {
-    const pick = this.viewer.scene.pick(position);
-    return pick?.id instanceof C.Entity ? this.features.get(pick.id.id.replace(/:(outline|pin)$/, '')) : undefined;
+    if (!this.footprints.show || !this.features.size) return undefined;
+    const { scene, camera } = this.viewer;
+    const occluder = new C.EllipsoidalOccluder(C.Ellipsoid.WGS84, camera.positionWC);
+    for (const f of this.features.values()) {
+      const [lon, lat] = footprintCentre(f);
+      const pin = C.Cartesian3.fromDegrees(lon, lat);
+      // Pins are only drawn beyond PIN_NEAR_M (see setFootprints).
+      if (C.Cartesian3.distance(camera.positionWC, pin) < PIN_NEAR_M || !occluder.isPointVisible(pin)) continue;
+      const screen = C.SceneTransforms.worldToWindowCoordinates(scene, pin);
+      if (screen && C.Cartesian2.distance(screen, position) <= PIN_HIT_PX) return f;
+    }
+    const ray = camera.getPickRay(position);
+    const ground = (ray && scene.globe.pick(ray, scene)) ?? camera.pickEllipsoid(position);
+    if (!ground) return undefined;
+    const c = C.Cartographic.fromCartesian(ground);
+    const lon = C.Math.toDegrees(c.longitude), lat = C.Math.toDegrees(c.latitude);
+    return [...this.features.values()].find(f => insideRing(lon, lat, f.geometry.coordinates[0]));
   }
   private highlight(id?: string) {
     if (this.hovered === id) return;
@@ -129,7 +163,7 @@ export class Globe {
       const [lon, lat] = footprintCentre(f);
       this.footprints.entities.add({ id: `${id}:pin`, position: C.Cartesian3.fromDegrees(lon, lat), point: {
         pixelSize: 15, color: C.Color.fromCssColorString('#65f4bc'), outlineColor: C.Color.BLACK,
-        outlineWidth: 3, distanceDisplayCondition: new C.DistanceDisplayCondition(4000, Infinity),
+        outlineWidth: 3, distanceDisplayCondition: new C.DistanceDisplayCondition(PIN_NEAR_M, Infinity),
       } });
     }
     this.footprints.show = false;

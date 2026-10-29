@@ -78,7 +78,10 @@ test('offline globe, footprint navigation, actual splat fragments and release su
     return { corners, changed, insideFraction: changedInside / changed, coverage: changedInside / footprintPixels };
   });
   await expect.poll(async () => (await measure()).changed, { timeout: 120000 }).toBeGreaterThan(10000);
-  const pixels = await measure();
+  // Splats draw per tile once its worker sort finishes, and hiding primitives to measure triggers a re-sort, so
+  // consecutive measurements can differ. Wait for the block to fill and assert on that same measurement.
+  let pixels;
+  await expect.poll(async () => (pixels = await measure()).coverage, { timeout: 120000 }).toBeGreaterThan(0.6);
   expect(pixels.insideFraction).toBeGreaterThan(0.85);
   expect(pixels.coverage).toBeGreaterThan(0.6);
   await writeFile(info.outputPath('app-pixels.json'), JSON.stringify(pixels, null, 2));
