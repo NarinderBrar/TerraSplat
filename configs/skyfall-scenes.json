@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "recipe": "configs/train-skyfall-recipe.json",
+  "dataset_revision": "82bcd8ae044afcf3182d335a47d0694ba2b4daa2",
+  "scenes": [
+    {
+      "scene": "JAX_004",
+      "source": "../Ref/Skyfall-GS/data/datasets_JAX/JAX_004",
+      "registration": "../TerraScope/docs/splat-registration/JAX_004.json",
+      "dataset_id": "skyfall-jax-004",
+      "region": "jacksonville",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "JAX_068",
+      "source": "../Ref/Skyfall-GS/data/datasets_JAX/JAX_068",
+      "registration": "../TerraScope/docs/splat-registration/JAX_068.json",
+      "dataset_id": "skyfall-jax-068",
+      "region": "jacksonville",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "JAX_164",
+      "source": "../Ref/Skyfall-GS/data/datasets_JAX/JAX_164",
+      "registration": "../TerraScope/docs/splat-registration/JAX_164.json",
+      "dataset_id": "skyfall-jax-164",
+      "region": "jacksonville",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "JAX_168",
+      "source": "../Ref/Skyfall-GS/data/datasets_JAX/JAX_168",
+      "registration": "../TerraScope/docs/splat-registration/JAX_168.json",
+      "dataset_id": "skyfall-jax-168",
+      "region": "jacksonville",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "JAX_175",
+      "source": "../Ref/Skyfall-GS/data/datasets_JAX/JAX_175",
+      "registration": "../TerraScope/docs/splat-registration/JAX_175.json",
+      "dataset_id": "skyfall-jax-175",
+      "region": "jacksonville",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "JAX_214",
+      "source": "../Ref/Skyfall-GS/data/datasets_JAX/JAX_214",
+      "registration": "../TerraScope/docs/splat-registration/JAX_214.json",
+      "dataset_id": "skyfall-jax-214",
+      "region": "jacksonville",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "JAX_260",
+      "source": "../Ref/Skyfall-GS/data/datasets_JAX/JAX_260",
+      "registration": "../TerraScope/docs/splat-registration/JAX_260.json",
+      "dataset_id": "skyfall-jax-260",
+      "region": "jacksonville",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "JAX_264",
+      "source": "../Ref/Skyfall-GS/data/datasets_JAX/JAX_264",
+      "registration": "../TerraScope/docs/splat-registration/JAX_264.json",
+      "dataset_id": "skyfall-jax-264",
+      "region": "jacksonville",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "NYC_004",
+      "source": "../Ref/Skyfall-GS/data/datasets_NYC/NYC_004",
+      "registration": "../TerraScope/docs/splat-registration/NYC_004.json",
+      "dataset_id": "skyfall-nyc-004",
+      "region": "new-york",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "NYC_010",
+      "source": "../Ref/Skyfall-GS/data/datasets_NYC/NYC_010",
+      "registration": "../TerraScope/docs/splat-registration/NYC_010.json",
+      "dataset_id": "skyfall-nyc-010",
+      "region": "new-york",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "NYC_219",
+      "source": "../Ref/Skyfall-GS/data/datasets_NYC/NYC_219",
+      "registration": "../TerraScope/docs/splat-registration/NYC_219.json",
+      "dataset_id": "skyfall-nyc-219",
+      "region": "new-york",
+      "core_half_extent_m": 250
+    },
+    {
+      "scene": "NYC_336",
+      "source": "../Ref/Skyfall-GS/data/datasets_NYC/NYC_336",
+      "registration": "../TerraScope/docs/splat-registration/NYC_336.json",
+      "dataset_id": "skyfall-nyc-336",
+      "region": "new-york",
+      "core_half_extent_m": 175,
+      "core_model_xy": [
+        115,
+        0
+      ]
+    }
+  ]
+}

@@ -120,3 +120,11 @@ lidar decision rule. [Details](../training/RESULT_2015.md#nineteen-training-view
 - How much seasonal and building change a wider date window adds.
 - Whether full resolution (resolution 1) or Stage 2 refinement on a larger
   GPU improves buildings further.
+
+## Prepared-scene delivery
+
+The Stage 1 JAX_068 recipe model is now visually registered and tiled alongside
+the known-anchor pipeline release. Its TerraScope placement measures 1.80 m
+horizontally and +4.99 m vertically from lidar; registered MAE is 1.38 m.
+The approximate vertical datum is not fitted to lidar. The other eleven prepared
+scenes use the same fixed recipe; see [Skyfall tiles](SKYFALL_TILES.md).

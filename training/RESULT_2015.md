@@ -463,6 +463,9 @@ are unchanged; conditional recipe tiling/browser checks were not needed.
 
 ## Nineteen training views
 
+The 19-view export issue is parked and remains open in `tasks.md`; the active
+pipeline release is `jax068-2015-5v-r2`.
+
 The approved [selection](../configs/jax068-pilot-19v.json) uses all 19 usable
 training acquisitions from October 5, 2014 to December 21, 2015 (442.007 days),
 with May 2 held out. All 20 RGB crops were inspected before SfM; none was

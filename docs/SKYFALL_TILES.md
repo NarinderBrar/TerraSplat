@@ -42,13 +42,21 @@ original exports stay immutable. Existing rendered-depth points are transformed
 through model space for JAX_068; each release records their hash and modal ground.
 
 `configs/tiles-skyfall.json` fixes a 500 m ENU core centred on the visual origin,
-excluding border context and floaters. Removed counts are retained in each plan.
+excluding border context and floaters. NYC_336 uses a 350 m core centred at
+model (115, 0), contained within TerraScope's conservative land footprint
+(model X −60 to 290); river water is excluded. Removed counts are retained in each plan.
 JAX_068 retains 77,021 / 149,842 centres, removing 72,821. The pilot profile and
 its export gates remain unchanged. Leaves preserve the full retained model;
 parents use moment-matched merges and REPLACE refinement. Every bound includes
 3σ support and all descendants; geometric errors strictly decrease. SH colour
 is baked to DC over training directions only. SPZ v2 is carried in glTF
-`KHR_gaussian_splatting` inside 3D Tiles 1.1.
+`KHR_gaussian_splatting` inside 3D Tiles 1.1. JAX_068 maximum SPZ errors are
+0.122 mm position, 0.001961 activated opacity and 0.031251 log scale. No log-scale
+components lie outside the SPZ range [−10, 5.9375], so none are clamped.
+
+`3d-tiles-validator` reports no tileset structure issues for JAX_068; its 17
+content errors come from unsupported Gaussian extensions and their attribute
+names, matching the pilot limitation. Actual decoding and rendering pass.
 
 ## JAX_068 lidar check
 
@@ -56,8 +64,9 @@ The visual registration places the model 1.80 m horizontally from DFC2019 lidar
 (−1.0 m east, +1.5 m north); vertical offset is +4.99 m. Registered rendered-depth
 MAE is 1.38 m. This checks TerraScope's visual placement separately from model
 shape; it is not surveyed control. No lidar-derived correction is applied.
-The rendered-depth ground mode is −17.46 m ellipsoidal, close to the neighbouring
-pipeline block. Compact evidence: `training/skyfall-jax-068.json`.
+The rendered-depth ground mode is −17.46 m ellipsoidal, versus −20.75 m for the overlapping
+pipeline block (3.29 m apart). The overlap switch selects the corresponding
+terrain patch; heights are not averaged between hidden models. Compact evidence: `training/skyfall-jax-068.json`.
 
 ## Status
 
@@ -73,4 +82,15 @@ Offline browser checks load zero GLBs at the globe, only the JAX_068 root at 8 k
 and 13 of 17 tiles through a fixed close camera. Layer and overlap switching,
 pipeline release substitution, splat coverage and zero page/external-request errors
 pass. JAX, pipeline and globe screenshots were inspected. Remaining scenes and
-NYC validation are pending.
+NYC validation are pending. The fixed batch configuration is
+`configs/skyfall-scenes.json`; source `scripts/stage1-env.sh` and run
+`.venv-imagery/bin/python -u -m pipeline.skyfall_batch`. Scene status and logs live
+under `artifacts/skyfall/`. Completed stages are reused; failures preserve their
+runs and are skipped while subsequent scenes continue. Disk free space is checked
+before each scene; GPU work stops below 5 GiB. Never remove pre-existing runs.
+
+Stage 1 details remain softer than the authors' final multi-million-splat models.
+Visual registrations were measured on those final models; shared prepared frames
+are compatible, but local Stage 1 distortions can differ. Approximate flat ground
+patches may have seams. Capture dates are unavailable in the prepared inputs;
+NYC scenes are synthetic. No production or raw-imagery provenance is claimed.

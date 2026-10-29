@@ -58,6 +58,12 @@ for (const tile of plan.tiles) {
   await writeFile(new URL(uri, root), glb);
   report.tiles[tile.id] = { splats: count, glbBytes: glb.length, glbSha256: sha(glb), positionError,
     // SPZ stores 8-bit activated opacity, so compare after the sigmoid (endpoints decode to +/-inf logits).
+    logScaleClamping: {
+      // SPZ v2 encodes log scale as round(16 * (logScale + 10)), clamped to uint8.
+      min: -10, max: 255 / 16 - 10,
+      below: [...cloud.scales].filter(s => s < -10).length,
+      above: [...cloud.scales].filter(s => s > 255 / 16 - 10).length,
+    },
     opacityError: maxError([...cloud.alphas].map(sigmoid), [...decoded.alphas].map(sigmoid)), scaleError: maxError([...cloud.scales], decoded.scales) };
   report.totals.splats += count;
   report.totals.glbBytes += glb.length;

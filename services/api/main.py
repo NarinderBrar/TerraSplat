@@ -103,8 +103,8 @@ def create_app(releases_dir=None, allowed_origins=None):
                 return dataset_summary(d) | {'releases': [summary(r['release_id']) for r in d['releases']]}
         raise HTTPException(404, 'Dataset not found')
 
-    # Optional manifest fields are omitted, not null, so responses still validate against the release schema.
-    @app.get('/api/releases/{release_id}', response_model_exclude_none=True)
+    # Omit absent optional fields while preserving explicit nulls for unmeasured quality.
+    @app.get('/api/releases/{release_id}', response_model_exclude_unset=True)
     def release(release_id: str) -> Manifest:
         return manifest(release_id)
 

@@ -171,3 +171,13 @@ def test_publish_records_ground_only_when_configured(tiled_release):
     m = publish(config, releases)
     assert m['ground']['ellipsoidal_height_m'] == pytest.approx(2.0, abs=0.05)
     validate_document(m, 'release-manifest')
+
+
+def test_pipeline_quality_cannot_be_replaced_with_unmeasured_values(tiled_release):
+    config, releases, _ = tiled_release
+    cfg = read(config)
+    del cfg['quality_sources']['registered_lidar_mae_all_m']
+    cfg['quality_values'] = {'registered_lidar_mae_all_m': None}
+    config.write_text(json.dumps(cfg))
+    with pytest.raises(ValueError, match='must be measured'):
+        publish(config, releases)

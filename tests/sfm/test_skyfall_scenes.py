@@ -59,3 +59,13 @@ def test_egm96_sign_when_grid_is_available():
     height, method = ground_ellipsoid(-81.66376, 30.34882, 'JAX')
     assert -19 < height < -16
     assert 'street 12 m' in method
+
+
+def test_shifted_core_preserves_model_placement_and_excludes_river():
+    source = registration()
+    zero = registration_placement(source, -20)
+    shifted = registration_placement(source, -20, (115, 0))
+    matrix = np.asarray(shifted['model_to_enu'])
+    np.testing.assert_allclose((matrix @ [115, 0, 20, 1])[:3], [0, 0, 0], atol=1e-12)
+    assert shifted['anchor']['longitude'] > zero['anchor']['longitude']
+    assert shifted['core_model_xy'] == [115, 0]

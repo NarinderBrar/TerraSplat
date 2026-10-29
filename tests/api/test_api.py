@@ -107,3 +107,25 @@ def test_empty_and_config(tmp_path, monkeypatch):
     assert c.get('/api/footprints').json()['features'] == []
     assert c.get('/api/health', headers={'Origin': 'https://viewer.example'}).headers[
         'access-control-allow-origin'] == 'https://viewer.example'
+
+
+def test_skyfall_quality_can_be_unmeasured_without_claiming_lidar_accuracy(tiled_release):
+    config, releases, _ = tiled_release
+    cfg = read(config)
+    cfg.update(dataset_id='skyfall-nyc-004', release_id='skyfall-nyc-004-stage1-r1', region='new-york',
+               source_label="TerraSplat Stage 1 · authors' prepared Skyfall data",
+               accuracy_label='TerraScope visual registration; vertical approximate')
+    unknown = {key: None for key in cfg['quality_sources'] if key.startswith('registered_lidar_')
+               or key in ('horizontal_offset_m', 'completeness')}
+    cfg['quality_sources'] = {key: value for key, value in cfg['quality_sources'].items() if key not in unknown}
+    cfg['quality_values'] = unknown
+    config.write_text(json.dumps(cfg))
+    publish(config, releases, True)
+    with TestClient(create_app(releases)) as c:
+        m = c.get('/api/releases/skyfall-nyc-004-stage1-r1').json()
+        assert m['quality']['registered_lidar_mae_all_m'] is None
+        assert m['quality']['holdout_psnr_db'] > 0
+        feature = c.get('/api/footprints').json()['features'][0]
+        assert feature['properties']['headline_mae_m'] is None
+        assert feature['properties']['source_label'] == cfg['source_label']
+        assert feature['properties']['accuracy_label'] == cfg['accuracy_label']

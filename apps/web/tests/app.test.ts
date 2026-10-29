@@ -95,3 +95,13 @@ it('keeps neighbouring terrain patches at their own model ground', () => {
   expect(groundHeight(-81.66, 30.35, patches)).toBe(-17);
   expect(groundHeight(-81.65, 30.35, patches)).toBe(-25);
 });
+
+it('labels Skyfall source and unmeasured lidar without inventing a score', () => {
+  const f = parseFootprints(footprints)[0];
+  f.properties = { ...f.properties, headline_mae_m: null,
+    source_label: "TerraSplat Stage 1 · authors' prepared Skyfall data",
+    accuracy_label: 'TerraScope visual registration; vertical approximate' };
+  expect(footprintTooltip(f)).toContain('vertical approximate');
+  expect(footprintTooltip(f)).not.toContain('lidar MAE');
+  expect(captureRange({ train: ['unavailable'], holdout: ['unavailable'] })).toBe('Capture dates unavailable');
+});

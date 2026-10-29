@@ -40,7 +40,7 @@ def back_project(depth, camera):
     return points @ camera["rotation"].T + camera["centre"]
 
 
-def render(run, output, pixel_m=0.25, altitude_m=17000.0, half_extent_m=145.0, min_alpha=0.5):
+def render(run, output, pixel_m=0.25, altitude_m=17000.0, half_extent_m=145.0, min_alpha=0.5, export_dir=None):
     import torch
 
     sys_path = str(ROOT / ".external/skyfall-gs")
@@ -52,7 +52,7 @@ def render(run, output, pixel_m=0.25, altitude_m=17000.0, half_extent_m=145.0, m
 
     run, output = Path(run).resolve(), Path(output).resolve()
     training = json.loads((run / "training-report.json").read_text())
-    manifest = json.loads((run / "export/export-manifest.json").read_text())
+    manifest = json.loads((Path(export_dir or run / "export") / "export-manifest.json").read_text())
     fused = Path(manifest["fused_ply"]["path"])
     if digest(fused) != manifest["fused_ply"]["sha256"]:
         raise ValueError("Fused PLY changed after export")
@@ -106,8 +106,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--export", dest="export_dir")
+    parser.add_argument("--half-extent", type=float, default=145.0)
     args = parser.parse_args()
-    print(json.dumps(render(args.run, args.output), indent=2))
+    result = render(args.run, args.output, half_extent_m=args.half_extent, export_dir=args.export_dir)
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":

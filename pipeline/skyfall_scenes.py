@@ -41,13 +41,14 @@ def ground_ellipsoid(lon, lat, city):
         return orthometric + undulation, f"city fallback geoid undulation {undulation:g} m; street {orthometric:g} m"
 
 
-def registration_placement(registration, ground_height_m):
+def registration_placement(registration, ground_height_m, core_model_xy=(0, 0)):
     affine = np.asarray(registration["modelRasterToReferencePixels"], dtype=float)
     raster, origin = registration["modelRaster"], registration["tileOrigin"]
     if affine.shape != (2, 3) or not np.isfinite(affine).all():
         raise ValueError("Expected finite 2x3 registration")
     unit = raster["unitsPerPixel"]
-    pixel_at_zero = affine @ [-raster["left"] / unit, raster["top"] / unit, 1]
+    pixel_at_zero = affine @ [(core_model_xy[0] - raster["left"]) / unit,
+                              (raster["top"] - core_model_xy[1]) / unit, 1]
     world = pixel_at_zero + np.array([origin["x0"], origin["y0"]]) * 256
     pixels = 256 * 2 ** origin["z"]
     lon = world[0] / pixels * 360 - 180
@@ -62,13 +63,14 @@ def registration_placement(registration, ground_height_m):
     geo = placement(anchor, IDENTITY)
     matrix = np.eye(4)
     matrix[:2, :2] = horizontal
+    matrix[:2, 3] = -horizontal @ np.asarray(core_model_xy)
     matrix[2, 2] = scale
     ground_z = registration.get("georeference", {}).get("groundZ", 0)
     matrix[2, 3] = -scale * ground_z
     geo.update(anchor=anchor, assumed_anchor=False, visually_registered=True, vertical_approximate=True,
                model_to_enu=matrix.tolist(),
                model_to_ecef=(np.asarray(geo["enu_to_ecef"]) @ matrix).tolist(),
-               ground_model_z=ground_z, metres_per_model_unit=scale,
+               core_model_xy=list(core_model_xy), ground_model_z=ground_z, metres_per_model_unit=scale,
                rotation_about_up_deg=math.degrees(math.atan2(rotation[1, 0], rotation[0, 0])),
                label=LABEL)
     return geo
@@ -94,16 +96,16 @@ def verify_frame(source, registration):
             "limitation": "Frame compatibility only; final-model landmarks are not independent Stage 1 accuracy"}
 
 
-def place(run, source, registration_path, output, depth_points=None):
+def place(run, source, registration_path, output, depth_points=None, core_model_xy=(0, 0)):
     run, output = Path(run), Path(output)
     if output.exists():
         raise ValueError("Use a new placed export directory")
     registration = json.loads(Path(registration_path).read_text())
     frame = verify_frame(source, registration)
-    preliminary = registration_placement(registration, 0)
+    preliminary = registration_placement(registration, 0, core_model_xy)
     anchor = preliminary["anchor"]
     height, method = ground_ellipsoid(anchor["longitude"], anchor["latitude"], registration["scene"][:3])
-    geo = registration_placement(registration, height)
+    geo = registration_placement(registration, height, core_model_xy)
     geo["vertical_method"] = "TerraScope calibrated groundZ mapped to " + method
     original = run / "export/export-manifest.json"
     manifest = json.loads(original.read_text())
