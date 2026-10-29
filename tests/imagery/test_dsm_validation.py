@@ -62,3 +62,14 @@ def test_read_ply_parses_binary_vertices(tmp_path):
     (tmp_path / "a.ply").write_bytes(header + data.tobytes())
     vertices = read_ply(tmp_path / "a.ply")
     assert vertices["z"][0] == 3.0 and vertices["opacity"][0] == 0.5
+
+
+def test_points_dsm_takes_the_cell_maximum():
+    from pipeline.dsm_validation import points_dsm
+
+    grid = {"dsm": np.zeros((4, 4)), "west": 0.0, "north": 2.0, "resolution": 0.5}
+    points = np.array([[0.1, 1.9, 1.0], [0.4, 1.6, 4.0], [1.9, 0.1, 2.0], [5.0, 5.0, 9.0]])
+    dsm = points_dsm(points, grid)
+    assert dsm[0, 0] == 4.0
+    assert dsm[3, 3] == 2.0
+    assert np.isnan(dsm).sum() == 14

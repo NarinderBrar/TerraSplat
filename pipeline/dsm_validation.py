@@ -70,6 +70,19 @@ def enu_to_utm(enu, georeference, utm_epsg):
     return np.stack([easting, northing, height], 1)
 
 
+def points_dsm(points, grid):
+    """Max height per truth-grid cell of dense surface points (Skyfall/plyflatten style, radius 0)."""
+    size = grid["dsm"].shape[0]
+    resolution = grid["resolution"]
+    columns = np.floor((points[:, 0] - grid["west"]) / resolution).astype(np.int64)
+    rows = np.floor((grid["north"] - points[:, 1]) / resolution).astype(np.int64)
+    inside = (columns >= 0) & (columns < size) & (rows >= 0) & (rows < size)
+    dsm = np.full(size * size, -np.inf)
+    np.maximum.at(dsm, rows[inside] * size + columns[inside], points[inside, 2])
+    dsm[np.isinf(dsm)] = np.nan
+    return dsm.reshape(size, size)
+
+
 def splat_dsm(points, radii, grid):
     """Max-height raster of splat footprints (discs of the given radii) on the truth grid."""
     size = grid["dsm"].shape[0]
@@ -166,7 +179,7 @@ def preview(path, truth, predicted, registered):
 
 
 def validate(export_dir, truth_dir, output, aoi="JAX_068", utm_epsg=32617,
-             min_opacity=0.5, max_radius_m=3.0):
+             min_opacity=0.5, max_radius_m=3.0, depth_points=None):
     from pipeline.phase2 import digest
 
     export_dir, output = Path(export_dir).resolve(), Path(output).resolve()
@@ -177,6 +190,21 @@ def validate(export_dir, truth_dir, output, aoi="JAX_068", utm_epsg=32617,
     georeference = manifest["georeference"]
     truth = read_truth(truth_dir, aoi)
 
+    if depth_points is not None:
+        enu_points = np.load(depth_points)["enu"]
+        predicted = points_dsm(enu_to_utm(enu_points, georeference, utm_epsg), truth)
+        source = {
+            "dsm": "max height per cell of back-projected rendered depth (see depth-report.json)",
+            "depth_points": int(len(enu_points)),
+            "depth_points_sha256": digest(Path(depth_points)),
+            "deviation": "Same rendered-depth principle as Skyfall, from one synthetic nadir camera instead of its camera path",
+        }
+    else:
+        predicted, source = footprint_dsm(fused, georeference, truth, utm_epsg, min_opacity, max_radius_m)
+    return finish(export_dir, output, manifest, georeference, truth, truth_dir, aoi, utm_epsg, predicted, source)
+
+
+def footprint_dsm(fused, georeference, truth, utm_epsg, min_opacity, max_radius_m):
     vertices = read_ply(fused)
     centres = np.stack([vertices[a].astype(np.float64) for a in "xyz"], 1)
     model_to_enu = np.asarray(georeference["model_to_enu"], dtype=np.float64)
@@ -190,6 +218,15 @@ def validate(export_dir, truth_dir, output, aoi="JAX_068", utm_epsg=32617,
     keep = opacity >= min_opacity
     points = enu_to_utm(enu[keep], georeference, utm_epsg)
     predicted = splat_dsm(points, radii[keep], truth)
+    return predicted, {
+        "dsm": f"max centre height over each splat's footprint disc (1 sigma, capped at {max_radius_m} m), opacity >= {min_opacity}",
+        "splats_used": int(keep.sum()),
+        "deviation": "Skyfall builds its DSM from rendered depth; this uses splat footprints, so registered MAE is not directly comparable to published numbers",
+    }
+
+
+def finish(export_dir, output, manifest, georeference, truth, truth_dir, aoi, utm_epsg, predicted, source):
+    from pipeline.phase2 import digest
 
     half = 125.0
     block_utm = enu_to_utm(np.array([[-half, -half, 0], [half, half, 0]]), georeference, utm_epsg)
@@ -208,8 +245,8 @@ def validate(export_dir, truth_dir, output, aoi="JAX_068", utm_epsg=32617,
     write_raster(predicted_path, predicted)
     dx, dy, offset = register(truth_path, predicted_path, registered_path)
     import rasterio
-    with rasterio.open(registered_path) as source:
-        registered = source.read(1).astype(np.float64)
+    with rasterio.open(registered_path) as dataset:
+        registered = dataset.read(1).astype(np.float64)
     preview(output / "dsm-comparison.png", truth["dsm"], predicted, registered)
 
     classes = truth["classes"]
@@ -228,12 +265,10 @@ def validate(export_dir, truth_dir, output, aoi="JAX_068", utm_epsg=32617,
             "acquisition_date": "unknown (HSIP U.S. Cities lidar; not stated in the DFC2019/US3D papers)",
         },
         "method": {
-            "splats": "fused export centres placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights",
-            "dsm": f"max centre height over each splat's footprint disc (1 sigma, capped at {max_radius_m} m), opacity >= {min_opacity}",
-            "splats_used": int(keep.sum()),
+            "placement": "fused export placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights",
+            **source,
             "registration": "Skyfall-GS/Sat-NeRF dsmr: recursive NCC shift, z offset, no z scaling",
             "evaluated_extent": "250 m block (ENU square) inside the truth grid; CLS 65 (unlabelled) and water excluded from all_labelled",
-            "deviation": "Skyfall builds its DSM from rendered depth; this uses splat footprints, so registered MAE is not directly comparable to published numbers",
         },
         "unregistered": by_class(predicted, truth["dsm"], classes, extent),
         "registration": {
@@ -253,8 +288,9 @@ def main():
     parser.add_argument("--truth", required=True, help="Directory with <AOI>_DSM.tif/.txt and <AOI>_CLS.tif")
     parser.add_argument("--output", required=True)
     parser.add_argument("--aoi", default="JAX_068")
+    parser.add_argument("--points", help="depth-points.npz from pipeline.render_depth (default: splat footprints)")
     args = parser.parse_args()
-    report = validate(args.export, args.truth, args.output, args.aoi)
+    report = validate(args.export, args.truth, args.output, args.aoi, depth_points=args.points)
     print(json.dumps({k: report[k] for k in ("unregistered", "registration", "registered")}, indent=2))
 
 
