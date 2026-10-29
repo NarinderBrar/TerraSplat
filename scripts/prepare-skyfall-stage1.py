@@ -25,6 +25,9 @@ def main():
                             ("prepared-enu.patch", ("scene/dataset_readers.py",))):
         patch = ROOT / "adapters" / "skyfall" / filename
         dirty = git("diff", "HEAD", "--", *paths, capture_output=True, text=True).stdout
+        if filename == "stage1-only.patch" and dirty == (ROOT / "adapters/skyfall/stage1-basic.patch").read_text():
+            git("apply", "--reverse", str(ROOT / "adapters/skyfall/stage1-basic.patch"))
+            dirty = ""
         if dirty:
             if dirty != patch.read_text():
                 raise RuntimeError("Isolated Skyfall source has unexpected changes; refusing to overwrite")
