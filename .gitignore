@@ -32,3 +32,5 @@ public/tiles/
 # Local task list.
 tasks.md
 .venv-moge/
+
+.venv-api/
