@@ -3,7 +3,7 @@ import tarfile
 
 import pytest
 
-from pipeline.acquisitions import parse_sidecars, select
+from pipeline.acquisitions import parse_sidecars, select, select_approved
 
 
 def sidecar_archive():
@@ -114,3 +114,42 @@ def test_training_angles_are_checked_after_holdout_removal():
 def test_invalid_epoch_policy_is_rejected():
     with pytest.raises(ValueError):
         select({"block": {}, "records": records()}, max_span_days=float("nan"))
+
+
+def approved(**changes):
+    return {
+        "max_span_days": 7,
+        "train_catalog_ids": ["view-0", "view-1", "view-3"],
+        "holdout_catalog_ids": ["view-2"],
+        **changes,
+    }
+
+
+def test_approved_selection_keeps_the_named_roles():
+    result = select_approved({"block": {}, "records": records()}, approved())
+    assert result["status"] == "candidate"
+    assert [r["catalog_id"] for r in result["train"]] == ["view-0", "view-1", "view-3"]
+    assert [r["catalog_id"] for r in result["holdout"]] == ["view-2"]
+    assert result["span_days"] == 3
+
+
+@pytest.mark.parametrize(
+    "scan_change, approval",
+    [
+        ({"cloud_cover": 0.3}, approved()),
+        ({}, approved(max_span_days=2)),
+        ({"catalog_id": "other"}, approved()),
+    ],
+)
+def test_approved_selection_applies_the_same_gates(scan_change, approval):
+    source = records()
+    source[-1].update(scan_change)
+    assert select_approved({"block": {}, "records": source}, approval)["status"] == "blocked"
+
+
+def test_approved_selection_rejects_overlapping_roles():
+    with pytest.raises(ValueError):
+        select_approved(
+            {"block": {}, "records": records()},
+            approved(holdout_catalog_ids=["view-0"]),
+        )

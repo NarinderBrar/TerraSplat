@@ -91,7 +91,7 @@ def fetch_selection(selection, destination, max_total_bytes=8 * 1024**3):
         p["bytes"] > 1024**3 for p in products
     ):
         raise ValueError(
-            "Selected sources exceed the explicit 8 GiB total or 1 GiB per-image budget"
+            f"Selected sources exceed the explicit {max_total_bytes / 1024**3:g} GiB total or 1 GiB per-image budget"
         )
     destination = Path(destination)
     destination.mkdir(parents=True, exist_ok=True)
@@ -116,9 +116,14 @@ def main():
     parser.add_argument(
         "--destination", type=Path, default=Path("artifacts/imagery/raw")
     )
+    parser.add_argument("--max-total-gib", type=float, default=8)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    report = fetch_selection(json.loads(args.selection.read_text()), args.destination)
+    report = fetch_selection(
+        json.loads(args.selection.read_text()),
+        args.destination,
+        max_total_bytes=int(args.max_total_gib * 1024**3),
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n")
     print(f"Verified {len(report['products'])} sources: {args.output}")

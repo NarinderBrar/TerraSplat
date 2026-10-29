@@ -1,0 +1,9 @@
+{
+  "block": "configs/jax068-block.json",
+  "max_span_days": 58,
+  "train_catalog_ids": ["104001000AB24A00", "104001000A1B5F00", "104001000AB10600", "104001000C22D200", "104001000C478800"],
+  "holdout_catalog_ids": ["104001000A22A000"],
+  "temporal_decision": "User approved widening the 2015 pilot to about eight weeks (April 19-June 15) for more training views; May 2 stays the holdout so results compare with the three-view run. May 14 is excluded by the 10% cloud gate.",
+  "satellitesfm_commit": "908c61937f6a16d6e1d50e98898db997e5e257bd",
+  "container": "ghcr.io/jayin92/satellitesfm@sha256:3c64997c9b2b4de5cdcad6d24972768423845fd7691015af1e4771c84fade9a5"
+}

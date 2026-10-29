@@ -195,13 +195,7 @@ def convergence(a, b):
     return math.degrees(math.acos(max(-1, min(1, dot))))
 
 
-def select(
-    scan_report,
-    max_span_days=7,
-    max_cloud_cover=0.1,
-    min_views=4,
-    min_convergence_deg=10,
-):
+def validate_policy(max_span_days, max_cloud_cover, min_views, min_convergence_deg):
     if (
         not all(
             math.isfinite(v)
@@ -213,6 +207,15 @@ def select(
         or not 0 < min_convergence_deg <= 90
     ):
         raise ValueError("Invalid multi-view selection policy")
+    return dict(
+        max_span_days=max_span_days,
+        max_cloud_cover=max_cloud_cover,
+        min_views=min_views,
+        min_training_convergence_deg=min_convergence_deg,
+    )
+
+
+def usable_records(scan_report, max_cloud_cover):
     usable = []
     for record in scan_report["records"]:
         if (
@@ -229,31 +232,58 @@ def select(
             continue
         usable.append(record)
     usable.sort(key=lambda x: (x["capture_time"], x["catalog_id"]))
+    return usable
+
+
+def span_days(group):
+    times = [
+        datetime.fromisoformat(x["capture_time"].replace("Z", "+00:00"))
+        for x in group
+    ]
+    return (max(times) - min(times)).total_seconds() / 86400
+
+
+def max_convergence(train):
+    return max(convergence(a, b) for a, b in itertools.combinations(train, 2))
+
+
+def candidate(scan_report, policy, span, train, holdout):
+    return {
+        "status": "candidate",
+        "block": scan_report["block"],
+        "policy": policy,
+        "span_days": span,
+        "training_max_convergence_deg": max_convergence(train),
+        "train": train,
+        "holdout": holdout,
+        "limitations": "Candidate only: block cloud review, local imagery and RGB alignment remain required. Holdout is excluded from training SfM.",
+    }
+
+
+def select(
+    scan_report,
+    max_span_days=7,
+    max_cloud_cover=0.1,
+    min_views=4,
+    min_convergence_deg=10,
+):
+    policy = validate_policy(max_span_days, max_cloud_cover, min_views, min_convergence_deg)
+    usable = usable_records(scan_report, max_cloud_cover)
     choices = []
     for group in itertools.combinations(usable, min_views):
         if len({x["catalog_id"] for x in group}) != len(group):
             continue
-        times = [
-            datetime.fromisoformat(x["capture_time"].replace("Z", "+00:00"))
-            for x in group
-        ]
-        span = (max(times) - min(times)).total_seconds() / 86400
+        span = span_days(group)
         if span > max_span_days:
             continue
         # Leave one entire acquisition out before SfM/appearance fitting.
         train = list(group[:-1])
         holdout = group[-1]
-        angle = max(convergence(a, b) for a, b in itertools.combinations(train, 2))
+        angle = max_convergence(train)
         if angle >= min_convergence_deg:
             choices.append(
                 (span, -angle, tuple(x["catalog_id"] for x in group), train, holdout)
             )
-    policy = dict(
-        max_span_days=max_span_days,
-        max_cloud_cover=max_cloud_cover,
-        min_views=min_views,
-        min_training_convergence_deg=min_convergence_deg,
-    )
     if not choices:
         return {
             "status": "blocked",
@@ -261,17 +291,46 @@ def select(
             "reason": "No group satisfies temporal, coverage, pair, cloud and training-angle gates",
             "usable_views": len(usable),
         }
-    span, negative_angle, _, train, heldout = min(choices, key=lambda x: x[:3])
-    return {
-        "status": "candidate",
-        "block": scan_report["block"],
-        "policy": policy,
-        "span_days": span,
-        "training_max_convergence_deg": -negative_angle,
-        "train": train,
-        "holdout": [heldout],
-        "limitations": "Candidate only: block cloud review, local imagery and RGB alignment remain required. Holdout is excluded from training SfM.",
-    }
+    span, _, _, train, heldout = min(choices, key=lambda x: x[:3])
+    return candidate(scan_report, policy, span, train, [heldout])
+
+
+def select_approved(
+    scan_report,
+    approved,
+    max_cloud_cover=0.1,
+    min_convergence_deg=10,
+):
+    """Check an explicitly approved view set against the same per-view and group gates."""
+    train_ids, holdout_ids = approved["train_catalog_ids"], approved["holdout_catalog_ids"]
+    identifiers = list(train_ids) + list(holdout_ids)
+    policy = validate_policy(
+        approved["max_span_days"], max_cloud_cover, len(identifiers), min_convergence_deg
+    )
+    if len(set(identifiers)) != len(identifiers) or len(train_ids) < 3 or not holdout_ids:
+        raise ValueError("Need three or more distinct training views and a separate holdout")
+    usable = {r["catalog_id"]: r for r in usable_records(scan_report, max_cloud_cover)}
+    missing = sorted(set(identifiers) - set(usable))
+    if missing:
+        return {
+            "status": "blocked",
+            "policy": policy,
+            "reason": f"Approved views fail coverage, cloud or angle gates: {missing}",
+            "usable_views": len(usable),
+        }
+    train, holdout = (
+        sorted((usable[i] for i in ids), key=lambda x: (x["capture_time"], x["catalog_id"]))
+        for ids in (train_ids, holdout_ids)
+    )
+    span = span_days(train + holdout)
+    if span > approved["max_span_days"] or max_convergence(train) < min_convergence_deg:
+        return {
+            "status": "blocked",
+            "policy": policy,
+            "reason": "Approved views exceed the time window or lack training convergence",
+            "usable_views": len(usable),
+        }
+    return candidate(scan_report, policy, span, train, holdout)
 
 
 def main():
@@ -284,6 +343,9 @@ def main():
     choosing = commands.add_parser("select")
     choosing.add_argument("scan", type=Path)
     choosing.add_argument("--max-span-days", type=float, default=7)
+    choosing.add_argument(
+        "--approved", type=Path, help="Check this fixed view set instead of searching"
+    )
     for command in (scanning, choosing):
         command.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
@@ -292,6 +354,10 @@ def main():
             json.loads(args.catalogue.read_text()),
             args.cache,
             json.loads(args.block.read_text()),
+        )
+    elif args.approved:
+        report = select_approved(
+            json.loads(args.scan.read_text()), json.loads(args.approved.read_text())
         )
     else:
         report = select(
