@@ -1,0 +1,225 @@
+diff --git a/train.py b/train.py
+index 8ddba33..276462d 100644
+--- a/train.py
++++ b/train.py
+@@ -10,6 +10,8 @@
+ #
+ 
+ import os
++import json
++import time
+ import numpy as np
+ import torch
+ import random
+@@ -32,10 +34,8 @@ from utils.camera_utils import gen_idu_orbit_camera, cameraList_from_camInfos
+ from scene.dataset_readers import CameraInfo
+ 
+ from PIL import Image
+-from submodules.MoGe.idu_depth import MoGeIDU
+ 
+ # pip install diffusers==0.30.1 huggingface-hub==0.33.4 transformers==4.46.3 tokenizers==0.20.3 (default)
+-from submodules.FlowEdit.idu_refine import FlowEditRefineIDU 
+ 
+ # fused SSIM, for faster training
+ 
+@@ -54,12 +54,27 @@ try:
+ except ImportError:
+     TENSORBOARD_FOUND = False
+ 
+-os.makedirs("./depth_tmp", exist_ok=True)
+-moge_standalone = MoGeIDU(
+-    "./depth_tmp",
+-    "cuda:0",
+-    60.0
+-)
++# TerraSplat pseudo-depth profile: pinned MoGe; IDU stays disabled.
++from pathlib import Path
++_moge_source = Path(__file__).resolve().parents[1] / "moge-priors"
++if __import__("subprocess").check_output(["git", "-C", str(_moge_source), "rev-parse", "HEAD"], text=True).strip() != "aca893a40faf6905cb722d6614cc37cb87ea06f7":
++    raise RuntimeError("MoGe source differs from pinned commit")
++sys.path.insert(0, str(_moge_source))
++from moge.model import MoGeModel
++
++class PinnedMoGe:
++    def __init__(self):
++        self.model = MoGeModel.from_pretrained(
++            "Ruicheng/moge-vitl", revision="ad326bfb61facd6c52b5a825bc1e34d7c97d9672",
++            local_files_only=True, cache_dir=str(Path.home() / ".cache/huggingface/hub")).to("cuda").eval()
++        self.model.output_mask = True
++
++    @torch.no_grad()
++    def run(self, images, pbar=False):
++        from torchvision.transforms.functional import to_tensor
++        return [self.model.infer(to_tensor(image).cuda(), fov_x=60.0)["depth"].cpu().numpy()
++                for image in images]
++
+ 
+ @torch.no_grad()
+ def create_offset_gt(image, offset):
+@@ -96,12 +111,9 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
+     if checkpoint:
+         print("Restoring model from checkpoint")
+         # original implementation
+-        (model_params, first_iter) = torch.load(checkpoint)
++        (model_params, first_iter) = torch.load(checkpoint, weights_only=False)
+         gaussians.restore(model_params, opt)
+         # set correct xyz lr scheduler
+-        opt.position_lr_max_steps = opt.iterations
+-        opt.densify_until_iter = opt.iterations
+-        opt.densify_from_iter = 0
+         gaussians.xyz_scheduler_args = get_expon_lr_func(lr_init=opt.position_lr_init * gaussians.spatial_lr_scale,
+                                                         lr_final=opt.position_lr_final * gaussians.spatial_lr_scale,
+                                                         lr_delay_mult=opt.position_lr_delay_mult,
+@@ -139,6 +151,29 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
+ 
+     opacity_cooldown_iter = None
+     origin_lambda_opacity = opt.lambda_opacity
++    measured = args.terrasplat_metrics is not None
++    metrics_started = time.monotonic()
++    skipped_densifications = 0
++    if measured:
++        if not dataset.eval:
++            raise ValueError("Measured runs require --eval")
++        if checkpoint:
++            state = torch.load(checkpoint + '.training-state.pth', weights_only=False)
++            gaussians.xyz_gradient_accum_abs = state['xyz_gradient_accum_abs']
++            random.setstate(state['random'])
++            np.random.set_state(state['numpy'])
++            torch.set_rng_state(state['torch'])
++            torch.cuda.set_rng_state(state['cuda'])
++            viewpoint_stack = [trainCameras[i] for i in state['viewpoint_stack']]
++            opacity_cooldown_iter = state['opacity_cooldown_iter']
++            opt.lambda_opacity = state['lambda_opacity']
++            origin_lambda_opacity = state['origin_lambda_opacity']
++        else:
++            scene.save(0)
++        with open(os.path.join(scene.model_path, 'training-schedule.json'), 'w') as stream:
++            json.dump({'start_iteration': first_iter - 1, 'target_iteration': opt.iterations,
++                       'position_lr_max_steps': opt.position_lr_max_steps,
++                       'densify_from_iter': opt.densify_from_iter, 'densify_until_iter': opt.densify_until_iter}, stream)
+     for iteration in range(first_iter, opt.iterations + 1):        
+         if network_gui.conn == None:
+             network_gui.try_connect()
+@@ -276,7 +311,14 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
+                 loss += loss_scale * opt.lambda_pseudo_depth * depth_loss_pseudo
+                 depth_loss += depth_loss_pseudo
+ 
++        if measured and not torch.isfinite(loss).all():
++            raise RuntimeError('Nonfinite training loss: camera={} l1={} ssim={} image_finite={}'.format(viewpoint_cam.image_name, Ll1.item(), ssim_value.item(), torch.isfinite(image).all().item()))
+         loss.backward()
++        if measured and (iteration <= 1000 or iteration % 100 == 0):
++            for group in gaussians.optimizer.param_groups:
++                for parameter in group['params']:
++                    if parameter.grad is not None and not torch.isfinite(parameter.grad).all():
++                        raise RuntimeError('Nonfinite gradient: ' + group.get('name', 'unnamed'))
+ 
+         iter_end.record()
+ 
+@@ -314,15 +356,22 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
+                 gaussians.max_radii2D[visibility_filter] = torch.max(gaussians.max_radii2D[visibility_filter], radii[visibility_filter])
+                 gaussians.add_densification_stats(viewspace_point_tensor, visibility_filter)
+ 
+-                if iteration > opt.densify_from_iter and iteration % opt.densification_interval == 0:
++                if iteration > opt.densify_from_iter and iteration % opt.densification_interval == 0 and (not measured or 2 * len(gaussians.get_xyz) <= args.terrasplat_max_gaussians):
+                     # size_threshold = 20 if iteration > opt.opacity_reset_interval else None
+                     size_threshold = opt.size_threshold
+                     # size_threshold = None
+                     gaussians.densify_and_prune(opt.densify_grad_threshold, 0.005, scene.cameras_extent, size_threshold)
+                     gaussians.compute_3D_filter(cameras=trainCameras) # + pseudoCameras)
++                elif measured and iteration > opt.densify_from_iter and iteration % opt.densification_interval == 0:
++                    skipped_densifications += 1
+ 
+                 if iteration % opt.opacity_reset_interval == 0 or (dataset.white_background and iteration == opt.densify_from_iter):
+                     gaussians.reset_opacity()
++                    if measured:
++                        # Inverse-sigmoid endpoints otherwise save +/-inf logits.
++                        if torch.isnan(gaussians._opacity).any():
++                            raise RuntimeError('NaN opacity after reset')
++                        gaussians._opacity.clamp_(-13.8, 13.8)
+                     opt.lambda_opacity = 0.01
+                     opacity_cooldown_iter = 500
+                     print(f"Turn off opacity regularization for {opacity_cooldown_iter} iterations")
+@@ -335,17 +384,45 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
+                     gaussians.compute_3D_filter(cameras=trainCameras) # + pseudoCameras)
+         
+             # Optimizer step
+-            if iteration < opt.iterations:
++            if iteration < opt.iterations or measured:
+                 gaussians.optimizer.step()
+                 gaussians.optimizer.zero_grad(set_to_none = True)
+ 
+             if (iteration in checkpoint_iterations):
+                 print("\n[ITER {}] Saving Checkpoint".format(iteration))
+                 torch.save((gaussians.capture(), iteration), scene.model_path + "/chkpnt" + str(iteration) + ".pth")
++                if measured:
++                    torch.save({'xyz_gradient_accum_abs': gaussians.xyz_gradient_accum_abs,
++                                'random': random.getstate(), 'numpy': np.random.get_state(),
++                                'torch': torch.get_rng_state(), 'cuda': torch.cuda.get_rng_state(),
++                                'viewpoint_stack': [c.uid for c in (viewpoint_stack or [])],
++                                'opacity_cooldown_iter': opacity_cooldown_iter,
++                                'lambda_opacity': opt.lambda_opacity, 'origin_lambda_opacity': origin_lambda_opacity},
++                               scene.model_path + '/chkpnt' + str(iteration) + '.pth.training-state.pth')
+ 
+             if (iteration in saving_iterations):
+                 print("\n[ITER {}] Saving Gaussians".format(iteration))
+                 scene.save(iteration)
++            if measured:
++                if iteration % 100 == 0 and not torch.isfinite(gaussians._opacity).all():
++                    raise RuntimeError('Nonfinite opacity parameter')
++                if len(gaussians.get_xyz) == 0 or len(gaussians.get_xyz) > args.terrasplat_max_gaussians:
++                    raise RuntimeError('Splat-count budget exceeded or cloud became empty')
++                if torch.cuda.max_memory_allocated() > args.terrasplat_max_allocated_bytes:
++                    raise RuntimeError('CUDA allocated-memory budget exceeded')
++                if iteration % 100 == 0 or iteration == first_iter or iteration == opt.iterations:
++                    free, total = torch.cuda.mem_get_info()
++                    record = {'iteration': iteration, 'loss': loss.item(), 'l1': Ll1.item(),
++                              'splats': len(gaussians.get_xyz), 'elapsed_seconds': time.monotonic() - metrics_started,
++                              'allocated_bytes': torch.cuda.memory_allocated(), 'reserved_bytes': torch.cuda.memory_reserved(),
++                              'peak_allocated_bytes': torch.cuda.max_memory_allocated(),
++                              'peak_reserved_bytes': torch.cuda.max_memory_reserved(),
++                              'sampled_device_used_bytes': total - free,
++                              'skipped_densifications': skipped_densifications}
++                    with open(args.terrasplat_metrics, 'a') as stream:
++                        stream.write(json.dumps(record) + '\n')
++                    if free < 256 * 1024 * 1024:
++                        raise RuntimeError('Less than 256 MiB free device memory')
+ 
+ @torch.no_grad()
+ def render_idu_set(views, gaussians, pipeline, background, kernel_size, idu_random_ap=False):
+@@ -1116,8 +1193,15 @@ if __name__ == "__main__":
+     parser.add_argument("--quiet", action="store_true")
+     parser.add_argument("--checkpoint_iterations", nargs="+", type=int, default=[2000, 3050, 7_000, 10000, 15000, 20000, 21000, 22000, 23000, 30_000, 60100, 61000, 62000, 65000, 67500, 70000, 70000, 70100, 71000, 72000, 75000, 77500, 80000])
+     parser.add_argument("--start_checkpoint", type=str, default = None)
++    parser.add_argument("--terrasplat_metrics", type=str, default=None)
++    parser.add_argument("--terrasplat_max_gaussians", type=int, default=200000)
++    parser.add_argument("--terrasplat_max_allocated_bytes", type=int, default=4831838208)
+     parser.add_argument("--iterative_datasets_update", action="store_true")
+     args = parser.parse_args(sys.argv[1:])
++    if args.iterative_datasets_update:
++        parser.error("Pseudo-depth adapter requires IDU off")
++    if args.lambda_pseudo_depth > 0:
++        moge_standalone = PinnedMoGe()
+     args.save_iterations.append(args.iterations)
+     
+     print("Optimizing " + args.model_path)
+@@ -1135,3 +1219,4 @@ if __name__ == "__main__":
+         training_idu(lp.extract(args), op.extract(args), pp.extract(args), args.start_checkpoint)
+     # All done
+     print("\nTraining complete.")
++    print("TERRASPLAT_GPU_PEAK_BYTES=" + str(torch.cuda.max_memory_allocated()))
+diff --git a/utils/camera_utils.py b/utils/camera_utils.py
+index bc6d7f0..bd2f87b 100755
+--- a/utils/camera_utils.py
++++ b/utils/camera_utils.py
+@@ -51,6 +51,11 @@ def loadCam(args, id, cam_info, resolution_scale, is_testing=False, optimizing=F
+             depth = torch.tensor(cam_info.depth).unsqueeze(0)
+         if cam_info.mask is not None:
+             mask = torch.tensor(cam_info.mask).unsqueeze(0)
++        target_size = (resolution[1], resolution[0])
++        if mask is not None and tuple(mask.shape[-2:]) != target_size:
++            mask = torch.nn.functional.interpolate(mask[None].float(), size=target_size, mode="nearest")[0].to(mask.dtype)
++        if depth is not None and tuple(depth.shape[-2:]) != target_size:
++            depth = torch.nn.functional.interpolate(depth[None].float(), size=target_size, mode="nearest")[0]
+ 
+         gt_image = resized_image_rgb[:3, ...]
+         loaded_mask = None

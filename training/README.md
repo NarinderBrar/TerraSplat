@@ -105,3 +105,22 @@ Gaussians and saved an iteration-20 checkpoint and raw PLY. PyTorch reported
 267,636,224 bytes (about 255 MiB) peak allocated GPU tensor memory, excluding
 CUDA context/driver overhead. This is not a projection of memory use during
 full-resolution training or densification. All three CUDA kernel checks passed.
+
+## Authors' prepared reference scene
+
+`pipeline.reference_scene` copies JAX_068 into `artifacts/imagery/ref-jax068/scene`
+and hashes the source inputs. `--verify` compares points and cameras with the
+real legacy loader on a disposable copy. This scene has no `R`/`T` fields:
+normalization is identity. The missing ENU anchor is explicitly assumed from
+the lidar AOI bounds centre and the pilot's lower altitude bracket minus 20 m.
+Registration can measure shape here, never placement accuracy.
+
+The `basic-stage1-registered` patch is unchanged. The separate
+`stage1-pseudo-depth` profile uses `.external/skyfall-gs-pseudo`, prepared by
+`scripts/prepare-skyfall-pseudo.py`. Its recorded patch restores pinned MoGe
+pseudo-view inference and retains the existing appearance model, memory cap,
+resume safeguards and IDU rejection. Additional dependencies are in
+`requirements-stage1-pseudo.txt`; install with `--no-deps` to preserve torch.
+Weights load only from the existing pinned HF cache revision. Run
+`scripts/trial-stage1-pseudo.py` before the full recipe profile; it records
+peak allocated/reserved bytes even when training raises CUDA OOM.

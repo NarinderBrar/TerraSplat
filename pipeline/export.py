@@ -89,8 +89,8 @@ def verify_run(run):
     return run, training, model, final_ply, georeference
 
 
-def create_fused_ply(model, output, iteration):
-    script = SKYFALL / "create_fused_ply.py"
+def create_fused_ply(model, output, iteration, skyfall=SKYFALL):
+    script = Path(skyfall) / "create_fused_ply.py"
     if not script.is_file():
         raise ValueError("Skyfall create_fused_ply.py is unavailable")
     shim = "\n".join(
@@ -120,7 +120,7 @@ def create_fused_ply(model, output, iteration):
         "--quiet",
     ]
     result = subprocess.run(
-        command, cwd=SKYFALL, text=True, capture_output=True, check=False
+        command, cwd=skyfall, text=True, capture_output=True, check=False
     )
     if result.returncode:
         raise RuntimeError(
@@ -294,7 +294,7 @@ def render_equivalence(training, model, fused_ply, final_ply):
     from pipeline.evaluation import image_metrics, render_context, render_ply
 
     gaussians, views, pipeline = render_context(training, model)
-    raw = render_ply(gaussians, views, pipeline, final_ply)
+    raw = render_ply(gaussians, views, pipeline, final_ply, fixed_appearance=True)
     fused = render_ply(gaussians, views, pipeline, fused_ply)
     records = []
     for key, item in raw.items():
@@ -331,18 +331,19 @@ def export(run, selection=None, gsd=None):
     if output.exists():
         raise ValueError("Use a new export directory; remove the previous one first")
     output.mkdir(parents=True)
-    create_fused_ply(model, fused, profile["iterations"])
+    create_fused_ply(model, fused, profile["iterations"], training.get("skyfall", SKYFALL))
     attributes = read_attributes(fused)
     validation = validate_attributes(attributes, training["final_splats"])
     bbox = enu_bbox_splat_centres(attributes, georeference)
     trip = round_trip(attributes, georeference, gsd_record["gsd_m"])
     failures = []
-    if not bbox["plausible"]:
+    if not bbox["plausible"] and not georeference.get("assumed_anchor", False):
         failures.append("ENU splat-centre bbox exceeds the coarse plausibility envelope")
     if not trip["passed"]:
         failures.append("Transform round-trip error exceeds 0.1 GSD")
     manifest = {
         "schema_version": 1,
+        "assumed_anchor": georeference.get("assumed_anchor", False),
         "status": "validated" if not failures else "failed",
         "run_directory": str(run),
         "training_report_sha256": digest(run / "training-report.json"),
@@ -382,11 +383,12 @@ def export(run, selection=None, gsd=None):
             ],
             "filter_3D_folded_into_opacity_and_scale": True,
             "filter_3D_attribute_written": False,
-            "appearance_colour_mapping": False,
+            "appearance_colour_mapping": profile.get("appearance_enabled", False),
             "splats_removed": training["final_splats"] - validation["splat_count"],
             "torch_load_compat": "weights_only=False shim inside the subprocess",
         },
         "georeference": {
+            "assumed_anchor": georeference.get("assumed_anchor", False),
             "matrix_layout": georeference["matrix_layout"],
             "source_frame": georeference.get("source_frame"),
             "model_frame": georeference.get("model_frame"),
@@ -410,6 +412,12 @@ def export(run, selection=None, gsd=None):
         "validation": {
             **validation,
             "enu_bbox": bbox,
+            "extent_gate_required": not georeference.get("assumed_anchor", False),
+            "extent_note": (
+                "Assumed-anchor reference: full cloud extent is diagnostic; authors initialization "
+                "covers a wider area and contains outliers. DSM uses the fixed 250 m AOI."
+                if georeference.get("assumed_anchor", False) else "Pilot extent gate enforced"
+            ),
             "failures": failures,
         },
         "round_trip": trip,
@@ -431,6 +439,7 @@ def export(run, selection=None, gsd=None):
     (output / "export-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     summary = {
         "schema_version": 1,
+        "assumed_anchor": georeference.get("assumed_anchor", False),
         "status": "exported",
         "run_directory": str(run),
         "source_final_ply_sha256": manifest["source"]["final_ply"]["sha256"],

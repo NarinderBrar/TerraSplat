@@ -1,0 +1,15 @@
+# Additional dependencies only; preserve .venv-stage1 torch==2.7.1+cu128.
+# uv pip install --python .venv-stage1/bin/python --no-deps -r training/requirements-stage1-pseudo.txt
+# Source: .external/moge-priors at aca893a40faf6905cb722d6614cc37cb87ea06f7.
+# Weights: existing ~/.cache/huggingface/hub; Ruicheng/moge-vitl revision
+# ad326bfb61facd6c52b5a825bc1e34d7c97d9672; local_files_only=True.
+huggingface-hub==0.25.2
+requests==2.32.3
+urllib3==2.2.3
+charset-normalizer==3.4.0
+idna==3.10
+certifi==2026.10.23
+opencv-python==4.10.0.84
+trimesh==4.4.9
+pyyaml==6.0.2
+packaging==25.0

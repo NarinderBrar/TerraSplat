@@ -1,4 +1,5 @@
 """Audit a prepared one-block reconstruction input without starting GPU training."""
+
 import argparse
 import hashlib
 import json
@@ -31,6 +32,7 @@ def preflight(manifest_path, check_environment=True):
     manifest = json.loads(manifest_path.read_text())
     if manifest.get("version") != 1:
         raise ValueError("Unsupported manifest version")
+
     def resolve(value):
         return (manifest_path.parent / value).resolve()
 
@@ -103,23 +105,34 @@ def preflight(manifest_path, check_environment=True):
             for name in ("transforms_train.json", "points3D.txt"):
                 if record["input_sha256"][name] != evidence.get(name, {}).get("sha256"):
                     raise ValueError(f"Georeference record does not match {name}")
-            georeference = {"anchor": record["anchor"], "normalization": record["normalization"],
-                            "provenance": record["provenance"], **placement(record["anchor"], record["normalization"])}
+            georeference = {
+                "assumed_anchor": record.get("assumed_anchor", False),
+                "anchor": record["anchor"],
+                "normalization": record["normalization"],
+                "provenance": record["provenance"],
+                **placement(record["anchor"], record["normalization"]),
+            }
             evidence["georeference"] = {"sha256": digest(path)}
         except (OSError, KeyError, TypeError, ValueError) as error:
             failures.append(f"Invalid georeference: {error}")
     commit = run(["git", "rev-parse", "HEAD"], cwd=skyfall)
     if not commit["ok"] or commit["output"] != manifest["expected_skyfall_commit"]:
         failures.append("Skyfall checkout does not match the pinned commit")
-    dirty = run(["git", "diff", "--name-only", "HEAD", "--", "train.py", "scene", "arguments", "gaussian_renderer", "utils"], cwd=skyfall)
+    dirty = run(
+        ["git", "diff", "--name-only", "HEAD", "--", "train.py", "scene", "arguments", "gaussian_renderer", "utils"],
+        cwd=skyfall,
+    )
     profile = manifest.get("skyfall_patch_profile")
-    if profile == "basic-stage1-registered":
+    if profile in ("basic-stage1-registered", "stage1-pseudo-depth"):
         approved_paths = {"train.py", "utils/camera_utils.py", "scene/dataset_readers.py"}
         if not dirty["ok"] or set(dirty["output"].splitlines()) != approved_paths:
             failures.append("Skyfall source differs from the approved Stage 1 adapter paths")
         patch_root = Path(__file__).resolve().parents[1] / "adapters/skyfall"
-        for name, paths in (("stage1-only.patch", ["train.py", "utils/camera_utils.py"]),
-                            ("prepared-enu.patch", ["scene/dataset_readers.py"])):
+        stage_patch = "stage1-pseudo-depth.patch" if profile == "stage1-pseudo-depth" else "stage1-only.patch"
+        for name, paths in (
+            (stage_patch, ["train.py", "utils/camera_utils.py"]),
+            ("prepared-enu.patch", ["scene/dataset_readers.py"]),
+        ):
             result = run(["git", "diff", "HEAD", "--", *paths], cwd=skyfall)
             patch = patch_root / name
             if not result["ok"] or result["output"] != patch.read_text().strip():
@@ -132,21 +145,40 @@ def preflight(manifest_path, check_environment=True):
     environment = None
     if check_environment:
         # Import in the selected training interpreter, not the CLI's environment.
-        probe = 'import torch, diff_gauss, simple_knn._C, fused_ssim; assert torch.cuda.is_available(), "CUDA unavailable"; print(torch.__version__, torch.cuda.get_device_name(0))'
+        probe = (
+            "import torch, diff_gauss, simple_knn._C, fused_ssim; assert "
+            'torch.cuda.is_available(), "CUDA unavailable"; print(torch.__version__, '
+            "torch.cuda.get_device_name(0))"
+        )
         environment = run([manifest.get("python", sys.executable), "-c", probe], cwd=skyfall)
         if not environment["ok"]:
             failures.append("Training interpreter lacks a working CUDA/PyTorch extension stack")
         module_args = ["git", "submodule", "status"]
-        if profile == "basic-stage1-registered":
-            module_args += ["--", "submodules/diff-gaussian-rasterization-depth", "submodules/simple-knn", "submodules/fused-ssim"]
+        if profile in ("basic-stage1-registered", "stage1-pseudo-depth"):
+            module_args += [
+                "--",
+                "submodules/diff-gaussian-rasterization-depth",
+                "submodules/simple-knn",
+                "submodules/fused-ssim",
+            ]
         modules = run(module_args, cwd=skyfall)
         if not modules["ok"] or any(line.startswith(("-", "+", "U")) for line in modules["output"].splitlines()):
             failures.append("Required Skyfall submodules are absent or do not match pinned revisions")
-    return {"version": 1, "id": manifest["id"], "status": "blocked" if failures else "passed",
-            "scope": "prepared-input and placement audit; does not execute training or validate independent geographic accuracy",
-            "manifest_sha256": digest(manifest_path), "inputs": evidence, "skyfall_commit": commit,
-            "environment_checked": check_environment, "environment": environment,
-            "georeference": georeference, "failures": failures}
+    return {
+        "version": 1,
+        "id": manifest["id"],
+        "status": "blocked" if failures else "passed",
+        "scope": (
+            "prepared-input and placement audit; does not execute training or validate independent geographic accuracy"
+        ),
+        "manifest_sha256": digest(manifest_path),
+        "inputs": evidence,
+        "skyfall_commit": commit,
+        "environment_checked": check_environment,
+        "environment": environment,
+        "georeference": georeference,
+        "failures": failures,
+    }
 
 
 def main():

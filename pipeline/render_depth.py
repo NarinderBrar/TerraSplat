@@ -61,6 +61,7 @@ def render(run, output, pixel_m=0.25, altitude_m=17000.0, half_extent_m=145.0, m
     enu_to_model = np.linalg.inv(model_to_enu)
 
     gaussians, _, pipeline = render_context(training, Path(training["model"]))
+    gaussians.appearance_enabled = False
     load_ply_model(gaussians, fused)
     centre = enu_to_model[:3, :3] @ np.zeros(3) + enu_to_model[:3, 3]
     pixels = int(round(2 * half_extent_m / pixel_m))
@@ -86,6 +87,7 @@ def render(run, output, pixel_m=0.25, altitude_m=17000.0, half_extent_m=145.0, m
     np.savez_compressed(output / "depth-points.npz", enu=enu.astype(np.float64))
     report = {
         "schema_version": 1,
+        "assumed_anchor": manifest["georeference"].get("assumed_anchor", False),
         "fused_ply_sha256": manifest["fused_ply"]["sha256"],
         "camera": {"type": "synthetic nadir, near-orthographic", "altitude_m": altitude_m,
                    "half_extent_m": half_extent_m, "pixel_m": pixel_m, "pixels": pixels,

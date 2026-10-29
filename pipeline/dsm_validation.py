@@ -2,9 +2,10 @@
 
 The splat DSM is placed only through the recorded transform chain
 (model -> ENU -> ECEF -> UTM, ellipsoidal heights), so the unregistered
-comparison measures absolute placement and height. Skyfall's `dsmr` then finds
+comparison measures placement and height only when the anchor is known.
+With an assumed anchor, registration is for shape comparison only. Skyfall's `dsmr` then finds
 the best horizontal shift and vertical offset; that shift is the placement
-error, and the residual after it measures shape.
+error only for a known anchor, and the residual after it measures shape.
 """
 
 import argparse
@@ -54,8 +55,13 @@ def read_truth(directory, aoi):
     if dsm.shape != (size, size) or classes.shape != dsm.shape:
         raise ValueError("Truth DSM, CLS and metadata disagree on size")
     # Sat-NeRF convention: the metadata origin is the lower-left corner; row 0 is north.
-    return {"dsm": dsm, "classes": classes, "west": float(easting),
-            "north": float(northing) + size * resolution, "resolution": float(resolution)}
+    return {
+        "dsm": dsm,
+        "classes": classes,
+        "west": float(easting),
+        "north": float(northing) + size * resolution,
+        "resolution": float(resolution),
+    }
 
 
 def enu_to_utm(enu, georeference, utm_epsg):
@@ -130,17 +136,22 @@ def by_class(predicted, truth, classes, extent):
 def write_raster(path, array):
     import rasterio
 
-    with rasterio.open(path, "w", driver="GTiff", width=array.shape[1], height=array.shape[0],
-                       count=1, dtype="float32", nodata=np.nan) as target:
+    with rasterio.open(
+        path, "w", driver="GTiff", width=array.shape[1], height=array.shape[0], count=1, dtype="float32", nodata=np.nan
+    ) as target:
         target.write(array.astype(np.float32), 1)
 
 
-def register(truth_path, predicted_path, registered_path):
+def register(truth_path, predicted_path, registered_path, search_range=5):
     """Skyfall/Sat-NeRF dsmr: integer-then-subpixel NCC shift plus a vertical offset."""
     sys.path.insert(0, str(ROOT / ".external/skyfall-gs"))
     import dsmr
 
-    dx, dy, _, offset = dsmr.compute_shift(str(truth_path), str(predicted_path), scaling=False)
+    u, _ = dsmr.readimg(str(truth_path))
+    v, _ = dsmr.readimg(str(predicted_path))
+    dx, dy = dsmr.recursive_ncc(u, v, irange=search_range)
+    muu, muv, _, _, _ = dsmr.mean_std(u, v, dx, dy)
+    offset = muu - muv
     dsmr.apply_shift(str(predicted_path), str(registered_path), dx, dy, 1, offset)
     return float(dx), float(dy), float(offset)
 
@@ -151,18 +162,24 @@ def offset_from_truth(dx, dy, z_offset, resolution):
     dsmr reports the predicted content's displacement in (column, row) pixels,
     rows growing southward, and the z offset to add to the predicted heights.
     """
-    return {"east": dx * resolution, "north": -dy * resolution, "up": -z_offset,
-            "horizontal": float(np.hypot(dx, dy) * resolution)}
+    return {
+        "east": dx * resolution,
+        "north": -dy * resolution,
+        "up": -z_offset,
+        "horizontal": float(np.hypot(dx, dy) * resolution),
+    }
 
 
 def preview(path, truth, predicted, registered):
     import rasterio
 
     low, high = np.nanpercentile(truth, [1, 99])
+
     def grey(a):
         v = np.clip((a - low) / (high - low), 0, 1)
         out = np.rint(np.nan_to_num(v, nan=0) * 255).astype(np.uint8)
         return np.stack([out] * 3, -1)
+
     def signed(a):
         v = np.clip(a / 5, -1, 1)
         rgb = np.full(a.shape + (3,), 255, np.uint8)
@@ -171,15 +188,18 @@ def preview(path, truth, predicted, registered):
         rgb[..., 2] = np.rint(255 * (1 - np.clip(v, 0, 1))).astype(np.uint8)
         rgb[~np.isfinite(a)] = 0
         return rgb
+
     panels = [grey(truth), grey(predicted), signed(predicted - truth), signed(registered - truth)]
     image = np.concatenate(panels, 1).transpose(2, 0, 1)
-    with rasterio.open(path, "w", driver="PNG", width=image.shape[2], height=image.shape[1],
-                       count=3, dtype="uint8") as target:
+    with rasterio.open(
+        path, "w", driver="PNG", width=image.shape[2], height=image.shape[1], count=3, dtype="uint8"
+    ) as target:
         target.write(image)
 
 
-def validate(export_dir, truth_dir, output, aoi="JAX_068", utm_epsg=32617,
-             min_opacity=0.5, max_radius_m=3.0, depth_points=None):
+def validate(
+    export_dir, truth_dir, output, aoi="JAX_068", utm_epsg=32617, min_opacity=0.5, max_radius_m=3.0, depth_points=None
+):
     from pipeline.phase2 import digest
 
     export_dir, output = Path(export_dir).resolve(), Path(output).resolve()
@@ -197,7 +217,9 @@ def validate(export_dir, truth_dir, output, aoi="JAX_068", utm_epsg=32617,
             "dsm": "max height per cell of back-projected rendered depth (see depth-report.json)",
             "depth_points": int(len(enu_points)),
             "depth_points_sha256": digest(Path(depth_points)),
-            "deviation": "Same rendered-depth principle as Skyfall, from one synthetic nadir camera instead of its camera path",
+            "deviation": (
+                "Same rendered-depth principle as Skyfall, from one synthetic nadir camera instead of its camera path"
+            ),
         }
     else:
         predicted, source = footprint_dsm(fused, georeference, truth, utm_epsg, min_opacity, max_radius_m)
@@ -219,9 +241,13 @@ def footprint_dsm(fused, georeference, truth, utm_epsg, min_opacity, max_radius_
     points = enu_to_utm(enu[keep], georeference, utm_epsg)
     predicted = splat_dsm(points, radii[keep], truth)
     return predicted, {
-        "dsm": f"max centre height over each splat's footprint disc (1 sigma, capped at {max_radius_m} m), opacity >= {min_opacity}",
+        "dsm": (f"max centre height over each splat's footprint disc (1 sigma, capped at {max_radius_m} m), "
+                f"opacity >= {min_opacity}"),
         "splats_used": int(keep.sum()),
-        "deviation": "Skyfall builds its DSM from rendered depth; this uses splat footprints, so registered MAE is not directly comparable to published numbers",
+        "deviation": (
+            "Skyfall builds its DSM from rendered depth; this uses splat footprints, so registered"
+            " MAE is not directly comparable to published numbers"
+        ),
     }
 
 
@@ -233,18 +259,28 @@ def finish(export_dir, output, manifest, georeference, truth, truth_dir, aoi, ut
     size, resolution = truth["dsm"].shape[0], truth["resolution"]
     east = truth["west"] + (np.arange(size) + 0.5) * resolution
     north = truth["north"] - (np.arange(size) + 0.5) * resolution
-    extent = ((east[None, :] >= block_utm[0, 0]) & (east[None, :] <= block_utm[1, 0])
-              & (north[:, None] >= block_utm[0, 1]) & (north[:, None] <= block_utm[1, 1]))
+    extent = (
+        (east[None, :] >= block_utm[0, 0])
+        & (east[None, :] <= block_utm[1, 0])
+        & (north[:, None] >= block_utm[0, 1])
+        & (north[:, None] <= block_utm[1, 1])
+    )
 
     if output.exists():
         raise ValueError("Use a new validation directory; remove the previous one first")
     output.mkdir(parents=True)
     truth_path, predicted_path, registered_path = (
-        output / "truth-dsm.tif", output / "splat-dsm.tif", output / "splat-dsm-registered.tif")
+        output / "truth-dsm.tif",
+        output / "splat-dsm.tif",
+        output / "splat-dsm-registered.tif",
+    )
     write_raster(truth_path, truth["dsm"])
     write_raster(predicted_path, predicted)
-    dx, dy, offset = register(truth_path, predicted_path, registered_path)
+    dx, dy, offset = register(
+        truth_path, predicted_path, registered_path, search_range=20 if georeference.get("assumed_anchor") else 5
+    )
     import rasterio
+
     with rasterio.open(registered_path) as dataset:
         registered = dataset.read(1).astype(np.float64)
     preview(output / "dsm-comparison.png", truth["dsm"], predicted, registered)
@@ -252,31 +288,54 @@ def finish(export_dir, output, manifest, georeference, truth, truth_dir, aoi, ut
     classes = truth["classes"]
     report = {
         "schema_version": 1,
+        "assumed_anchor": georeference.get("assumed_anchor", False),
         "status": "measured",
         "export_manifest_sha256": digest(export_dir / "export-manifest.json"),
         "fused_ply_sha256": manifest["fused_ply"]["sha256"],
         "reference": {
             "aoi": aoi,
-            "source": "DFC2019 Track3-Truth (HSIP airborne lidar, ANPS about 0.8 m), via the Sat-NeRF EarthVision2022 dataset.zip",
+            "source": (
+                "DFC2019 Track3-Truth (HSIP airborne lidar, ANPS about 0.8 m), via the Sat-NeRF "
+                "EarthVision2022 dataset.zip"
+            ),
             "files_sha256": {p.name: digest(p) for p in sorted(Path(truth_dir).iterdir()) if p.is_file()},
-            "grid": {"utm_epsg": utm_epsg, "west": truth["west"], "north": truth["north"],
-                     "resolution_m": resolution, "size": size},
+            "grid": {
+                "utm_epsg": utm_epsg,
+                "west": truth["west"],
+                "north": truth["north"],
+                "resolution_m": resolution,
+                "size": size,
+            },
             "heights": "WGS84 ellipsoidal (ground median about -17 m; orthometric would be about +12 m here)",
             "acquisition_date": "unknown (HSIP U.S. Cities lidar; not stated in the DFC2019/US3D papers)",
         },
         "method": {
-            "placement": "fused export placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights",
+            "placement": (
+                "fused export placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights"
+            ),
             **source,
             "registration": "Skyfall-GS/Sat-NeRF dsmr: recursive NCC shift, z offset, no z scaling",
-            "evaluated_extent": "250 m block (ENU square) inside the truth grid; CLS 65 (unlabelled) and water excluded from all_labelled",
+            "evaluated_extent": (
+                "250 m block (ENU square) inside the truth grid; CLS 65 (unlabelled) and water "
+                "excluded from all_labelled"
+            ),
         },
         "unregistered": by_class(predicted, truth["dsm"], classes, extent),
         "registration": {
-            "dx_px": dx, "dy_px": dy, "z_offset_m": offset,
+            "placement_measurement": not georeference.get("assumed_anchor", False),
+            "search_range_per_level_px": 20 if georeference.get("assumed_anchor") else 5,
+            "dx_px": dx,
+            "dy_px": dy,
+            "z_offset_m": offset,
             "splats_offset_from_lidar_m": offset_from_truth(dx, dy, offset, resolution),
         },
         "registered": by_class(registered, truth["dsm"], classes, extent),
-        "outputs": {"comparison_png": "dsm-comparison.png (truth | splat DSM | unregistered error | registered error; error scale +/-5 m, red = splats too high)"},
+        "outputs": {
+            "comparison_png": (
+                "dsm-comparison.png (truth | splat DSM | unregistered error | registered error; error "
+                "scale +/-5 m, red = splats too high)"
+            )
+        },
     }
     (output / "dsm-validation.json").write_text(json.dumps(report, indent=2) + "\n")
     return report

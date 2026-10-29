@@ -22,9 +22,7 @@ def image_metrics(reference, rendered, valid):
     valid = valid.astype(bool)
     if not valid.any():
         raise ValueError("No valid evaluation pixels")
-    difference = rendered[valid].astype(np.float64) - reference[valid].astype(
-        np.float64
-    )
+    difference = rendered[valid].astype(np.float64) - reference[valid].astype(np.float64)
     mse = float(np.mean(difference**2))
     return {
         "valid_pixels": int(valid.sum()),
@@ -52,9 +50,7 @@ def load_ply_model(gaussians, path):
         )
 
     def named(name):
-        return torch.tensor(
-            np.asarray(data[name], dtype=np.float32)[:, None], device="cuda"
-        )
+        return torch.tensor(np.asarray(data[name], dtype=np.float32)[:, None], device="cuda")
 
     gaussians._xyz = torch.nn.Parameter(
         torch.tensor(
@@ -65,9 +61,7 @@ def load_ply_model(gaussians, path):
             device="cuda",
         )
     )
-    gaussians._features_dc = torch.nn.Parameter(
-        columns("f_dc_").reshape(count, 3, 1).transpose(1, 2)
-    )
+    gaussians._features_dc = torch.nn.Parameter(columns("f_dc_").reshape(count, 3, 1).transpose(1, 2))
     rest = columns("f_rest_").reshape(count, 3, -1)
     gaussians._features_rest = torch.nn.Parameter(rest.transpose(1, 2))
     gaussians._opacity = torch.nn.Parameter(named("opacity"))
@@ -81,7 +75,7 @@ def load_ply_model(gaussians, path):
 
 
 def render_context(training, model):
-    sys.path.insert(0, str(ROOT / ".external/skyfall-gs"))
+    sys.path.insert(0, str(training.get("skyfall", ROOT / ".external/skyfall-gs")))
     from arguments import ModelParams, PipelineParams
     from scene import Scene, GaussianModel
 
@@ -104,19 +98,26 @@ def render_context(training, model):
     if profile.get("convert_sh_python"):
         arguments += ["--convert_SHs_python"]
     args = parser.parse_args(arguments)
-    gaussians = GaussianModel(profile["sh_degree"], False, 4, 32)
+    gaussians = GaussianModel(profile["sh_degree"], profile.get("appearance_enabled", False), 4, 32)
     scene = Scene(mp.extract(args), gaussians, load_iteration=profile["iterations"])
+    if profile.get("appearance_enabled"):
+        import torch
+
+        params, _ = torch.load(model / f"chkpnt{profile['iterations']}.pth", weights_only=False)
+        gaussians.load_from_checkpoints(params)
     pipeline = pp.extract(args)
-    views = [("train", c) for c in scene.getTrainCameras()] + [
-        ("holdout", c) for c in scene.getTestCameras()
-    ]
+    views = [("train", c) for c in scene.getTrainCameras()] + [("holdout", c) for c in scene.getTestCameras()]
     return gaussians, views, pipeline
 
 
-def render_ply(gaussians, views, pipeline, ply):
+def render_ply(gaussians, views, pipeline, ply, fixed_appearance=False):
     import torch
     from gaussian_renderer import render
 
+    appearance = gaussians.appearance_enabled
+    # Fused colours already contain the MLP mapping; initial geometry has no learned embeddings.
+    if "fused" in Path(ply).name or "iteration_0" in str(ply):
+        gaussians.appearance_enabled = False
     load_ply_model(gaussians, ply)
     renders = {}
     with torch.no_grad():
@@ -127,7 +128,7 @@ def render_ply(gaussians, views, pipeline, ply):
                 pipeline,
                 torch.zeros(3, device="cuda"),
                 0.1,
-                testing=role == "holdout",
+                testing=fixed_appearance or role == "holdout",
             )
             rgb = result["render"].clamp(0, 1).permute(1, 2, 0).cpu().numpy()
             alpha = result["render_alpha"].squeeze().cpu().numpy()
@@ -141,6 +142,7 @@ def render_ply(gaussians, views, pipeline, ply):
                 "reference": camera.original_image.permute(1, 2, 0).cpu().numpy(),
                 "valid": camera.original_mask.squeeze().cpu().numpy().astype(bool),
             }
+    gaussians.appearance_enabled = appearance
     return renders
 
 
@@ -190,9 +192,7 @@ def evaluate(run):
             Image.fromarray(np.rint(rgb * 255).astype(np.uint8)).save(png)
             previews[(stage, camera.image_name)] = Image.open(png).copy()
             if stage == "initial":
-                previews[("reference", camera.image_name)] = Image.fromarray(
-                    np.rint(reference * 255).astype(np.uint8)
-                )
+                previews[("reference", camera.image_name)] = Image.fromarray(np.rint(reference * 255).astype(np.uint8))
     canvas = Image.new("RGB", (1200, 440 * len(views)), "#20252b")
     draw = ImageDraw.Draw(canvas)
     for row, (role, camera) in enumerate(views):
@@ -208,10 +208,13 @@ def evaluate(run):
     canvas.save(output / "comparison.png")
     result = {
         "status": "evaluated",
+        "assumed_anchor": training.get("assumed_anchor", False),
         "training_report_sha256": digest(report_path),
         "evaluator_sha256": digest(Path(__file__)),
         "resolution_factor": profile["resolution"],
-        "metric_definition": "MSE/MAE over RGB samples at valid mask pixels; PSNR uses unit-range colors and a 1e-12 MSE floor",
+        "metric_definition": (
+            "MSE/MAE over RGB samples at valid mask pixels; PSNR uses unit-range colors and a 1e-12 MSE floor"
+        ),
         "records": records,
         "holdout_used_for_training_or_selection": False,
         "independent_geographic_accuracy_validated": False,

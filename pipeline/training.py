@@ -15,9 +15,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def validate_profile(profile):
-    depth = profile.get("lambda_depth", 0)
-    if type(depth) not in (int, float) or not math.isfinite(depth) or depth < 0:
-        raise ValueError("lambda_depth must be finite and nonnegative")
+    for key in ("lambda_depth", "lambda_opacity", "lambda_pseudo_depth"):
+        weight = profile.get(key, 0)
+        if type(weight) not in (int, float) or not math.isfinite(weight) or weight < 0:
+            raise ValueError(f"{key} must be finite and nonnegative")
     if profile.get("version") != 1:
         raise ValueError("Unsupported training profile")
     for key in (
@@ -70,9 +71,9 @@ def training_command(python, data, model, metrics, profile, target, checkpoint=N
         "--lambda_depth",
         str(profile.get("lambda_depth", 0)),
         "--lambda_opacity",
-        "0",
+        str(profile.get("lambda_opacity", 0)),
         "--lambda_pseudo_depth",
-        "0",
+        str(profile.get("lambda_pseudo_depth", 0)),
         "--position_lr_max_steps",
         str(profile["iterations"]),
         "--densify_from_iter",
@@ -101,6 +102,12 @@ def training_command(python, data, model, metrics, profile, target, checkpoint=N
         args += ["--detect_anomaly"]
     if profile.get("convert_sh_python"):
         args += ["--convert_SHs_python"]
+    if profile.get("appearance_enabled"):
+        args += ["--appearance_enabled"]
+    for key in ("densify_grad_threshold", "start_sample_pseudo", "end_sample_pseudo", "size_threshold",
+                "scaling_lr", "rotation_lr", "opacity_reset_interval", "sample_pseudo_interval"):
+        if key in profile:
+            args += ["--" + key, str(profile[key])]
     return args
 
 
@@ -118,11 +125,13 @@ def copy_scene(scene, target):
     return contract
 
 
-def validate_outputs(model, iteration):
+def validate_outputs(model, iteration, skyfall=None):
     import numpy as np
     import torch
     from plyfile import PlyData
 
+    # Appearance checkpoints pickle Skyfall's EmbeddingModel class.
+    sys.path.insert(0, str(skyfall or ROOT / ".external/skyfall-gs"))
     checkpoint = model / f"chkpnt{iteration}.pth"
     auxiliary = model / f"chkpnt{iteration}.pth.training-state.pth"
     ply = model / f"point_cloud/iteration_{iteration}/point_cloud.ply"
@@ -136,7 +145,9 @@ def validate_outputs(model, iteration):
     def finite(value):
         if isinstance(value, torch.Tensor) and not torch.isfinite(value).all():
             raise ValueError("Nonfinite checkpoint tensor")
-        if isinstance(value, dict):
+        if isinstance(value, torch.nn.Module):
+            finite(value.state_dict())
+        elif isinstance(value, dict):
             for item in value.values():
                 finite(item)
         elif isinstance(value, (list, tuple)):
@@ -166,6 +177,12 @@ def train(scene, output, profile_path):
     validate_profile(profile)
     if output.exists():
         raise ValueError("Use a new training output directory")
+    manifest = json.loads((scene / "phase2-manifest.json").read_text())
+    if manifest["skyfall_patch_profile"] != profile.get("skyfall_patch_profile", "basic-stage1-registered"):
+        raise ValueError("Training profile and scene adapter disagree")
+    backend = (ROOT / profile.get("skyfall", ".external/skyfall-gs")).resolve()
+    if backend != (scene / manifest["skyfall"]).resolve():
+        raise ValueError("Training profile and audited Skyfall checkout disagree")
     audit = preflight(scene / "phase2-manifest.json", check_environment=True)
     if audit["status"] != "passed":
         raise ValueError(audit["failures"])
@@ -177,6 +194,7 @@ def train(scene, output, profile_path):
     (output / "preflight-report.json").write_text(json.dumps(audit, indent=2) + "\n")
     report = {
         "status": "running",
+        "assumed_anchor": contract.get("assumed_anchor", False),
         "profile": profile,
         "profile_sha256": digest(Path(profile_path)),
         "runner_sha256": digest(Path(__file__)),
@@ -187,7 +205,10 @@ def train(scene, output, profile_path):
         "model": str(model),
         "phases": [],
         "georeference_sha256": digest(model / "georeference.json"),
-        "adapter_sha256": audit["inputs"]["stage1-only.patch"]["sha256"],
+        "adapter_sha256": audit["inputs"][
+            "stage1-pseudo-depth.patch" if profile.get("skyfall_patch_profile") == "stage1-pseudo-depth"
+            else "stage1-only.patch"]["sha256"],
+        "skyfall": str((ROOT / profile.get("skyfall", ".external/skyfall-gs")).resolve()),
         "independent_accuracy_validated": False,
         "holdout_used_for_training_or_selection": False,
     }
@@ -226,7 +247,7 @@ def train(scene, output, profile_path):
             with (output / f"training-{target}.log").open("w") as log:
                 result = subprocess.run(
                     command,
-                    cwd=ROOT / ".external/skyfall-gs",
+                    cwd=Path(report["skyfall"]),
                     stdout=log,
                     stderr=subprocess.STDOUT,
                     timeout=timeout,
@@ -235,7 +256,7 @@ def train(scene, output, profile_path):
             entry["returncode"] = result.returncode
             if result.returncode:
                 raise RuntimeError(f"Training phase failed: {target}; inspect its log")
-            entry["outputs"] = validate_outputs(model, target)
+            entry["outputs"] = validate_outputs(model, target, Path(report["skyfall"]))
             entry["schedule"] = json.loads(
                 (model / "training-schedule.json").read_text()
             )
