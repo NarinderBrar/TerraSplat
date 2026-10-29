@@ -1,6 +1,6 @@
 {
-  "stage": "approved multi-view imagery and RPC camera initialization",
-  "status": "prepared_for_sfm",
+  "stage": "approved imagery, RPC initialization and CPU sparse reconstruction",
+  "status": "sparse_reconstruction_completed",
   "span_days": 13.003511287037036,
   "train_catalog_ids": [
     "104001000AB24A00",
@@ -84,17 +84,87 @@
   ],
   "visual_review": "Same urban block visible in all four RGB crops; no obvious cloud obstruction. Tint, shadows and vehicles differ. Screening only.",
   "not_executed": [
-    "feature matching",
-    "bundle adjustment",
-    "sparse reconstruction",
     "skew correction",
-    "Skyfall training on this new block"
+    "Skyfall normalization capture",
+    "Skyfall training on this new block",
+    "independent geographic accuracy validation"
   ],
-  "reproduction": "scripts/prepare-jax068.sh completed from the hashed source cache in a fresh run directory",
+  "reproduction": "scripts/setup-sfm-cpu.sh completed; pipeline.reconstruct completed on the prepared inputs in two fresh run directories",
   "next_step": {
-    "stage": "feature matching and bundle adjustment",
-    "status": "blocked",
-    "reason": "Pinned container prefetch did not complete; an additional 180-second retry timed out.",
-    "gpu_container_runtime": "not configured; CPU path has not been verified"
+    "stage": "skew correction and Skyfall input conversion",
+    "status": "pending",
+    "requirements": [
+      "record image warp and pixel transform",
+      "preserve original ENU observer and normalization",
+      "retain independent May 2 holdout"
+    ]
+  },
+  "runtime": {
+    "colmap_commit": "79a6d150714d0eb350a1b10e17bedf91877568a1",
+    "ceres_commit": "f68321e7de8929fbcdb95dd42877531e64f72f66",
+    "executable_sha256": "739c9d88ba623852e7b01543cc0030b4c6c4c5bf66670940772ceefc3b945d36",
+    "cuda": false,
+    "opengl": false,
+    "openmp": false,
+    "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "cmake": "cmake version 4.3.2"
+  },
+  "reconstruction": {
+    "sparse_points": 2233,
+    "reprojection_error_pixels": {
+      "observations": 4931,
+      "median": 0.2736196174143938,
+      "p95": 1.3409242776579386,
+      "max": 2.055521217626689
+    },
+    "observations_by_image": {
+      "104001000AB24A00.png": 2013,
+      "104001000AB10600.png": 1014,
+      "104001000A1B5F00.png": 1904
+    },
+    "track_lengths": {
+      "2": 1768,
+      "3": 465
+    },
+    "principal_point_adjustments": {
+      "104001000AB24A00.png": [
+        2.439143327275815,
+        -4.28431641313
+      ],
+      "104001000AB10600.png": [
+        1.630087946075946,
+        -0.3533522258512676
+      ],
+      "104001000A1B5F00.png": [
+        -3.7316351360059343,
+        4.2618588441982865
+      ]
+    },
+    "enu_percentiles_2_98": [
+      [
+        -148.35820371432254,
+        -148.0344385780539,
+        42.8079911476123
+      ],
+      [
+        151.23329892760566,
+        165.14144673714543,
+        85.23507434373926
+      ]
+    ],
+    "output_sha256": {
+      "adjusted-2/cameras.txt": "599eeeb4418b45240872895780597b40f409b984beafa9010735df5494a4250a",
+      "adjusted-2/images.txt": "a087330d7cbfbb8cb331a0d360311c1aeca94240516831ec03afb66ed6469120",
+      "adjusted-2/points3D.txt": "b59326a9d09ca8a2091f99fd637a6ff5c2bf0c2d217e39a78d48c2af3e1dbd0e"
+    },
+    "independent_accuracy_validated": false,
+    "runner_sha256": "e6c2894cfa76261a2d5ec05a815e37b76b76a72253f0c3fa370726e1fcac2f3f",
+    "report_path": "artifacts/imagery/sfm-2015-02/reconstruction-report.json",
+    "report_sha256": "b518f2c0da38f05f1ccbe66c21e88b68d64a365865419b80a2826d66607b12f8",
+    "commands_passed": 6,
+    "command_elapsed_seconds": 19.222188094998728,
+    "holdout_in_database": false,
+    "extrinsics_and_skew_preserved": true,
+    "repeatability_note": "First run: 2221 points, median 0.2695 px and p95 1.2987 px. Verification rerun: 2233 points, median 0.2736 px and p95 1.3409 px. Multi-threaded matching is not bit-identical."
   }
 }

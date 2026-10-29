@@ -177,4 +177,4 @@ Estimate cost using measured GPU-hours × selected rate, plus preprocessing, sto
 
 Choose and verify a recent imagery source, acceptable capture age, within-group acquisition span, date-compatible validation evidence and access/derivative rights; target AOI size and GSD; available GPU/VRAM; horizontal/vertical accuracy requirement; hosting and access model; and whether generated detail is a desired product mode. Resolve these when needed by the phase gates. No purchases, external uploads, or deployments are part of this planning work.
 
-Next implementation priority: resolve the SatelliteSfM runtime and complete the prepared 2015 one-block reconstruction, then measured Stage 1 training, export and validation. Recent imagery qualification resumes only for later current-city work.
+Next implementation priority: correct skew and convert the completed 2015 sparse reconstruction for Skyfall, then measured Stage 1 training, export and validation. CPU matching, bundle adjustment and sparse points now pass; see [the SfM result](../sfm/README.md). Recent imagery qualification resumes only for later current-city work.

@@ -26,3 +26,4 @@ public/cesium/
 .toolchains/
 .cache/
 .venv-imagery/
+.venv-sfm/

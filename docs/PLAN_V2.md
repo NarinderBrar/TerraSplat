@@ -1,6 +1,6 @@
 # TerraSplat plan v2
 
-Updated: 2026-10-29. Status: Phase 0 compatibility fixture passes; Phase 2 proceeds with the approved 2015 pilot. See [PHASE0.md](PHASE0.md) and [PHASE2.md](PHASE2.md). Phase 1 remains incomplete.
+Updated: 2026-10-29. Status: Phase 0 compatibility fixture passes; Phase 2 has completed CPU sparse reconstruction of the approved 2015 pilot. See [PHASE0.md](PHASE0.md) and [PHASE2.md](PHASE2.md). Phase 1 remains incomplete.
 
 Current implementation scope: pipeline tooling and a minimal validation viewer. Product web app features are deferred.
 
@@ -55,7 +55,7 @@ Record this chain in `georeference.json` (see PLAN.md §5). For the historical b
 
 ### Active historical pilot
 
-Use the existing 250 m block with a 20 m halo, three training acquisitions (April 19, April 26 and May 1, 2015), and the May 2 holdout. Crops, RGB preparation and RPC-derived initial cameras already exist. Next resolve the SfM runtime, complete matching/bundle adjustment and sparse reconstruction, and preserve the ENU origin and pixel/normalization transforms through training. Keep the holdout out of calibration and fitting.
+Use the existing 250 m block with a 20 m halo, three training acquisitions (April 19, April 26 and May 1, 2015), and the May 2 holdout. Crops, RGB preparation, RPC-derived cameras and CPU sparse reconstruction are complete. Next correct skew and convert inputs for Skyfall, preserving the ENU origin and pixel/normalization transforms through training. Keep the holdout out of calibration and fitting.
 
 ### Recent imagery qualification — deferred
 
@@ -162,12 +162,12 @@ Estimates are planning guesses, not measurements. Stack and layout follow PLAN.m
 
 ## 10. Next tasks
 
-1. Resolve and verify the SatelliteSfM runtime, then complete matching, bundle adjustment and sparse reconstruction on the prepared 2015 training views. Preserve the ENU observer and pixel transforms; retain the May 2 holdout.
+1. Correct skew with a recorded pixel transform and convert the completed sparse reconstruction into Skyfall inputs. Preserve the ENU observer and explicit May 2 holdout.
 2. Verify independent validation data for the pilot's capture epoch, coverage and vertical datum. Document any unchanged-area or time-gap limitation.
 3. Run measured one-block Skyfall-GS Stage 1 training within the 6 GB GPU budget, preserving normalization and resumable checkpoints.
 4. Fuse/export the result, verify geographic placement and quality, then view the historical tiles in CesiumJS before scale-up.
 
-Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation and RPC-derived initial cameras. Full historical SfM and full training remain unexecuted. The prepared Skyfall JAX_068 diagnostic is separate from this raw-imagery block and does not replace its geographic reconstruction checks.
+Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation, RPC-derived initial cameras and CPU matching/bundle adjustment/sparse reconstruction. The final verification run produced 2,233 points with median residual 0.274 px and p95 1.341 px; independent geographic accuracy is unverified. Full training remains unexecuted. The prepared Skyfall JAX_068 diagnostic is separate from this raw-imagery block.
 
 ## Sources
 

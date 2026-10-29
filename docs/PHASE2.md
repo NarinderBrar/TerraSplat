@@ -4,8 +4,10 @@ Status: started. Prepared-input preflight, explicit coordinate-transform
 preservation, isolated Stage 1 training, and raw RPC-aware crop tooling are
 implemented. The approved 13-day pilot now has three training RGB views, one
 holdout and RPC-derived initial cameras with a preserved ENU origin. See
-[SatelliteSfM handoff](../sfm/README.md). Feature matching and bundle adjustment
-have not run; the pinned runtime image download did not complete. The raw-imagery-to-tiles pipeline has not run.
+[SatelliteSfM handoff](../sfm/README.md). CPU feature matching, bundle adjustment
+and sparse reconstruction now pass using an isolated native runtime. The final
+verification run produced 2,233 points with median reprojection error 0.274 px
+and p95 1.341 px. The raw-imagery-to-tiles pipeline has not run.
 Phase 1's existing-scene conversions remain incomplete; Phase 0 is committed and
 pushed. The user explicitly confirmed proceeding directly to Phase 2.
 
@@ -15,7 +17,7 @@ The user confirmed on 2026-10-29 that we will use the 2015 data. Complete the ap
 
 Recent imagery selection is deferred and does not block training on this historical pilot. Before a future current-city release, qualify recent imagery and date-compatible independent validation using [PLAN_V2.md §5](PLAN_V2.md#5-imagery-details).
 
-The [29 October qualification report](../imagery/qualification/2026-10-29/README.md) preserves the earlier free-source search and its unresolved recent-input gate. The subsequent 2015 decision changes the immediate work to resolving the SfM runtime and completing the existing block. Feature matching, bundle adjustment and full training are still unexecuted.
+The [29 October qualification report](../imagery/qualification/2026-10-29/README.md) preserves the earlier free-source search and its unresolved recent-input gate. The subsequent 2015 decision led to successful sparse reconstruction. Full training is still unexecuted; skew correction and Skyfall input conversion are the next work.
 
 ## Run the implemented checks
 
@@ -120,9 +122,9 @@ Local reports are ignored by Git.
 
 ## Remaining Phase 2 work
 
-1. Resolve the SfM runtime and complete feature matching, bundle adjustment and sparse reconstruction on the prepared 2015 training views; retain the May 2 holdout.
-2. Verify independent validation for the historical pilot, including reference capture dates, coverage and vertical datum; document any epoch/unchanged-area limitation.
-3. Prepare the SfM output for Skyfall, preserving the ENU observer, pixel transforms and normalization at runtime.
+1. Correct image skew with an explicit pixel transform.
+2. Convert the completed sparse model for Skyfall, preserving the ENU observer, normalization and independent May 2 holdout.
+3. Verify independent validation for the historical pilot, including reference capture dates, coverage and vertical datum; document any epoch/unchanged-area limitation.
 4. Run measured Stage 1 training within the GPU budget, fuse/export the scene, and verify placement and accuracy before expanding coverage.
 
 The 2015 block is the active reconstruction milestone. Recent source qualification is deferred; the completed demonstration must be described as historical.

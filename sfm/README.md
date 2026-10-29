@@ -1,6 +1,6 @@
 # SatelliteSfM handoff for the Jacksonville pilot
 
-Latest decision (2026-10-29): the approved 2015 CORE3D inputs below are the active end-to-end historical demonstration. Resolve the runtime and complete matching, bundle adjustment and sparse reconstruction before measured Stage 1 training. Recent imagery selection is deferred; see [the revised plan](../docs/PLAN_V2.md).
+Latest status (2026-10-29): the approved 2015 CORE3D pilot completed CPU feature matching, bundle adjustment and sparse reconstruction. Skew correction and Skyfall conversion are next, before measured Stage 1 training. Recent imagery selection is deferred; see [the revised plan](../docs/PLAN_V2.md).
 
 The approved pilot uses April 19–May 2, 2015: three training acquisitions and a
 separate May 2 holdout. No four-view group satisfied the initial seven-day
@@ -81,11 +81,73 @@ SfM. These cameras must not be passed through an arbitrary new train/test split.
 Upstream's default conversion uses a directory-order 90/10 split; the adapter
 must preserve the approved acquisition roles instead.
 
-## Remaining reconstruction gates
+## Sparse reconstruction and remaining gates
 
-Feature extraction, matching, bundle adjustment, sparse points, skew correction,
-Skyfall normalization capture and training on this new block have not run.
-Camera initialization is not a structure-from-motion result.
+### Isolated CPU runtime
+
+`scripts/setup-sfm-cpu.sh` builds ColmapForVisSat at
+`79a6d150714d0eb350a1b10e17bedf91877568a1` with Ceres 2.1 at
+`f68321e7de8929fbcdb95dd42877531e64f72f66`, installing only into
+`.toolchains/sfm-cpu`. Python dependencies use `.venv-sfm`. This path avoids the
+large container download and does not require GPU container passthrough.
+
+The build uses existing Ubuntu development packages: a C++ compiler, CMake,
+Boost, Eigen, FreeImage, glog/gflags, SQLite, GLEW/OpenGL and Qt5 development
+headers. The script does not install system packages. CUDA, OpenGL execution,
+CGAL and OpenMP are disabled. Explicit C/C++ standard-header includes and the
+local Ceres include directory handle the old source's compiler/build-system
+assumptions; source files remain unchanged.
+
+```bash
+bash scripts/setup-sfm-cpu.sh
+.venv-sfm/bin/python -m pipeline.reconstruct --output artifacts/imagery/sfm-new-run
+```
+
+Run from the TerraSplat root and choose a new output directory for each attempt.
+The runner checks source revisions, the recorded executable hash, matching
+selection hashes and approved acquisition roles. It verifies source RGB hashes,
+converts TIFF pixels to PNG without resampling, and copies full float64 cameras
+including skew. The May 2 holdout remains in a separate directory, outside the
+COLMAP image database.
+
+SIFT extraction and matching use CPU mode. The reconstruction follows upstream's
+32-pixel then 2-pixel triangulation/bundle-adjustment sequence, with its fixed
+extrinsics, principal-point refinement and point-constraint weight 0.01.
+Commands use checked subprocesses and individual logs. Failure or timeout leaves
+the attempt and its report for inspection; no failed command is hidden by a
+shell logging pipeline. Final reprojection errors are recomputed using the full
+camera matrix after BA. This is internal consistency evidence, not independent
+geographic accuracy validation.
+
+### Executed result
+
+The setup script completed on Ubuntu 24.04 with GCC 13.3 and CMake 4.3.2.
+All six reconstruction commands passed in each of two fresh run directories.
+The final verification run is `artifacts/imagery/sfm-2015-02`; its
+`reconstruction-report.json` records command lines, timings, input/executable
+hashes and final model hashes. [verified-result.json](verified-result.json)
+retains the compact result and report checksum.
+
+- All three training views registered; the database contains no holdout image.
+- Final run: **2,233 sparse points**, 4,931 observations; 1,768 two-view tracks
+  and 465 three-view tracks.
+- Recomputed final reprojection error: median **0.274 px**, p95 **1.341 px**,
+  maximum **2.056 px**. The 2 px triangulation filter precedes final BA and is
+  not a strict bound on residuals after that BA.
+- Principal-point changes are approximately −4.3 to +4.3 px. Fixed camera
+  extrinsics and skew remain unchanged within numeric roundoff; the original
+  ENU observer file is retained.
+- The first run produced 2,221 points, median 0.270 px and p95 1.299 px.
+  Multithreaded matching is not bit-identical; these runs establish successful
+  execution, not identical model bytes or independent geographic accuracy.
+
+Skew correction with a recorded image warp, Skyfall normalization capture,
+training, and independent placement/height validation are still pending.
+
+### Container attempt history
+
+This earlier container attempt did not execute. The isolated CPU path above
+subsequently completed sparse reconstruction, resolving the runtime blocker.
 
 The intended container is pinned to:
 
@@ -93,10 +155,9 @@ The intended container is pinned to:
 ghcr.io/jayin92/satellitesfm@sha256:3c64997c9b2b4de5cdcad6d24972768423845fd7691015af1e4771c84fade9a5
 ```
 
-The local Docker runtime currently exposes `runc` but no NVIDIA runtime. Do not
-assume GPU container passthrough works. A CPU SIFT execution path or configured
-NVIDIA Container Toolkit must be verified before the SfM run. The pinned image
-prefetch did not complete, and a second attempt ended at its 180-second limit.
+At that attempt the local Docker runtime exposed `runc` but no NVIDIA runtime;
+GPU container passthrough was unverified. The pinned image prefetch did not
+complete, and a second attempt ended at its 180-second limit.
 The image was not executed; the source-based RPC calibration above runs without
 it. No system runtime
 or GPU driver was changed by this preparation.
@@ -110,10 +171,13 @@ skew must not simply be dropped during Skyfall conversion.
 
 ```bash
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv-imagery/bin/python -m pytest tests/imagery -q
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv-sfm/bin/python -m pytest tests/sfm -q
 ```
 
 Tests cover crop geometry, metadata parsing, epoch gates, training-angle checks,
 whole-view holdouts, input budget/cache integrity, RPC-aligned RGB, acquisition
-matching and upstream camera metadata/observer conventions.
+matching and upstream camera metadata/observer conventions. The six SfM adapter
+tests also check unchanged pixels, role isolation, subprocess failures,
+skew-aware residuals and fixed-camera preservation.
 
 Source reference: [SatelliteSfM preprocessing](https://github.com/jayin92/SatelliteSfM/tree/908c61937f6a16d6e1d50e98898db997e5e257bd).
