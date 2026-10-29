@@ -1,0 +1,31 @@
+{
+  "block": "configs/jax068-block.json",
+  "max_span_days": 443,
+  "train_catalog_ids": [
+    "104001000209A800",
+    "1040010002A97700",
+    "1040010003371100",
+    "10400100031BC200",
+    "1040010004550F00",
+    "1040010005A0D800",
+    "10400100066B8E00",
+    "1040010007020F00",
+    "1040010006764E00",
+    "1040010007980900",
+    "1040010008037800",
+    "104001000AB24A00",
+    "104001000A1B5F00",
+    "104001000AB10600",
+    "104001000C22D200",
+    "104001000C478800",
+    "104001000E362D00",
+    "1040010013D78C00",
+    "1040010016BADB00"
+  ],
+  "holdout_catalog_ids": [
+    "104001000A22A000"
+  ],
+  "temporal_decision": "User approved using all usable 2014-2015 acquisitions for more views; the wider span includes seasonal and construction change; the appearance model handles lighting. May 2, 2015 remains the whole-acquisition holdout, excluded from SfM, training, pseudo views and setting choices.",
+  "satellitesfm_commit": "908c61937f6a16d6e1d50e98898db997e5e257bd",
+  "container": "ghcr.io/jayin92/satellitesfm@sha256:3c64997c9b2b4de5cdcad6d24972768423845fd7691015af1e4771c84fade9a5"
+}
