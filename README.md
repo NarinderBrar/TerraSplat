@@ -22,6 +22,7 @@ For the historical multi-view inputs and initial ENU cameras, see [SatelliteSfM 
 
 - [Plan v2](docs/PLAN_V2.md): selected 2015 pilot, reconstruction sequence, CesiumJS and the 6 GB GPU budget.
 - [Build plan](docs/PLAN.md): architecture, data contracts, implementation order, acceptance gates, and open decisions.
+- [Training findings](docs/TRAINING_FINDINGS.md): what improved heights across six runs, and the recommended setup for product training (about 15–20 views, authors' recipe).
 - [Research and compatibility notes](docs/RESEARCH.md): sources, local reference findings, and candidates to evaluate.
 - [Editable architecture diagram](docs/architecture.drawio): open in draw.io/diagrams.net. The desktop exporter was unavailable in the planning environment.
 

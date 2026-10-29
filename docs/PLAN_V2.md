@@ -164,6 +164,8 @@ Estimates are planning guesses, not measurements. Stack and layout follow PLAN.m
 
 ## 10. Next tasks
 
+Height experiments are condensed in [training findings](TRAINING_FINDINGS.md): view count is the main lever, and the authors' Stage 1 recipe helps only with many views (17 views: 2.36 → 1.38 m MAE; 5 views: no gain). Product training should target about 15–20 views per block.
+
 1. ~~Run measured one-block Skyfall-GS Stage 1 training~~ **Completed** on a copy of the verified prepared scene with `--eval`: 30,000 iterations, 102,543 splats, 214.9 MiB peak allocated tensor memory. Held-out May 2 PSNR 17.57 dB; training views 30.05–42.37 dB. See [the measured result](../training/RESULT_2015.md). The 6 GB GPU budget was not stressed.
 2. ~~Fuse/export the result with the captured transforms~~ **Completed**: 102,543 splats, fused render matches the trained model (≥105.9 dB), transform round trip 1.4e-9 m. See [the fused export](../training/RESULT_2015.md#fused-export). Splats extend past the block; the tiler must crop or flag border floaters.
 3. ~~Verify independent validation data~~ **Measured** against the DFC2019 JAX_068 lidar DSM (full coverage, WGS84 ellipsoidal heights, flight date unpublished): with no ground control, the surface sits 1.8 m off horizontally and within about 0.2–0.6 m vertically. The rendered-depth DSM has 99% completeness and 3.3 m registered MAE. See [the lidar check](../training/RESULT_2015.md#independent-lidar-check).
