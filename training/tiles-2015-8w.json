@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "status": "tiled",
+  "commands": [
+    ".venv-stage1/bin/python -m pipeline.tiling --export artifacts/stage1/pilot-2015-8w-01/export --output artifacts/tiles/pilot-2015-8w-01",
+    "node scripts/encode-tiles.mjs artifacts/tiles/pilot-2015-8w-01",
+    "npm run build && npx playwright test tests/pilot.browser.js"
+  ],
+  "profile": {
+    "version": 1,
+    "id": "jax068-2015-tiles-baseline",
+    "block_half_extent_m": 125,
+    "leaf_max_splats": 8192,
+    "extent_sigma": 3,
+    "max_opacity": 0.99,
+    "note": "Crop to the 250 m core block (the 20 m halo is training context only). Leaves hold full-resolution splats; parents hold moment-matched voxel merges capped at leaf_max_splats."
+  },
+  "inputs": {
+    "export_manifest_sha256": "c5c73d9e8dbcb543033588e0de6696cae4ea24baf7b2b11f7fd2ba7898bf2169",
+    "fused_ply_sha256": "037f4f5da900b5ff865f1b13a22a216835ad8cbf6fe70084bba749d673082a4e"
+  },
+  "outputs": {
+    "tile_plan_sha256": "48e8cd28c3b731b0b0310f3908371fa4d482c1270a3b22c08c0b0ee26e858ffe",
+    "tileset_sha256": "fc45d79a33a9f363c1b418f2773eee16926a4aadf050ce3f039de113d570e06b",
+    "glb_sha256": {
+      "r": "b5d5694d26283595498164c93b4ff9e5dee9c66301a37fb4d7ae7243a372891a",
+      "r0": "9a3328539520ba4c732c5e5dc5421c887eec86853c81a462cdb877cc4a0dcc1a",
+      "r00": "bf0706bad60341f1ddd93a3e22ccd6a48b3a52276f60724b38455f6ecb41b2b4",
+      "r01": "c1431a801c28ff4f293f5173132c2aa8e543b52e14760ab8637dda3ad86afede",
+      "r02": "f8dea6daecd4732b537aff79858e8cadd78b83957ba8e306c0d8a499849b7680",
+      "r03": "ae89b2cbfc6044edd54bff975d5dc28428f12b5729d40d723389176ea83245ae",
+      "r1": "4ae9a168fefe645ec3d54600732085d5bc398b5998f7fef1f9d49eb2fd951419",
+      "r10": "98a6c641a08b5fc93dafc843c61c907dd03b694fcbafe6ec3b5a247c92de2950",
+      "r11": "365318fcb8676046859ee6380720b7124b39195373f5b7d3ac0abb3b7f5d5f1c",
+      "r12": "4d6ae1164d12d6b3ccafb833153721d01b2ed343221160e28b1bad877bcf665e",
+      "r13": "a1ef398d08a2b3d235498cf60d7db62dc9ee34116b22e9e712276df8669469e5",
+      "r2": "7c93dd521941514aef6a4e185a9062b0c89e105931fa7bf9f1ddc32504d30888",
+      "r20": "1b8ef93230a905d53a742b4944100457eb4b3c02c2721bd7f609e35db655f4bd",
+      "r21": "88a40e75ed99fae43ef0ea42b202d0fca7e3b247bbd61eeda3b5afb91983ed76",
+      "r22": "24e05839628f894a14f97a1f255d150d9362a105d7377c47bfb8e26e61229e66",
+      "r23": "59110061ec65f29d87753c7a6f81291cc1e9ccd0847f06985eab6aa7bc981450",
+      "r3": "ff9815df90eb652096847f5c769d076a9be25d7211f985bd75df22ab12fbedb6",
+      "r30": "3ccc7a5fcb823441c658d66976e20201654a28be7831f54842374e03711a359f",
+      "r31": "d375ce39fdddc999b82b9afe4e8a70e473370115a7df68e73b4d4c8600ddfe39",
+      "r32": "da80f2fbb2dbbd40989b4135755f3ae03e6d1663ec9f8022cac56ce96d05e4e9",
+      "r33": "68127bc2ecbc5bd4f4d33f42d423143236100a7fe402be2846035e518619df1d"
+    }
+  },
+  "format": {
+    "tiles": "3D Tiles 1.1 + 3DTILES_content_gltf",
+    "content": "glTF KHR_gaussian_splatting + KHR_gaussian_splatting_compression_spz_2 (SPZ v2)",
+    "encoder": "TerraSplat tiler / @adobe/spz 0.2.3",
+    "sh_degree": 0,
+    "colour": "Mean 3DGS SH colour over the training camera directions, folded into DC"
+  },
+  "placement": {
+    "root_transform": "enu_to_ecef (column-major); model_to_enu (uniform scale 0.8863 + translation) baked into splats",
+    "enu_anchor": {
+      "latitude": 30.348819714393777,
+      "longitude": -81.66376056134547,
+      "ellipsoidal_height_m": -70
+    },
+    "axes": "payload in glTF Y-up (east, up, -north); bounding boxes in tile Z-up ENU"
+  },
+  "crop": {
+    "frame": "metric ENU square centred on the anchor",
+    "half_extent_m": 125,
+    "input_splats": 107464,
+    "owned_splats": 61857,
+    "removed_splats": 45607,
+    "owned_z_range_m": [
+      -27.905355612697235,
+      149.26838260396545
+    ],
+    "max_extent_m": 3110.965688261463,
+    "p99_extent_m": 49.75129698661153
+  },
+  "tree": {
+    "levels": 3,
+    "tiles": 21,
+    "tileset_geometric_error_m": 8413.859200428622,
+    "by_tile": [
+      {
+        "id": "r",
+        "parent": null,
+        "splats": 5682,
+        "geometric_error": 13.531646934131853,
+        "merge_voxel_m": 7.8125
+      },
+      {
+        "id": "r0",
+        "parent": "r",
+        "splats": 5248,
+        "geometric_error": 6.7658234670659265,
+        "merge_voxel_m": 3.90625
+      },
+      {
+        "id": "r00",
+        "parent": "r0",
+        "splats": 3848,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r01",
+        "parent": "r0",
+        "splats": 4336,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r02",
+        "parent": "r0",
+        "splats": 4925,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r03",
+        "parent": "r0",
+        "splats": 3651,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r1",
+        "parent": "r",
+        "splats": 4252,
+        "geometric_error": 6.7658234670659265,
+        "merge_voxel_m": 3.90625
+      },
+      {
+        "id": "r10",
+        "parent": "r1",
+        "splats": 3605,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r11",
+        "parent": "r1",
+        "splats": 3075,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r12",
+        "parent": "r1",
+        "splats": 3519,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r13",
+        "parent": "r1",
+        "splats": 3005,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r2",
+        "parent": "r",
+        "splats": 4603,
+        "geometric_error": 6.7658234670659265,
+        "merge_voxel_m": 3.90625
+      },
+      {
+        "id": "r20",
+        "parent": "r2",
+        "splats": 3562,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r21",
+        "parent": "r2",
+        "splats": 3912,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r22",
+        "parent": "r2",
+        "splats": 3359,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r23",
+        "parent": "r2",
+        "splats": 4179,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r3",
+        "parent": "r",
+        "splats": 4809,
+        "geometric_error": 6.7658234670659265,
+        "merge_voxel_m": 3.90625
+      },
+      {
+        "id": "r30",
+        "parent": "r3",
+        "splats": 4605,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r31",
+        "parent": "r3",
+        "splats": 3855,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r32",
+        "parent": "r3",
+        "splats": 4788,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r33",
+        "parent": "r3",
+        "splats": 3633,
+        "geometric_error": 0.311,
+        "merge_voxel_m": 0.0
+      }
+    ]
+  },
+  "size": {
+    "splats_all_tiles": 86451,
+    "glb_bytes": 1536040
+  },
+  "quantization_max": {
+    "position_m": 0.0001220703125,
+    "opacity": 0.001960823691876945,
+    "log_scale": 1.1965913772583008
+  },
+  "validation": {
+    "tiler_rules": "pipeline.tiling.validate_tree: finite attributes; non-zero, strictly decreasing geometric error; every splat centre plus 3 sigma inside its tile and all ancestors; leaves partition the owned splats",
+    "decoded_centres_inside_boxes": true,
+    "cesium_browser": {
+      "cesium": "1.146.0",
+      "renderer": "SwiftShader WebGL2",
+      "top_view_pixels_inside_block_square": 0.9133142763525842,
+      "block_square_coverage": 0.9856423012556128,
+      "far_view_8km_tiles": [
+        "r.glb"
+      ],
+      "near_view": "full-resolution leaves selected, root replaced",
+      "errors": 0,
+      "external_requests": 0
+    }
+  },
+  "limitations": [
+    "Footprint check compares the render with the recorded transform chain; it is not independent placement or height accuracy.",
+    "Top and oblique screenshots reviewed; needle-like splats and border streaks remain, especially obliquely.",
+    "Maximum 3 sigma extent is 3111 m (p99 49.8 m), so tile bounds remain loose.",
+    "SPZ v2 clamps large log scales to 5.9375; the source maximum 7.1341 produces a maximum log-scale error of 1.1966 (versus 0.0313 for three views).",
+    "The crop is an ENU square; the source block is a UTM square about 0.3 degrees rotated.",
+    "View-dependent SH is baked at the training directions; SH degree >= 1 awaits a verified Cesium SH convention.",
+    "No terrain is loaded; the viewer hides the globe or makes it translucent for the optional OpenStreetMap overlay."
+  ]
+}

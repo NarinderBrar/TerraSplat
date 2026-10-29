@@ -1,7 +1,7 @@
 import '../phase0/style.css';
 const C = window.Cesium;
 const status = document.querySelector('#status');
-const base = '/tiles/pilot-2015-04/';
+const base = '/tiles/pilot-2015-8w-01/';
 try {
   const plan = await fetch(`${base}tile-plan.json`).then(r => {
     if (!r.ok) throw new Error(`Tile plan HTTP ${r.status}`);

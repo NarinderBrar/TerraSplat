@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { existsSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 
-const tileset = new URL('../public/tiles/pilot-2015-04/tileset.json', import.meta.url);
+const tileset = new URL('../public/tiles/pilot-2015-8w-01/tileset.json', import.meta.url);
 
 test('2015 pilot tiles render inside the block footprint and refine by distance', async ({ page }, testInfo) => {
   test.skip(!existsSync(tileset), 'Pilot tiles are generated locally into artifacts/tiles');

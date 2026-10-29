@@ -269,8 +269,19 @@ Compact evidence is in [result-2015-8w.json](result-2015-8w.json).
   −0.82 m), versus within 0.2–0.6 m before. Absolute height still rests on
   RPCs without ground control.
 - The fused export round trip is 1.5e-9 m and the fused render matches the
-  trained model (≥101 dB). Tiles were not regenerated for this run; the
-  Cesium pilot still shows `pilot-2015-04`.
+  trained model (≥101 dB).
+
+The Cesium pilot now shows `pilot-2015-8w-01`; compact tile evidence is in
+[tiles-2015-8w.json](tiles-2015-8w.json). With the same tiling profile, 3 → 5
+views gives 17 → 21 tiles (both 3 levels), 36,722 → 61,857 owned splats and
+1.16 → 1.54 MB of glb content. Top-view inside fraction is 91.54% → 91.33%
+and block coverage is 99.07% → 98.56%. The browser test passes unchanged,
+including distance refinement, with no errors or external requests. Both
+screenshots were reviewed; oblique needle-like splats and border streaks
+remain. Large splats hit the SPZ v2 scale ceiling: maximum log-scale error
+is 1.197 versus 0.031 for three views (position error stays 0.12 mm). The
+footprint check tests the transform chain only, not independent placement
+or height accuracy.
 
 Next: depth supervision or more views from a wider window to push heights
 further; optionally record the horizontal offset as a separate, versioned
