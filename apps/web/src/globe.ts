@@ -7,7 +7,7 @@ import { groundPatches, heightmap } from './ground';
 
 declare global { interface Window { Cesium: typeof Cesium; terra?: Globe } }
 const C = window.Cesium;
-const PIN_NEAR_M = 4000, PIN_HIT_PX = 12;
+const PIN_NEAR_M = 4000, PIN_HIT_PX = 12, STATS_INTERVAL_MS = 100;
 
 function insideRing(lon: number, lat: number, ring: number[][]) {
   let inside = false;
@@ -39,6 +39,8 @@ export class Globe {
   private removeListeners: (() => void)[] = [];
   private hovered?: string;
   private lastStats = '';
+  private lastStatsAt = 0;
+  private statsTimer?: ReturnType<typeof setTimeout>;
   loadedUrls: string[] = [];
   constructor(container: HTMLElement, private onStats: (stats: MapStats) => void,
     private onHover: (text: string, x: number, y: number) => void,
@@ -54,6 +56,11 @@ export class Globe {
     scene.highDynamicRange = false;
     scene.backgroundColor = C.Color.fromCssColorString('#101a24');
     scene.globe.depthTestAgainstTerrain = false;
+    // The camera controller reads scene depth back from the GPU (pickPositionWorldCoordinates -> readPixels) on every
+    // drag and wheel event, stalling until the frame finishes: ~3 s in an 8 s profiled session. Without depth picking it
+    // intersects the globe on the CPU instead; zoom then aims at the ground under the cursor rather than a roof.
+    // Nothing else in the app uses pickPosition.
+    Object.defineProperty(scene, 'pickPositionSupported', { get: () => false });
     // Fallback for releases without a recorded ground height: their splats lie below the ellipsoid, so fade the
     // globe near the surface to keep them visible. setFootprints replaces this with ground terrain when it can.
     scene.globe.translucency.enabled = true;
@@ -87,11 +94,9 @@ export class Globe {
     const tasks = C.TaskProcessor as typeof C.TaskProcessor & { taskCompletedEvent: Cesium.Event };
     this.removeListeners.push(tasks.taskCompletedEvent.addEventListener(() => scene.requestRender()));
     this.removeListeners.push(scene.preRender.addEventListener(() => this.visible.clear()));
-    this.removeListeners.push(scene.postRender.addEventListener(() => {
-      const stats = this.stats();
-      const key = JSON.stringify(stats);
-      if (key !== this.lastStats) { this.lastStats = key; this.onStats(stats); }
-    }));
+    // Stats feed React state; emitting after every frame re-rendered the whole panel each frame.
+    // Emit at most every STATS_INTERVAL_MS, with a trailing update once movement stops.
+    this.removeListeners.push(scene.postRender.addEventListener(() => this.queueStats()));
     this.removeListeners.push(camera.changed.addEventListener(() => {
       scene.requestRender();
     }));
@@ -269,6 +274,17 @@ export class Globe {
     for (const t of [...this.indexes.values(), ...[...this.overrides.values()].flat()]) t.debugShowBoundingVolume = value;
     this.viewer.scene.requestRender();
   }
+  private queueStats() {
+    if (this.statsTimer || this.disposed) return;
+    const wait = Math.max(0, STATS_INTERVAL_MS - (performance.now() - this.lastStatsAt));
+    this.statsTimer = setTimeout(() => {
+      this.statsTimer = undefined;
+      if (this.disposed) return;
+      this.lastStatsAt = performance.now();
+      const stats = this.stats(), key = JSON.stringify(stats);
+      if (key !== this.lastStats) { this.lastStats = key; this.onStats(stats); }
+    }, wait);
+  }
   stats(): MapStats {
     const active = [...this.indexes.values(), ...[...this.overrides.values()].flat()].filter(t => t.show);
     return { loaded: active.reduce((n, t) => n + (this.loadedTiles.get(t)?.size ?? 0), 0), visible: this.visible.size,
@@ -283,7 +299,7 @@ export class Globe {
   }
 
   destroy() {
-    this.disposed = true; ++this.generation;
+    this.disposed = true; ++this.generation; clearTimeout(this.statsTimer);
     this.removeListeners.forEach(remove => remove()); this.handler.destroy(); this.viewer.destroy();
     if (window.terra === this) delete window.terra;
   }
