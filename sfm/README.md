@@ -1,6 +1,6 @@
 # SatelliteSfM handoff for the Jacksonville pilot
 
-Latest status (2026-10-29): the approved 2015 CORE3D pilot completed CPU sparse reconstruction, skew correction, Skyfall input conversion, measured Stage 1 training and holdout evaluation. The actual loader and GPU-enabled preflight pass; the trained run produced 102,543 splats with 214.9 MiB peak allocated tensor memory. See [the measured result](../training/RESULT_2015.md), [the training handoff](../training/PILOT.md) and [the revised plan](../docs/PLAN_V2.md). Fusion/export and Cesium 3D Tiles delivery are complete ([tiles](../training/RESULT_2015.md#3d-tiles-and-cesium)); an independent lidar check measured a 1.8 m horizontal offset, within about 0.2–0.6 m vertically ([details](../training/RESULT_2015.md#independent-lidar-check)). Recent imagery selection remains deferred.
+Latest status (2026-10-29): the approved 2015 CORE3D pilot completed CPU sparse reconstruction, skew correction, Skyfall input conversion, measured Stage 1 training and holdout evaluation. The actual loader and GPU-enabled preflight pass; the trained run produced 102,543 splats with 214.9 MiB peak allocated tensor memory. See [the measured result](../training/RESULT_2015.md), [the training handoff](../training/PILOT.md) and [the revised plan](../docs/PLAN_V2.md). Fusion/export and Cesium 3D Tiles delivery are complete ([tiles](../training/RESULT_2015.md#3d-tiles-and-cesium)); an independent lidar check measured a 1.8 m horizontal offset, within about 0.2–0.6 m vertically ([details](../training/RESULT_2015.md#independent-lidar-check)); [five training views](../training/RESULT_2015.md#five-training-views) cut height MAE from 3.3 m to 2.8 m. Recent imagery selection remains deferred.
 
 The approved pilot uses April 19–May 2, 2015: three training acquisitions and a
 separate May 2 holdout. No four-view group satisfied the initial seven-day
@@ -31,6 +31,8 @@ Individual stages are available as modules:
 .venv-imagery/bin/python -m pipeline.block_inputs artifacts/imagery/selection-14d.json artifacts/imagery/selected-sources.json --output artifacts/imagery/new-block
 OPENBLAS_NUM_THREADS=2 .venv-imagery/bin/python -m pipeline.satellite_sfm artifacts/imagery/selection-14d.json --output artifacts/imagery/new-calibration
 ```
+
+To check a fixed, approved view set instead of searching, pass `select --approved configs/jax068-pilot-8w.json`; the same per-view and group gates apply. That five-view set is about 9.2 GiB, so `pipeline.sources` needs `--max-total-gib 10`. The full five-view command sequence is in [result-2015-8w.json](../training/result-2015-8w.json).
 
 Each crop retains source pixels, metadata and the RPC model. The preparation
 step verifies actual NITF RPCs against their selected sidecars, including crop

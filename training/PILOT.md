@@ -106,4 +106,4 @@ PSNR and training views 30.05–42.37 dB. Those are masked appearance metrics, n
 height or placement accuracy. See [the result](RESULT_2015.md) for the full
 table, hashes and limitations. The basic Stage 1 restrictions still apply: IDU
 and pseudo-depth modes are disabled. Fusion/export preserving the recorded placement
-is complete ([fused export](RESULT_2015.md#fused-export)), and so is [3D Tiles delivery in CesiumJS](RESULT_2015.md#3d-tiles-and-cesium); an [independent lidar check](RESULT_2015.md#independent-lidar-check) measured a 1.8 m horizontal offset, within about 0.2–0.6 m vertically.
+is complete ([fused export](RESULT_2015.md#fused-export)), and so is [3D Tiles delivery in CesiumJS](RESULT_2015.md#3d-tiles-and-cesium); an [independent lidar check](RESULT_2015.md#independent-lidar-check) measured a 1.8 m horizontal offset, within about 0.2–0.6 m vertically, and [five training views](RESULT_2015.md#five-training-views) cut height MAE from 3.3 m to 2.8 m.

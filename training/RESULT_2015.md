@@ -232,7 +232,47 @@ unregistered.
   Skyfall's published numbers.
 - The lidar date is unknown, so some disagreement may be scene change.
 
-Next: optionally record the 1.8 m horizontal offset as a separate, versioned
+## Five training views
+
+Two more acquisitions were added to test whether more viewing angles improve
+heights. [jax068-pilot-8w.json](../configs/jax068-pilot-8w.json) widens the
+window to April 19–June 15, 2015 (57 days) and adds May 21 (5.9° off nadir)
+and June 15 (11.1°). May 14 fails the 10% cloud gate. The May 2 holdout and
+all Stage 1 settings
+([train-2015-pilot-8w.json](../configs/train-2015-pilot-8w.json)) are
+unchanged, so the run compares directly with `pilot-2015-04`. Selection uses
+`acquisitions select --approved`, which applies the same coverage, cloud,
+time-window and angle gates to a named view set. The six RGB crops were
+reviewed by eye: same cloud-free block, varying lighting and vehicles.
+Compact evidence is in [result-2015-8w.json](result-2015-8w.json).
+
+| | 3 views (`pilot-2015-04`) | 5 views (`pilot-2015-8w-01`) |
+| --- | ---: | ---: |
+| Sparse points (median / p95 residual) | 2,233 (0.27 / 1.34 px) | 5,618 (0.31 / 1.37 px) |
+| Splats | 102,543 | 107,464 |
+| Holdout May 2 PSNR | 17.57 dB | 17.73 dB |
+| Training-view PSNR | 30.1–42.4 dB | 24.0–38.1 dB |
+| Lidar, registered MAE, all labelled | 3.32 m | **2.82 m** |
+| ground / buildings / vegetation | 2.93 / 3.70 / 3.75 m | 2.77 / 2.87 / 2.78 m |
+| Registered RMSE / NMAD | 5.04 / 2.99 m | 4.17 / 2.82 m |
+| Horizontal offset from lidar | 1.8 m (1.5 W, 1.0 S) | 1.6 m (1.5 W, 0.5 N) |
+| Unregistered median height error | −0.19 m | −0.92 m |
+| Completeness (rendered depth) | 99% | 99.6% |
+
+- Heights improved most on buildings (−22% MAE) and vegetation; ground
+  barely changed. Building outlines are visibly sharper in the DSM, though
+  roof errors of several metres remain.
+- Holdout PSNR barely moved. Training-view PSNR fell because five dates
+  without an appearance model cannot each be fitted exactly; that is less
+  overfitting, not a regression.
+- The surface now sits about 0.8–0.9 m low before registration (dsmr offset
+  −0.82 m), versus within 0.2–0.6 m before. Absolute height still rests on
+  RPCs without ground control.
+- The fused export round trip is 1.5e-9 m and the fused render matches the
+  trained model (≥101 dB). Tiles were not regenerated for this run; the
+  Cesium pilot still shows `pilot-2015-04`.
+
+Next: depth supervision or more views from a wider window to push heights
+further; optionally record the horizontal offset as a separate, versioned
 georeference adjustment (it would then no longer be independent of this
-lidar), improve height quality with more views or depth supervision, and
-scale to more blocks.
+lidar); then scale to more blocks.
