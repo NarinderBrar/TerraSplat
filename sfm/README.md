@@ -1,6 +1,6 @@
 # SatelliteSfM handoff for the Jacksonville pilot
 
-Latest status (2026-10-29): the approved 2015 CORE3D pilot completed CPU sparse reconstruction, skew correction and Skyfall input conversion. The actual loader and GPU-enabled preflight pass; measured Stage 1 training is next. See [the training handoff](../training/PILOT.md) and [the revised plan](../docs/PLAN_V2.md). Recent imagery selection remains deferred.
+Latest status (2026-10-29): the approved 2015 CORE3D pilot completed CPU sparse reconstruction, skew correction, Skyfall input conversion, measured Stage 1 training and holdout evaluation. The actual loader and GPU-enabled preflight pass; the trained run produced 102,543 splats with 214.9 MiB peak allocated tensor memory. See [the measured result](../training/RESULT_2015.md), [the training handoff](../training/PILOT.md) and [the revised plan](../docs/PLAN_V2.md). Fusion/export and independent geographic validation remain. Recent imagery selection remains deferred.
 
 The approved pilot uses April 19–May 2, 2015: three training acquisitions and a
 separate May 2 holdout. No four-view group satisfied the initial seven-day

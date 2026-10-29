@@ -1,10 +1,11 @@
 # 2015 pilot: verified Skyfall inputs
 
-The approved April 19–May 2, 2015 Jacksonville block is prepared for measured
-Stage 1 training. Skew correction, explicit normalization, the real Skyfall
-loader and GPU-enabled preflight have passed. Training on this block has not
-started. This is a historical demonstration; independent geographic accuracy
-has not been validated.
+The approved April 19–May 2, 2015 Jacksonville block is prepared and measured
+Stage 1 training has completed. Skew correction, explicit normalization, the
+real Skyfall loader, GPU-enabled preflight, a 30,000-iteration training run and
+holdout evaluation have passed. See [the measured result](RESULT_2015.md). This
+is a historical demonstration; independent geographic accuracy has not been
+validated.
 
 The current scene is `artifacts/imagery/skyfall-2015-02`.
 [pilot-verified.json](pilot-verified.json) records the result and artifact hashes.
@@ -96,7 +97,13 @@ existing loader behavior.
   forward/backward checks passed, as did GPU-enabled scene preflight.
 
 These are numerical consistency and execution checks. They do not establish
-surveyed placement, training quality or GPU rendering precision on this scene.
-Next run measured Stage 1 training on a fresh copy, preserve the georeference
-through checkpoints/export, and measure memory and holdout results. Keep the
-existing basic Stage 1 restrictions: IDU and pseudo-depth modes disabled.
+surveyed placement or training quality on this scene.
+
+Measured Stage 1 training and evaluation have now completed on a fresh copy of
+the prepared inputs. The 30,000-iteration run produced 102,543 splats with
+214.9 MiB peak allocated tensor memory; the held-out May 2 view scored 17.57 dB
+PSNR and training views 30.05–42.37 dB. Those are masked appearance metrics, not
+height or placement accuracy. See [the result](RESULT_2015.md) for the full
+table, hashes and limitations. The basic Stage 1 restrictions still apply: IDU
+and pseudo-depth modes are disabled. The next step is fusion/export preserving
+the recorded placement, then tiling and Cesium delivery.

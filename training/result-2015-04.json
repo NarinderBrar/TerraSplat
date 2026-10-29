@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "status": "measured-training-complete",
+  "completed": "2026-10-29",
+  "run_directory": "artifacts/stage1/pilot-2015-04",
+  "environment": {
+    "python": "3.10.20",
+    "torch": "2.7.1+cu128",
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "gpu_bytes": 6088359936
+  },
+  "profile": {
+    "id": "jax068-2015-stage1-baseline",
+    "iterations": 30000,
+    "warmup_iterations": 1000,
+    "resolution": 2,
+    "sh_degree": 2,
+    "convert_sh_python": true,
+    "densify_from_iter": 1000,
+    "densify_until_iter": 20000,
+    "densification_interval": 100,
+    "max_gaussians": 200000
+  },
+  "catalog_ids": {
+    "train": [
+      "104001000A1B5F00",
+      "104001000AB10600",
+      "104001000AB24A00"
+    ],
+    "holdout": [
+      "104001000A22A000"
+    ]
+  },
+  "training": {
+    "status": "trained",
+    "final_splats": 102543,
+    "elapsed_seconds": 541.081,
+    "peak_allocated_bytes": 225390592,
+    "peak_allocated_mib": 214.9,
+    "peak_reserved_bytes": 358612992,
+    "peak_reserved_mib": 342.0,
+    "sampled_device_used_bytes": 564396032,
+    "sampled_device_used_mib": 538.2,
+    "checkpoint_resume_verified": true,
+    "phases": [
+      {
+        "target": 1000,
+        "returncode": 0,
+        "splats": 2233,
+        "sha256": {
+          "chkpnt1000.pth": "46e7297d8b0078c0416965061b396e0898dce3935fb2b43718cb90c58a8b1a00",
+          "chkpnt1000.pth.training-state.pth": "2e589c556fd00a14e5c32bfd175faf6a86af6a712420319c3516d20c37374505",
+          "point_cloud/iteration_1000/point_cloud.ply": "7efa777b595c53f42e6bd92e43049ae18685abd1244bb344a9d9257fd137a913"
+        },
+        "schedule": {
+          "start_iteration": 0,
+          "target_iteration": 1000,
+          "position_lr_max_steps": 30000,
+          "densify_from_iter": 1000,
+          "densify_until_iter": 20000
+        }
+      },
+      {
+        "target": 30000,
+        "returncode": 0,
+        "splats": 102543,
+        "sha256": {
+          "chkpnt30000.pth": "98f912d871a9df44202e2795f4b1a438b9bf8a5c1ec77cf7ae5368652e9e5eb1",
+          "chkpnt30000.pth.training-state.pth": "f1c447c6345534cd23174e634f18c78d17547c95ac37ef505e035c72169d2d88",
+          "point_cloud/iteration_30000/point_cloud.ply": "c7ca16b8fbd8491dce59aa4dfc415fa23391476969a72c40f8a04882726b0f57"
+        },
+        "schedule": {
+          "start_iteration": 1000,
+          "target_iteration": 30000,
+          "position_lr_max_steps": 30000,
+          "densify_from_iter": 1000,
+          "densify_until_iter": 20000
+        }
+      }
+    ]
+  },
+  "hashes": {
+    "profile_sha256": "8413da58bc6aef343c8eb11c168cdbb63f681685ba0e8a34e7c55e978a9a73b6",
+    "runner_sha256": "d911c52105890f76df2bcec17162166ec46bcaf02ce73e367159b25891376e46",
+    "adapter_sha256": "139472b44487e310f1739ad5d0bfab37b9083b646794ad34dc762956cac98089",
+    "input_manifest_sha256": "5b48bc4fd5edc23ef13a7699811199886457ad2a8b36143200abfebee21a61e8",
+    "georeference_sha256": "aad5350a14525e79098d85ba3a5aa00ad8df0416b29e3d35d7035ab41445e0a4",
+    "metrics_sha256": "c8cd51e16ea50643ecf23ba74f81570a4175ddc4d238c6276f26395e8dadada5",
+    "initial_ply_sha256": "beede5661f008570e3ae1d68fd279b72b3cab954f15676f23cc032fe92e43dd1",
+    "evaluation_report_sha256": "79b68efa65811a6c16b14d50d71e1d665e5ab01ec43dea0341f47d2c75236e93",
+    "comparison_png_sha256": "341b4df90e7e075e50eb774ddec1037c881e96a426bd40538f182ba4e31b4ea1"
+  },
+  "evaluation": {
+    "status": "evaluated",
+    "resolution_factor": 2,
+    "metric_definition": "MSE/MAE over RGB samples at valid mask pixels; PSNR uses unit-range colors and a 1e-12 MSE floor",
+    "holdout_used_for_training_or_selection": false,
+    "independent_geographic_accuracy_validated": false,
+    "renders": {
+      "initial": [
+        {
+          "role": "train",
+          "catalog_id": "104001000AB24A00",
+          "valid_pixels": 295065,
+          "mse": 0.028931311549271494,
+          "mae": 0.13172240793592022,
+          "psnr_db": 15.38631877942052,
+          "alpha_coverage_above_0_01": 1.0,
+          "mean_alpha": 0.9850083589553833
+        },
+        {
+          "role": "train",
+          "catalog_id": "104001000A1B5F00",
+          "valid_pixels": 306906,
+          "mse": 0.03231634473316193,
+          "mae": 0.14432402485603316,
+          "psnr_db": 14.905777676991947,
+          "alpha_coverage_above_0_01": 1.0,
+          "mean_alpha": 0.9837934970855713
+        },
+        {
+          "role": "train",
+          "catalog_id": "104001000AB10600",
+          "valid_pixels": 281707,
+          "mse": 0.03338660496048147,
+          "mae": 0.13496404717522173,
+          "psnr_db": 14.764277415294412,
+          "alpha_coverage_above_0_01": 1.0,
+          "mean_alpha": 0.9823485612869263
+        },
+        {
+          "role": "holdout",
+          "catalog_id": "104001000A22A000",
+          "valid_pixels": 339489,
+          "mse": 0.03228072467951871,
+          "mae": 0.14028382070715692,
+          "psnr_db": 14.910567242354869,
+          "alpha_coverage_above_0_01": 1.0,
+          "mean_alpha": 0.9746748805046082
+        }
+      ],
+      "final": [
+        {
+          "role": "train",
+          "catalog_id": "104001000AB24A00",
+          "valid_pixels": 295065,
+          "mse": 5.795356756014982e-05,
+          "mae": 0.0028705291468782775,
+          "psnr_db": 42.36919824169806,
+          "alpha_coverage_above_0_01": 0.9999966109162388,
+          "mean_alpha": 0.7993822693824768
+        },
+        {
+          "role": "train",
+          "catalog_id": "104001000A1B5F00",
+          "valid_pixels": 306906,
+          "mse": 0.0007056036084245934,
+          "mae": 0.008658905651947156,
+          "psnr_db": 31.51439206908433,
+          "alpha_coverage_above_0_01": 1.0,
+          "mean_alpha": 0.7934138774871826
+        },
+        {
+          "role": "train",
+          "catalog_id": "104001000AB10600",
+          "valid_pixels": 281707,
+          "mse": 0.0009885813798607384,
+          "mae": 0.009329369589681984,
+          "psnr_db": 30.04987573826577,
+          "alpha_coverage_above_0_01": 1.0,
+          "mean_alpha": 0.73176109790802
+        },
+        {
+          "role": "holdout",
+          "catalog_id": "104001000A22A000",
+          "valid_pixels": 339489,
+          "mse": 0.017486747166279844,
+          "mae": 0.08456574536326238,
+          "psnr_db": 17.572909692016605,
+          "alpha_coverage_above_0_01": 0.9821702617757866,
+          "mean_alpha": 0.7675284743309021
+        }
+      ]
+    },
+    "output_sha256": {
+      "comparison.png": "341b4df90e7e075e50eb774ddec1037c881e96a426bd40538f182ba4e31b4ea1",
+      "final-104001000A1B5F00.png": "cc49316c419be68cfc853ce38d19b83df13d0d05d250743cced93f82938334ac",
+      "final-104001000A22A000.png": "29b85adaca0bb6e3a93b5d9e3607c46ff81e283692dc391e4c0fefea6a714113",
+      "final-104001000AB10600.png": "eb9d2754deefa54f2414016f2cce81f425b4498162875d5b9b3449bda9403fe9",
+      "final-104001000AB24A00.png": "627c58fa4d0e688775fd3ca3e0c980b8deba37ade4dc80880aa85f16055c7b4d",
+      "initial-104001000A1B5F00.png": "79c3fcc1b36ec03f002d268656790733f21f342d1940318956e2f968aba27d18",
+      "initial-104001000A22A000.png": "71df1665f0b902161809484baa9e1fdfbf3afd889f77769f25f5aee953c4ea15",
+      "initial-104001000AB10600.png": "a48c662a2ea546ed42e2f6cbb43f03e77af1c4ed112d3c6218b3281842a7c214",
+      "initial-104001000AB24A00.png": "b804954b9bff44e1b36a487dce68e4fa7b6d7d510f4f8c5f1937ae12f7b8d0cc"
+    }
+  },
+  "limitations": [
+    "Appearance metrics over held-out May 2 imagery are not independent height or placement accuracy evidence.",
+    "The holdout camera is the uncorrected RPC-derived camera, so its error includes cross-date camera/registration differences.",
+    "This is a basic Stage 1 configuration on one small block with a 6 GB laptop GPU, not the full published Skyfall recipe.",
+    "The raw PLY has not been fused/exported, tiled, or validated in Cesium; geographic accuracy of georeference.json remains unverified.",
+    "The opacity-reset clamp avoids nonfinite logits but does not establish calibrated opacity."
+  ]
+}

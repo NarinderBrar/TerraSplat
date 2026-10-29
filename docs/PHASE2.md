@@ -1,15 +1,17 @@
 # Phase 2: one-block reconstruction
 
 Status: started. Prepared-input preflight, explicit coordinate-transform
-preservation, isolated Stage 1 training, and raw RPC-aware crop tooling are
-implemented. The approved 13-day pilot now has three training RGB views, one
-holdout and RPC-derived initial cameras with a preserved ENU origin. See
-[SatelliteSfM handoff](../sfm/README.md). CPU feature matching, bundle adjustment
-and sparse reconstruction now pass using an isolated native runtime. The final
-verification run produced 2,233 points with median reprojection error 0.274 px
-and p95 1.341 px. Skew correction, explicit normalization, the actual Skyfall
-loader and GPU-enabled prepared-input preflight now pass; see [the training
-handoff](../training/PILOT.md). The raw-imagery-to-tiles pipeline has not run.
+preservation, isolated Stage 1 training, holdout evaluation, and raw RPC-aware
+crop tooling are implemented. The approved 13-day pilot now has three training
+RGB views, one holdout and RPC-derived initial cameras with a preserved ENU
+origin. See [SatelliteSfM handoff](../sfm/README.md). CPU feature matching,
+bundle adjustment and sparse reconstruction now pass using an isolated native
+runtime. The final verification run produced 2,233 points with median
+reprojection error 0.274 px and p95 1.341 px. Skew correction, explicit
+normalization, the actual Skyfall loader, GPU-enabled prepared-input preflight,
+a 30,000-iteration Stage 1 run and holdout evaluation now pass; see [the
+training handoff](../training/PILOT.md) and [the measured result](../training/RESULT_2015.md).
+Fusion/export and the raw-imagery-to-tiles pipeline have not run.
 Phase 1's existing-scene conversions remain incomplete; Phase 0 is committed and
 pushed. The user explicitly confirmed proceeding directly to Phase 2.
 
@@ -19,7 +21,7 @@ The user confirmed on 2026-10-29 that we will use the 2015 data. Complete the ap
 
 Recent imagery selection is deferred and does not block training on this historical pilot. Before a future current-city release, qualify recent imagery and date-compatible independent validation using [PLAN_V2.md §5](PLAN_V2.md#5-imagery-details).
 
-The [29 October qualification report](../imagery/qualification/2026-10-29/README.md) preserves the earlier free-source search and its unresolved recent-input gate. The subsequent 2015 decision led to successful sparse reconstruction and a verified Skyfall input handoff. Full training is still unexecuted and is the next work.
+The [29 October qualification report](../imagery/qualification/2026-10-29/README.md) preserves the earlier free-source search and its unresolved recent-input gate. The subsequent 2015 decision led to successful sparse reconstruction, a verified Skyfall input handoff and measured Stage 1 training with holdout evaluation. The next work is fusion/export preserving placement, then tiling.
 
 ## Run the implemented checks
 
@@ -124,9 +126,9 @@ Local reports are ignored by Git.
 
 ## Remaining Phase 2 work
 
-1. Run measured Stage 1 training within the GPU budget on a fresh copy of the prepared inputs, requiring `--eval` and retaining the normalization/placement record.
-2. Verify independent validation for the historical pilot, including reference capture dates, coverage and vertical datum; document any epoch/unchanged-area limitation.
-3. Fuse/export the trained scene with its geographic transforms, then verify placement and quality before expanding coverage.
+1. ~~Run measured Stage 1 training~~ **Completed** on a fresh copy with `--eval`: 102,543 splats, 214.9 MiB peak allocated tensor memory, held-out May 2 PSNR 17.57 dB. See [the measured result](../training/RESULT_2015.md). This is appearance evidence, not independent accuracy.
+2. Fuse/export the trained scene with its geographic transforms, then verify placement and quality before expanding coverage.
+3. Verify independent validation for the historical pilot, including reference capture dates, coverage and vertical datum; document any epoch/unchanged-area limitation.
 
 The 2015 block is the active reconstruction milestone. Recent source qualification is deferred; the completed demonstration must be described as historical.
 

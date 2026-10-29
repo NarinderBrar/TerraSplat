@@ -7,7 +7,8 @@ ignored by Git.
 
 The [2015 pilot handoff](PILOT.md) now has deskewed images, source-derived masks,
 explicit normalization and a verified three-train/one-holdout loader contract.
-See [its verified result](pilot-verified.json). Full training on that block is next.
+See [its verified result](pilot-verified.json). Measured Stage 1 training and
+holdout evaluation completed on that block; see [the measured result](RESULT_2015.md).
 
 ## Setup
 
@@ -44,13 +45,19 @@ Skyfall is pinned to `73194842a404910c5bbff006359eedfc56a98d60`. The preparation
 script clones tracked source, not the reference project's datasets. It checks
 the commit and refuses to overwrite unexpected changes to the patched training files.
 
-Three patches are applied only to `.external/skyfall-gs`:
+The preparation script applies three patches only to `.external/skyfall-gs`:
 
 - `adapters/skyfall/stage1-only.patch` removes unconditional MoGe/FlowEdit imports
-  and the global MoGe model load, rejects IDU and nonzero pseudo-depth loss, and
-  resizes masks and depth to match downsampled images, and reports peak allocated
-  GPU memory. Reconstruction, rasterization and gradients
-  still use Skyfall's Stage 1 implementation.
+  and the global MoGe model load, rejects IDU and nonzero pseudo-depth loss,
+  resizes masks and depth to match downsampled images, records bounded-run
+  metrics, preserves the requested learning-rate/densification schedule across
+  resume, clamps opacity logits after `reset_opacity` to avoid inverse-sigmoid
+  endpoints, checks opacity finiteness, and reports peak allocated GPU memory.
+  Reconstruction, rasterization and gradients still use Skyfall's Stage 1
+  implementation.
+- `adapters/skyfall/stage1-basic.patch` is the earlier, smaller adapter. It is
+  retained only so the preparation script can detect an already-patched legacy
+  checkout and upgrade it to `stage1-only.patch`; new checkouts do not apply it.
 - `adapters/skyfall/rasterizer-cstdint.patch` adds the rasterizer's missing
   standard integer header for the compiler used here.
 - `adapters/skyfall/prepared-enu.patch` verifies prepared payload hashes,

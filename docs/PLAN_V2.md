@@ -55,7 +55,7 @@ Record this chain in `georeference.json` (see PLAN.md §5). For the historical b
 
 ### Active historical pilot
 
-Use the existing 250 m block with a 20 m halo, three training acquisitions (April 19, April 26 and May 1, 2015), and the May 2 holdout. Crops, RGB preparation, RPC-derived cameras, CPU sparse reconstruction, deskewing and Skyfall conversion are complete. The actual loader and GPU-enabled preflight pass. Next run measured Stage 1 training, preserving the ENU origin and pixel/normalization transforms. Keep the holdout out of calibration and fitting.
+Use the existing 250 m block with a 20 m halo, three training acquisitions (April 19, April 26 and May 1, 2015), and the May 2 holdout. Crops, RGB preparation, RPC-derived cameras, CPU sparse reconstruction, deskewing, Skyfall conversion, measured Stage 1 training and holdout evaluation are complete. The actual loader and GPU-enabled preflight pass. The run preserved the ENU origin and pixel/normalization transforms, and the holdout stayed out of calibration and fitting. See [the measured result](../training/RESULT_2015.md). Next fuse/export preserving placement, then tile and validate independently.
 
 ### Recent imagery qualification — deferred
 
@@ -153,7 +153,7 @@ Semantics as tiles: start with a 3D Tiles voxel tileset rendered by Cesium `Voxe
 | --- | --- | --- |
 | 0 | Pin CesiumJS, SPZ and extension versions; tiny test glb renders with correct placement, scale and orientation | days |
 | 1 | Historical benchmark: convert TerraScope's 12 registered scenes to 3D Tiles; view on the Cesium globe | 1–2 weeks |
-| 2 | Complete the approved 2015 one-block pipeline with its ENU anchor preserved, measured Stage 1 training, export and independent validation | 2–4 weeks; runtime and validation prerequisites remain |
+| 2 | Complete the approved 2015 one-block pipeline with its ENU anchor preserved, measured Stage 1 training, export and independent validation | 2–4 weeks; export and independent validation remain |
 | 3 | All blocks of the 1 km² AOI; no seams or doubled opacity between tiles or LOD levels | 2–3 weeks |
 | 4 | Semantic voxel tiles + query API | 2–3 weeks |
 | 5 | Job runner (resume/retry), versioned releases, catalogue UI | 3+ weeks |
@@ -162,12 +162,12 @@ Estimates are planning guesses, not measurements. Stack and layout follow PLAN.m
 
 ## 10. Next tasks
 
-1. Run measured one-block Skyfall-GS Stage 1 training on a copy of the verified prepared scene, requiring `--eval`, preserving normalization and checkpoints, and measuring the 6 GB GPU budget.
-2. Verify independent validation data for the pilot's capture epoch, coverage and vertical datum. Document any unchanged-area or time-gap limitation.
-3. Fuse/export the result with the captured ENU-to-model and model-to-ECEF transforms, then verify placement and quality.
+1. ~~Run measured one-block Skyfall-GS Stage 1 training~~ **Completed** on a copy of the verified prepared scene with `--eval`: 30,000 iterations, 102,543 splats, 214.9 MiB peak allocated tensor memory. Held-out May 2 PSNR 17.57 dB; training views 30.05–42.37 dB. See [the measured result](../training/RESULT_2015.md). The 6 GB GPU budget was not stressed.
+2. Fuse/export the result with the captured ENU-to-model and model-to-ECEF transforms, then verify placement and quality.
+3. Verify independent validation data for the pilot's capture epoch, coverage and vertical datum. Document any unchanged-area or time-gap limitation.
 4. View the historical tiles in CesiumJS before scale-up.
 
-Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation, RPC-derived initial cameras, CPU matching/bundle adjustment/sparse reconstruction, deskewing and the verified Skyfall handoff. The sparse model has 2,233 points with median residual 0.274 px and p95 1.341 px. Its explicit three-train/one-holdout split, masks and normalization pass the real loader; independent geographic accuracy remains unverified. Full training remains unexecuted. The prepared Skyfall JAX_068 diagnostic is separate from this raw-imagery block.
+Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation, RPC-derived initial cameras, CPU matching/bundle adjustment/sparse reconstruction, deskewing, the verified Skyfall handoff, measured Stage 1 training and holdout evaluation. The sparse model has 2,233 points with median residual 0.274 px and p95 1.341 px. Its explicit three-train/one-holdout split, masks and normalization pass the real loader; independent geographic accuracy remains unverified. Training quality is appearance-only and the raw PLY is not yet fused/exported. The prepared Skyfall JAX_068 diagnostic is separate from this raw-imagery block.
 
 ## Sources
 
