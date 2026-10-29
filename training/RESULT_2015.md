@@ -105,13 +105,70 @@ use. Compact evidence: [export-2015-04.json](export-2015-04.json).
   the nominal 145 m half-extent (250 m block plus 20 m halo); the
   opacity-weighted p95 radius is 224 m. Floaters at the image borders spread
   beyond the block, so the tiler must crop or flag them.
-- The tileset root transform is `model_to_ecef` in column-major order, stored
-  in the manifest. Splats stay in Skyfall's Z-up model frame; the tiler owns
-  any glTF Y-up conversion and must apply it exactly once.
+- The manifest records `model_to_ecef` (column-major) as one valid root
+  transform. The tiler below uses the equivalent rigid form instead.
 - Tiler rules: `REPLACE` refinement only. Child geometric error is non-zero
   and strictly below the parent's. Every tile and all its ancestors must
   contain each splat's centre plus about 3σ of its extent. Placement uses
   `root.transform`, not `CESIUM_RTC`.
 
-Next milestone: crop to the block, tile into `KHR_gaussian_splatting` + SPZ
-3D Tiles and check placement in CesiumJS.
+## 3D Tiles and Cesium
+
+```
+python -m pipeline.tiling --export artifacts/stage1/pilot-2015-04/export --output artifacts/tiles/pilot-2015-04
+node scripts/encode-tiles.mjs artifacts/tiles/pilot-2015-04
+npm run build && npx playwright test tests/pilot.browser.js
+```
+
+Run the planner with `.venv-stage1/bin/python`, which has `plyfile`. The
+generated tiles stay in `artifacts/tiles/`; `public/tiles/` links them for
+`pilot.html`. Compact evidence: [tiles-2015-04.json](tiles-2015-04.json).
+
+- Placement: `model_to_enu` (uniform scale 0.8514 plus translation, no
+  rotation) is baked into the splats, so tile content is metric ENU and
+  `root.transform = enu_to_ecef` stays rigid. This is mathematically the same
+  as `model_to_ecef`, but it avoids relying on Cesium to scale splat
+  covariances through a non-rigid root transform. Payloads use glTF Y-up axes
+  (east, up, −north); a unit test checks that positions and covariances
+  rotate exactly.
+- Crop: an ENU square of ±125 m around the anchor keeps 36,722 of 102,543
+  splats. The rest are outside the core block, either on ground the training
+  crops covered beyond the block or as border floaters.
+- Tree: 17 tiles in 3 levels, an adaptive quadtree with at most 8,192 splats
+  per tile. Leaves hold the full-resolution splats; parents hold
+  moment-matched voxel merges. Geometric error is 13.5 m at the root, 3.4 or
+  1.7 m at merged quadrants and 0.335 m (1 GSD) at the leaves. The tileset
+  error is the root box diagonal (696 m), the error of drawing nothing.
+- Encoding: SPZ v2 inside `KHR_gaussian_splatting` glb files, the Phase 0
+  profile, now shared through `scripts/lib/splat-glb.mjs`. The fixture output
+  is unchanged. 64,511 splats across all levels take 1.16 MB. Maximum
+  quantization error is 0.12 mm in position, 0.002 in opacity and 0.031 in
+  log scale. Decoded centres stay inside their tile boxes.
+- Colour: SH degree 0. The view-dependent SH is folded into the base colour
+  as the mean colour over the three training directions. Higher-degree SH
+  awaits a verified Cesium SH convention.
+- Validation: `validate_tree` enforces the tiler rules. `3d-tiles-validator`
+  0.6.1 reports no tileset-structure issues. Its 17 errors are all content
+  errors: it does not support `KHR_gaussian_splatting` and rejects that
+  extension's attribute names, which the Phase 0 fixture also uses.
+- Cesium 1.146.0, headless browser with SwiftShader: no errors and no
+  external requests. From the top view, 91.5% of rendered pixels fall inside
+  the projected 250 m block square and 99.1% of the square is covered, with
+  north up and buildings matching the source imagery. From 8 km only the
+  merged root draws; close up, it is replaced by full-resolution leaves.
+
+Limitations:
+- The footprint check compares the render with the recorded transform chain;
+  it is not independent placement or height accuracy.
+- Oblique views show needle-shaped splats along the satellite view rays,
+  because three views constrain height poorly. This is not a tiler defect.
+- About 10k of the owned splats reach more than 10 m (3σ), so tile bounds are
+  loose.
+- The crop is an ENU square, while the source block is a UTM square rotated
+  by about 0.3°. Multi-block seams will need a shared ownership grid.
+- The ground lies about 17 m below the ellipsoid and no terrain is loaded,
+  so `pilot.html` hides the globe, or makes it translucent for the optional
+  OpenStreetMap overlay.
+
+Next: independent placement and height validation against date-compatible
+reference data, then scaling to more blocks.

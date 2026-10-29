@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "status": "tiled",
+  "commands": [
+    "python -m pipeline.tiling --export artifacts/stage1/pilot-2015-04/export --output artifacts/tiles/pilot-2015-04",
+    "node scripts/encode-tiles.mjs artifacts/tiles/pilot-2015-04",
+    "npm run build && npx playwright test tests/pilot.browser.js"
+  ],
+  "profile": {
+    "version": 1,
+    "id": "jax068-2015-tiles-baseline",
+    "block_half_extent_m": 125,
+    "leaf_max_splats": 8192,
+    "extent_sigma": 3,
+    "max_opacity": 0.99,
+    "note": "Crop to the 250 m core block (the 20 m halo is training context only). Leaves hold full-resolution splats; parents hold moment-matched voxel merges capped at leaf_max_splats."
+  },
+  "inputs": {
+    "export_manifest_sha256": "57256537b1b8cfc665ced12cf683bc7636fb933b30e971f2132f7043657cf02b",
+    "fused_ply_sha256": "b2d5b9a58bb974b6d627636eb77b57179cab2fede2317939ac9ab771fd04dd7a"
+  },
+  "outputs": {
+    "tile_plan_sha256": "e142c14e8e5b0dd259e2dcf3c9247a50dc83b36350808c20ce9fcd28e02cbc2a",
+    "tileset_sha256": "4080d96620b625e7f9fd18c870ee1cc49327f06bb9037f02539b8c390cdd51d6",
+    "glb_sha256": {
+      "r": "5174c22a0808abf721de602f7efbba09d1ec78c05c7f9785f4bff1bd5940b2f0",
+      "r0": "7f19fc811ecde9520e5e9756d0c726672af6ebb3b8cd984964cf3f5b7e3ba043",
+      "r00": "b479ec62e0b4d9097b911b50f042b44e8e98b8f2c54d28851410b537c8c06602",
+      "r01": "410d3820e76e171e0710cc794acac035da0ce23961d36be739940db361ce5f13",
+      "r02": "4e04ad9c02b13611dd1bceb7fce24129b5a2802abaf28ad1592d8ecb6ddf7cfd",
+      "r03": "cd418f2bdf72848b5dbaf1fb98d1bb8992d95bf064833dd1a844ec93a209a299",
+      "r1": "99dd467cd50b87be0860524549aca8faa1db40d17eb7980b1d64c0291729483d",
+      "r2": "81859fd4531c7971e52be5a68d3201c3314e8d9bd11c96c2a8fb5503e2c4abc9",
+      "r20": "7886c31c35561c8d6ef75d964fa9cfa550e56cdf567adf382ff9dcfa240997b1",
+      "r21": "8f264d886b507de79ebaf931d7c12b3ae4f25dddcf436b7955268914350d41cb",
+      "r22": "b493adebbff0292d9720a4fffa42043a6b72b3af640ac18892fb4283937c876b",
+      "r23": "e4ef65b9a724f5636cf250ec4670eb14de702c132b40a69073f852df1ca0da53",
+      "r3": "ce5433b0d090f999e9f6d1366119fa4c3bcb9f83dcfe88744fde4d4543f7266e",
+      "r30": "64651d5f8a4a47612db1aefbfcd3952a8456f11881e61a049020037cc3327ca2",
+      "r31": "02aeeffb3153a4789f64ade2f481353d089d89dd8897de26cf215158e65900e8",
+      "r32": "0e6c87e7155851fd7190db7e34c770bbe6c395793161675e91b6fb5d2ab3706d",
+      "r33": "48cddf38387a5ec32c6bed0b704239bd2dfb6780372748ff46d0a423d2fcb419"
+    }
+  },
+  "format": {
+    "tiles": "3D Tiles 1.1 + 3DTILES_content_gltf",
+    "content": "glTF KHR_gaussian_splatting + KHR_gaussian_splatting_compression_spz_2 (SPZ v2)",
+    "encoder": "TerraSplat tiler / @adobe/spz 0.2.3",
+    "sh_degree": 0,
+    "colour": "Mean 3DGS SH colour over the training camera directions, folded into DC"
+  },
+  "placement": {
+    "root_transform": "enu_to_ecef (column-major); model_to_enu (uniform scale 0.8514 + translation) baked into splats",
+    "enu_anchor": {
+      "latitude": 30.348819714393777,
+      "longitude": -81.66376056134547,
+      "ellipsoidal_height_m": -70
+    },
+    "axes": "payload in glTF Y-up (east, up, -north); bounding boxes in tile Z-up ENU"
+  },
+  "crop": {
+    "frame": "metric ENU square centred on the anchor",
+    "half_extent_m": 125,
+    "input_splats": 102543,
+    "owned_splats": 36722,
+    "removed_splats": 65821,
+    "owned_z_range_m": [
+      -17.344135639075382,
+      132.5361580866063
+    ],
+    "max_extent_m": 186.71465864264698,
+    "p99_extent_m": 36.30776039561316
+  },
+  "tree": {
+    "levels": 3,
+    "tiles": 17,
+    "tileset_geometric_error_m": 695.9140967290231,
+    "by_tile": [
+      {
+        "id": "r",
+        "parent": null,
+        "splats": 4748,
+        "geometric_error": 13.531646934131853,
+        "merge_voxel_m": 7.8125
+      },
+      {
+        "id": "r0",
+        "parent": "r",
+        "splats": 8139,
+        "geometric_error": 3.3829117335329633,
+        "merge_voxel_m": 1.953125
+      },
+      {
+        "id": "r00",
+        "parent": "r0",
+        "splats": 2484,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r01",
+        "parent": "r0",
+        "splats": 2697,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r02",
+        "parent": "r0",
+        "splats": 2906,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r03",
+        "parent": "r0",
+        "splats": 2525,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r1",
+        "parent": "r",
+        "splats": 7518,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r2",
+        "parent": "r",
+        "splats": 8053,
+        "geometric_error": 1.6914558667664816,
+        "merge_voxel_m": 0.9765625
+      },
+      {
+        "id": "r20",
+        "parent": "r2",
+        "splats": 1982,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r21",
+        "parent": "r2",
+        "splats": 2222,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r22",
+        "parent": "r2",
+        "splats": 1997,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r23",
+        "parent": "r2",
+        "splats": 2652,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r3",
+        "parent": "r",
+        "splats": 6849,
+        "geometric_error": 3.3829117335329633,
+        "merge_voxel_m": 1.953125
+      },
+      {
+        "id": "r30",
+        "parent": "r3",
+        "splats": 2650,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r31",
+        "parent": "r3",
+        "splats": 2218,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r32",
+        "parent": "r3",
+        "splats": 2724,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      },
+      {
+        "id": "r33",
+        "parent": "r3",
+        "splats": 2147,
+        "geometric_error": 0.335,
+        "merge_voxel_m": 0.0
+      }
+    ]
+  },
+  "size": {
+    "splats_all_tiles": 64511,
+    "glb_bytes": 1162620
+  },
+  "quantization_max": {
+    "position_m": 0.0001220703125,
+    "opacity": 0.001960764246872748,
+    "log_scale": 0.0312504768371582
+  },
+  "validation": {
+    "tiler_rules": "pipeline.tiling.validate_tree: finite attributes; non-zero, strictly decreasing geometric error; every splat centre plus 3 sigma inside its tile and all ancestors; leaves partition the owned splats",
+    "decoded_centres_inside_boxes": true,
+    "3d_tiles_validator": {
+      "version": "0.6.1",
+      "tileset_structure_issues": 0,
+      "content_errors": 17,
+      "content_error_cause": "Validator does not support KHR_gaussian_splatting; it rejects the extension's KHR_gaussian_splatting:SCALE/ROTATION attribute names (same as the Phase 0 fixture Cesium renders)"
+    },
+    "cesium_browser": {
+      "cesium": "1.146.0",
+      "renderer": "SwiftShader WebGL2",
+      "top_view_pixels_inside_block_square": 0.9154355535150451,
+      "block_square_coverage": 0.9907360835490037,
+      "far_view_8km_tiles": [
+        "r.glb"
+      ],
+      "near_view": "full-resolution leaves selected, root replaced",
+      "errors": 0,
+      "external_requests": 0
+    }
+  },
+  "limitations": [
+    "Footprint check compares the render with the recorded transform chain; it is not independent placement or height accuracy.",
+    "Oblique views show needle-like splats along satellite view rays; three training views constrain height poorly.",
+    "About 10k of 37k owned splats have a 3 sigma reach over 10 m, so tile bounds are loose (root about 430 x 480 m).",
+    "The crop is an ENU square; the source block is a UTM square about 0.3 degrees rotated.",
+    "View-dependent SH is baked at the training directions; SH degree >= 1 awaits a verified Cesium SH convention.",
+    "Ground sits about 17 m below the ellipsoid; without terrain the globe must be hidden or translucent."
+  ]
+}
