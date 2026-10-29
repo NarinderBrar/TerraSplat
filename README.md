@@ -20,6 +20,7 @@ For the prepared 2015 block and loader checks, see [the pilot training handoff](
 For raw sensor crops and RPC preservation, see [Imagery preparation](imagery/README.md).
 For the historical multi-view inputs and initial ENU cameras, see [SatelliteSfM handoff](sfm/README.md).
 
+- [Releases and read-only API](docs/RELEASES.md): immutable local publication, activation and viewer contracts.
 - [Plan v2](docs/PLAN_V2.md): selected 2015 pilot, reconstruction sequence, CesiumJS and the 6 GB GPU budget.
 - [Build plan](docs/PLAN.md): architecture, data contracts, implementation order, acceptance gates, and open decisions.
 - [Training findings](docs/TRAINING_FINDINGS.md): what improved heights across six runs, and the recommended setup for product training (about 15–20 views, authors' recipe).

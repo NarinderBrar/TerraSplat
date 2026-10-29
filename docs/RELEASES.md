@@ -1,0 +1,70 @@
+# Releases
+
+The local publish stage turns a completed tiled run into an immutable release. It requires only stdlib + numpy;
+use the existing `.venv-sfm` (Python 3.12). Configs in `configs/releases/` record dataset metadata,
+train/holdout capture times from the selections, source runs and JSON pointers into committed quality evidence.
+
+```bash
+.venv-sfm/bin/python -m pipeline.publish --config configs/releases/jax068-2015-3v.json --releases artifacts/releases
+.venv-sfm/bin/python -m pipeline.publish --config configs/releases/jax068-2015-5v.json --releases artifacts/releases --activate
+```
+
+```text
+artifacts/releases/
+  catalog.json
+  index/jacksonville/tileset.json
+  jax068-2015-3v-r1/{release.json,tileset.json,tile-plan.json,tiles-report.json,tiles/,evidence/}
+  jax068-2015-5v-r1/{release.json,tileset.json,tile-plan.json,tiles-report.json,tiles/,evidence/}
+```
+
+Published pilot releases (2026-10-29):
+
+| Release ID | Tiles | Delivery bytes, excluding manifest | Active |
+| --- | ---: | ---: | --- |
+| `jax068-2015-3v-r1` | 17 | 1,219,107 | No |
+| `jax068-2015-5v-r1` | 21 | 1,591,466 | Yes |
+
+The publisher verifies plan, tileset and GLB hashes against `tiles-report.json`, checks tile references,
+copies delivery files and evidence into `.staging/<release_id>/`, validates and rehashes, then renames atomically.
+Training payload binaries are not delivery assets and are not copied. A release ID can never be overwritten;
+rebuilds need a new ID. Failed prepublication attempts remove their staging folder. A process killed before rename
+may leave staging behind; inspect and remove that incomplete staging folder before retrying.
+
+`release.json` includes UTC creation time, the pipeline Git commit, source/config hashes, capture times,
+ENU anchor, owned crop GeoJSON polygon (longitude/latitude), six-value geographic bbox with ellipsoidal height,
+quality, evidence and limitations. Footprints transform the crop square at ENU up=0 through ECEF to WGS84;
+bbox heights cover the owned centre Z range, including tangent-plane curvature. They describe ownership,
+not kernel support. Full kernel bounds remain in the tileset. Both releases are historical, cover one block,
+have no ground control and use lidar of unknown acquisition date; they are not production accuracy claims.
+`bytes` counts delivery files and evidence excluding `release.json`; `quality.glb_bytes` counts GLBs alone.
+`quality.splats` counts owned crop splats rather than duplicate LOD splats.
+
+The manifest hashes every other release file. The catalogue hashes the manifest itself, avoiding a self-hash cycle.
+JSON Schemas live in `schemas/`; publication validates their used assertion subset with a fail-closed stdlib validator,
+and tests also validate documents and schemas with the full Draft 2020-12 `jsonschema` implementation.
+
+Activation and rollback only switch the catalogue pointer; both releases remain available:
+
+```bash
+.venv-sfm/bin/python -m pipeline.publish --releases artifacts/releases --activate-release jax068-2015-3v-r1
+.venv-sfm/bin/python -m pipeline.publish --releases artifacts/releases --activate-release jax068-2015-5v-r1
+```
+
+Publish/activation uses a filesystem lock. Catalogue and index writes each use a temporary file and atomic replacement;
+the catalogue is authoritative. A crash between replacements can leave the index stale; repair with
+`python -m pipeline.publish --releases artifacts/releases --rebuild-index`. A crash after release rename but before
+catalogue replacement can leave a complete unlisted release: preserve it, inspect its manifest/hashes, then recover
+the catalogue from a backup or publish under a new ID. Multi-file transactional publication is not provided.
+
+Each regional 3D Tiles 1.1 index references only active releases as external tilesets with relative URIs.
+Child ECEF boxes contain all transformed corners of the release root box, including kernel support;
+the external root applies its own ENU transform exactly once. Child geometric error matches the referenced
+tileset's error of drawing nothing; the index root exceeds its children's errors and spans their bounds.
+`ADD` at the content-free index root supports independent blocks; release hierarchies retain `REPLACE`.
+
+The [read-only API](../services/api/README.md) exposes dataset/release lists, quality and active footprints.
+Part 2 adds `apps/web/` (React/Vite/Cesium), loading the regional index and offering dataset/release selection,
+3D Footprints, quality, navigation and LOD diagnostics. The existing pilot viewer remains separate.
+
+Publisher tests run in `tests/sfm/`; API tests run separately in `tests/api/` with `.venv-api`.
+The shared `tests/conftest.py` fixture is opt-in, imports publisher dependencies lazily and defines no collection hooks.
