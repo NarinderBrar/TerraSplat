@@ -1,0 +1,281 @@
+{
+  "stage": "2015 raw pilot: skew correction and Skyfall handoff",
+  "status": "prepared_and_loader_verified",
+  "scene_path": "artifacts/imagery/skyfall-2015-02",
+  "point_count": 2233,
+  "train_cameras": 3,
+  "holdout_cameras": 1,
+  "views": [
+    {
+      "catalog_id": "104001000AB24A00",
+      "role": "train",
+      "original_size": [
+        959,
+        1232
+      ],
+      "corrected_size": [
+        961,
+        1232
+      ],
+      "pixel_transform": [
+        [
+          1.0,
+          0.0012997182994512794,
+          -0.0
+        ],
+        [
+          0.0,
+          1.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "inverse_pixel_transform": [
+        [
+          1.0,
+          -0.0012997182994512794,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mask_valid_fraction": 0.9968790964498561,
+      "source_valid_fraction": 1.0,
+      "source_mask_sha256": "a9f19d2efe1d4afdfa82676486a65bd9549bb3a9a640fcbd09f3dd83fa5c04e0",
+      "projection_equivalence_max_pixels": 1.3262923023912556e-11,
+      "camera_source": "bundle-adjusted training model"
+    },
+    {
+      "catalog_id": "104001000A1B5F00",
+      "role": "train",
+      "original_size": [
+        1236,
+        994
+      ],
+      "corrected_size": [
+        1247,
+        994
+      ],
+      "pixel_transform": [
+        [
+          1.0,
+          -0.010309607385038642,
+          11.0
+        ],
+        [
+          0.0,
+          1.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "inverse_pixel_transform": [
+        [
+          1.0,
+          0.010309607385038642,
+          -11.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mask_valid_fraction": 0.9903777113361807,
+      "source_valid_fraction": 1.0,
+      "source_mask_sha256": "d167facddc8de67dd89cef3ee6fffa5b8a7348746a031404cdb68067c7b4c3a8",
+      "projection_equivalence_max_pixels": 1.0759484730516163e-11,
+      "camera_source": "bundle-adjusted training model"
+    },
+    {
+      "catalog_id": "104001000AB10600",
+      "role": "train",
+      "original_size": [
+        1242,
+        908
+      ],
+      "corrected_size": [
+        1357,
+        908
+      ],
+      "pixel_transform": [
+        [
+          1.0,
+          -0.12573188237517477,
+          115.0
+        ],
+        [
+          0.0,
+          1.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "inverse_pixel_transform": [
+        [
+          1.0,
+          0.12573188237517477,
+          -115.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mask_valid_fraction": 0.9145181291979262,
+      "source_valid_fraction": 1.0,
+      "source_mask_sha256": "e05e43214d7ebca096c09e86f3d48fe0010373cacbca0398867ad7da93163d3b",
+      "projection_equivalence_max_pixels": 1.1257470599498624e-09,
+      "camera_source": "bundle-adjusted training model"
+    },
+    {
+      "catalog_id": "104001000A22A000",
+      "role": "holdout",
+      "original_size": [
+        1127,
+        1206
+      ],
+      "corrected_size": [
+        1143,
+        1206
+      ],
+      "pixel_transform": [
+        [
+          1.0,
+          -0.012644601325174431,
+          16.0
+        ],
+        [
+          0.0,
+          1.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "inverse_pixel_transform": [
+        [
+          1.0,
+          0.012644601325174431,
+          -16.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mask_valid_fraction": 0.985127584590898,
+      "source_valid_fraction": 1.0,
+      "source_mask_sha256": "ea34b521704ba820653a1ae02c5f1bc70700e4c699729fd6f8e250da748c0ed3",
+      "projection_equivalence_max_pixels": 2.92216928861505e-10,
+      "camera_source": "RPC-only holdout; no fitted correction"
+    }
+  ],
+  "normalization": {
+    "rotation": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "translation": [
+      16.317875131229794,
+      11.886125198834137,
+      49.32214519638325
+    ],
+    "scale": 1.1745735791433705,
+    "z_shift": -8.072884706269226
+  },
+  "anchor": {
+    "latitude": 30.348819714393777,
+    "longitude": -81.66376056134547,
+    "ellipsoidal_height_m": -70
+  },
+  "enu_roundtrip_max_m": 5.684341886080802e-14,
+  "warp_projection_equivalence_max_pixels": 1.1257470599498624e-09,
+  "loader_camera_projection_error_pixels": {
+    "104001000AB24A00": 0.0,
+    "104001000A1B5F00": 0.0,
+    "104001000AB10600": 0.0,
+    "104001000A22A000": 1.525677362224087e-10
+  },
+  "float32_ply_max_position_error_model_units": 1.3239133068054798e-05,
+  "loader_rejections_verified": [
+    "missing --eval",
+    "changed input hash",
+    "second normalization"
+  ],
+  "gpu_preflight": "passed",
+  "cuda_kernel_checks": [
+    "CUDA nearest neighbours",
+    "SSIM forward/backward",
+    "rasterizer forward/backward",
+    "patched Stage 1 CLI import",
+    "optional model modes rejected"
+  ],
+  "source_commit": "73194842a404910c5bbff006359eedfc56a98d60",
+  "stage1_patch_sha256": "58067f6278fe341d338204b5f6814e0b2522efad46accfe87b7a2e3e4f852965",
+  "prepared_enu_patch_sha256": "c844e176afda8e6bbe0ebd56a18e2ed3b3a3521cc297590f5f00352c70bb959f",
+  "artifact_sha256": {
+    "artifacts/imagery/skyfall-2015-02/conversion-report.json": "84fced6b82cc1b5909da091889824c78bec962e7db17c3bafd7416b64cafc7f1",
+    "artifacts/imagery/skyfall-2015-02/loader-report.json": "4ef5149ab941260aac24673a851975d21ce805bd41abbf0e727d1196b657af06",
+    "artifacts/imagery/skyfall-2015-02/preflight-report.json": "bfc633ab74fdf55943c8c5687d88ce901b2a29e1a078644ca2136d00e03fae59",
+    "artifacts/imagery/skyfall-2015-02/georeference.json": "aad5350a14525e79098d85ba3a5aa00ad8df0416b29e3d35d7035ab41445e0a4",
+    "artifacts/imagery/skyfall-2015-02/terrasplat-scene.json": "5b48bc4fd5edc23ef13a7699811199886457ad2a8b36143200abfebee21a61e8",
+    "artifacts/stage1/environment.json": "0e2421005c379fd52c1c060bfc8c8b7b44bf67b4990b08fe4f62f20bcc9a8286"
+  },
+  "training_executed": false,
+  "independent_accuracy_validated": false,
+  "next_step": "measured Stage 1 training on a copied scene with --eval and generative modes disabled"
+}

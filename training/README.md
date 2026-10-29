@@ -5,6 +5,10 @@ checkout inside TerraSplat. It does not modify the shared `../Ref/Skyfall-GS`
 checkout or the system driver. The generated environment and model artifacts are
 ignored by Git.
 
+The [2015 pilot handoff](PILOT.md) now has deskewed images, source-derived masks,
+explicit normalization and a verified three-train/one-holdout loader contract.
+See [its verified result](pilot-verified.json). Full training on that block is next.
+
 ## Setup
 
 The host needs `uv`, Git, GCC, an NVIDIA driver and Python 3.12+ for the toolchain
@@ -40,7 +44,7 @@ Skyfall is pinned to `73194842a404910c5bbff006359eedfc56a98d60`. The preparation
 script clones tracked source, not the reference project's datasets. It checks
 the commit and refuses to overwrite unexpected changes to the patched training files.
 
-Two small patches are applied only to `.external/skyfall-gs`:
+Three patches are applied only to `.external/skyfall-gs`:
 
 - `adapters/skyfall/stage1-only.patch` removes unconditional MoGe/FlowEdit imports
   and the global MoGe model load, rejects IDU and nonzero pseudo-depth loss, and
@@ -49,6 +53,10 @@ Two small patches are applied only to `.external/skyfall-gs`:
   still use Skyfall's Stage 1 implementation.
 - `adapters/skyfall/rasterizer-cstdint.patch` adds the rasterizer's missing
   standard integer header for the compiler used here.
+- `adapters/skyfall/prepared-enu.patch` verifies prepared payload hashes,
+  requires `--eval` to preserve the acquisition holdout, and consumes externally
+  normalized cameras/points without a second normalization or random-point
+  fallback. See [the handoff contract](PILOT.md).
 
 This is a **basic Stage 1 configuration**, not the full published Stage 1 recipe:
 monocular pseudo-depth regularization is disabled. Diffusion models and their

@@ -112,7 +112,22 @@ def preflight(manifest_path, check_environment=True):
     if not commit["ok"] or commit["output"] != manifest["expected_skyfall_commit"]:
         failures.append("Skyfall checkout does not match the pinned commit")
     dirty = run(["git", "diff", "--name-only", "HEAD", "--", "train.py", "scene", "arguments", "gaussian_renderer", "utils"], cwd=skyfall)
-    if not dirty["ok"] or dirty["output"]:
+    profile = manifest.get("skyfall_patch_profile")
+    if profile == "basic-stage1-registered":
+        approved_paths = {"train.py", "utils/camera_utils.py", "scene/dataset_readers.py"}
+        if not dirty["ok"] or set(dirty["output"].splitlines()) != approved_paths:
+            failures.append("Skyfall source differs from the approved Stage 1 adapter paths")
+        patch_root = Path(__file__).resolve().parents[1] / "adapters/skyfall"
+        for name, paths in (("stage1-only.patch", ["train.py", "utils/camera_utils.py"]),
+                            ("prepared-enu.patch", ["scene/dataset_readers.py"])):
+            result = run(["git", "diff", "HEAD", "--", *paths], cwd=skyfall)
+            patch = patch_root / name
+            if not result["ok"] or result["output"] != patch.read_text().strip():
+                failures.append(f"Skyfall source does not match recorded adapter: {name}")
+            evidence[name] = {"sha256": digest(patch)}
+    elif profile is not None:
+        failures.append("Unsupported Skyfall patch profile")
+    elif not dirty["ok"] or dirty["output"]:
         failures.append("Skyfall training source differs from the pinned revision")
     environment = None
     if check_environment:
@@ -121,11 +136,14 @@ def preflight(manifest_path, check_environment=True):
         environment = run([manifest.get("python", sys.executable), "-c", probe], cwd=skyfall)
         if not environment["ok"]:
             failures.append("Training interpreter lacks a working CUDA/PyTorch extension stack")
-        modules = run(["git", "submodule", "status"], cwd=skyfall)
+        module_args = ["git", "submodule", "status"]
+        if profile == "basic-stage1-registered":
+            module_args += ["--", "submodules/diff-gaussian-rasterization-depth", "submodules/simple-knn", "submodules/fused-ssim"]
+        modules = run(module_args, cwd=skyfall)
         if not modules["ok"] or any(line.startswith(("-", "+", "U")) for line in modules["output"].splitlines()):
-            failures.append("Skyfall submodules are absent or do not match pinned revisions (Stage 1 imports FlowEdit and MoGe)")
+            failures.append("Required Skyfall submodules are absent or do not match pinned revisions")
     return {"version": 1, "id": manifest["id"], "status": "blocked" if failures else "passed",
-            "scope": "prepared-input preflight; raw RPC preprocessing, reconstruction and lidar validation are not executed",
+            "scope": "prepared-input and placement audit; does not execute training or validate independent geographic accuracy",
             "manifest_sha256": digest(manifest_path), "inputs": evidence, "skyfall_commit": commit,
             "environment_checked": check_environment, "environment": environment,
             "georeference": georeference, "failures": failures}

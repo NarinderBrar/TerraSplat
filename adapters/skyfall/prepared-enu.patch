@@ -1,0 +1,61 @@
+diff --git a/scene/dataset_readers.py b/scene/dataset_readers.py
+index 9f8be6f..3a5226f 100755
+--- a/scene/dataset_readers.py
++++ b/scene/dataset_readers.py
+@@ -18,6 +18,7 @@ from scene.colmap_loader import read_extrinsics_text, read_intrinsics_text, qvec
+ from utils.graphics_utils import getWorld2View2, focal2fov, fov2focal
+ import numpy as np
+ import json
++import hashlib
+ from pathlib import Path
+ from plyfile import PlyData, PlyElement
+ from utils.sh_utils import SH2RGB
+@@ -357,7 +358,48 @@ def readMultiScaleNerfSyntheticInfo(path, white_background, eval, load_allres=Fa
+                            ply_path=ply_path)
+     return scene_info
+ 
++def readTerraSplatInfo(path, white_background, eval, extension=".png"):
++    root = Path(path).resolve()
++    contract = json.loads((root / "terrasplat-scene.json").read_text())
++    if contract.get("version") != 1 or contract.get("profile") != "terrasplat-prepared-enu-v1":
++        raise ValueError("Unsupported TerraSplat scene contract")
++    if contract.get("normalization_applied") is not True or contract.get("requires_eval") is not True:
++        raise ValueError("TerraSplat inputs require explicit normalization and acquisition splits")
++    if not eval:
++        raise ValueError("TerraSplat scenes require --eval to preserve the acquisition holdout")
++    hashes = contract["input_sha256"]
++    for required in ("transforms_train.json", "transforms_test.json", "points3D.txt", "georeference.json"):
++        if required not in hashes:
++            raise ValueError("TerraSplat scene contract lacks required input hashes")
++    for relative, expected in hashes.items():
++        file = (root / relative).resolve()
++        if not file.is_relative_to(root):
++            raise ValueError("TerraSplat input escapes scene directory")
++        if hashlib.sha256(file.read_bytes()).hexdigest() != expected:
++            raise ValueError("TerraSplat input checksum changed: " + relative)
++    train, train_rotation, _ = readSatelliteCamerasFromTransforms(path, "transforms_train.json", white_background, extension)
++    test, test_rotation, _ = readSatelliteCamerasFromTransforms(path, "transforms_test.json", white_background, extension)
++    if train_rotation is not None or test_rotation is not None:
++        raise ValueError("TerraSplat normalization is already applied; refusing a second rotation")
++    for cameras, key in ((train, "train_catalog_ids"), (test, "holdout_catalog_ids")):
++        if len(cameras) != len(contract[key]) or {c.image_name for c in cameras} != set(contract[key]):
++            raise ValueError("TerraSplat camera split differs from acquisition contract")
++        if any(c.mask is None or c.mask.shape != (c.height, c.width) for c in cameras):
++            raise ValueError("TerraSplat camera mask dimensions disagree")
++    if set(contract["train_catalog_ids"]) & set(contract["holdout_catalog_ids"]):
++        raise ValueError("TerraSplat training and holdout acquisitions overlap")
++    xyz, rgb, _ = read_points3D_text(str(root / "points3D.txt"))
++    if len(xyz) != contract["point_count"] or len(xyz) == 0 or not np.isfinite(xyz).all():
++        raise ValueError("TerraSplat initialization points are empty, changed or nonfinite")
++    ply_path = str(root / "points3D.ply")
++    storePly(ply_path, xyz, rgb)
++    return SceneInfo(point_cloud=fetchPly(ply_path), train_cameras=train, test_cameras=test,
++                     nerf_normalization={"translate": np.zeros(3), "radius": 128.0}, ply_path=ply_path)
++
++
+ def readSatelliteInfo(path, white_background, eval, extension=".png"):
++    if os.path.isfile(os.path.join(path, "terrasplat-scene.json")):
++        return readTerraSplatInfo(path, white_background, eval, extension)
+     print("Reading Training Transforms")
+     train_cam_infos, R, T = readSatelliteCamerasFromTransforms(path, "transforms_train.json", white_background, extension)
+     print("Reading Test Transforms")

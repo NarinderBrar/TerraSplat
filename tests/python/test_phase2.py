@@ -81,6 +81,21 @@ def test_modified_backend_is_rejected(block):
     assert any("training source differs" in message for message in report["failures"])
 
 
+def test_claiming_adapter_profile_does_not_allow_arbitrary_source_changes(block):
+    manifest = json.loads(block.read_text())
+    manifest["skyfall_patch_profile"] = "basic-stage1-registered"
+    block.write_text(json.dumps(manifest))
+    (block.parent / "skyfall/train.py").write_text("# unrecorded edit\n")
+    assert any("recorded adapter" in message for message in preflight(block, False)["failures"])
+
+
+def test_unknown_adapter_profile_is_rejected(block):
+    manifest = json.loads(block.read_text())
+    manifest["skyfall_patch_profile"] = "allow-anything"
+    block.write_text(json.dumps(manifest))
+    assert "Unsupported Skyfall patch profile" in preflight(block, False)["failures"]
+
+
 @pytest.mark.parametrize("rotation", [IDENTITY, [[0, -1, 0], [1, 0, 0], [0, 0, 1]]])
 def test_normalization_inverse_restores_metric_enu(rotation):
     result = placement({"longitude": -81.66, "latitude": 30.34, "ellipsoidal_height_m": 11},

@@ -1,6 +1,6 @@
 # CORE3D imagery preparation
 
-Latest status (2026-10-29): the approved 2015 CORE3D inputs below completed CPU sparse reconstruction. Skew correction and Skyfall conversion come next, followed by measured Stage 1 training; recent imagery selection is deferred. See [the revised plan](../docs/PLAN_V2.md).
+Latest status (2026-10-29): the approved 2015 CORE3D inputs below completed CPU sparse reconstruction and a verified [Skyfall handoff](../training/PILOT.md), including deskewing and source-mask preservation. Measured Stage 1 training is next; recent imagery selection is deferred. See [the revised plan](../docs/PLAN_V2.md).
 
 The [29 October source qualification](qualification/2026-10-29/README.md) retains the earlier free-source search and unresolved recent-data findings. It is background evidence, not a prerequisite for the selected historical pilot.
 

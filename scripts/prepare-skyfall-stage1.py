@@ -21,14 +21,16 @@ def main():
     actual = git("rev-parse", "HEAD", capture_output=True, text=True).stdout.strip()
     if actual != COMMIT:
         raise RuntimeError(f"Expected Skyfall {COMMIT}, got {actual}; checkout left unchanged")
-    patch = ROOT / "adapters" / "skyfall" / "stage1-only.patch"
-    dirty = git("diff", "HEAD", "--", "train.py", "utils/camera_utils.py", capture_output=True, text=True).stdout
-    if dirty:
-        if dirty != patch.read_text():
-            raise RuntimeError("Isolated train.py has unexpected changes; refusing to overwrite")
-    else:
-        git("apply", "--check", str(patch))
-        git("apply", str(patch))
+    for filename, paths in (("stage1-only.patch", ("train.py", "utils/camera_utils.py")),
+                            ("prepared-enu.patch", ("scene/dataset_readers.py",))):
+        patch = ROOT / "adapters" / "skyfall" / filename
+        dirty = git("diff", "HEAD", "--", *paths, capture_output=True, text=True).stdout
+        if dirty:
+            if dirty != patch.read_text():
+                raise RuntimeError("Isolated Skyfall source has unexpected changes; refusing to overwrite")
+        else:
+            git("apply", "--check", str(patch))
+            git("apply", str(patch))
     git("submodule", "update", "--init", "--recursive", *EXTENSIONS)
     rasterizer = target / "submodules/diff-gaussian-rasterization-depth"
     header_patch = ROOT / "adapters/skyfall/rasterizer-cstdint.patch"

@@ -1,6 +1,6 @@
 # SatelliteSfM handoff for the Jacksonville pilot
 
-Latest status (2026-10-29): the approved 2015 CORE3D pilot completed CPU feature matching, bundle adjustment and sparse reconstruction. Skew correction and Skyfall conversion are next, before measured Stage 1 training. Recent imagery selection is deferred; see [the revised plan](../docs/PLAN_V2.md).
+Latest status (2026-10-29): the approved 2015 CORE3D pilot completed CPU sparse reconstruction, skew correction and Skyfall input conversion. The actual loader and GPU-enabled preflight pass; measured Stage 1 training is next. See [the training handoff](../training/PILOT.md) and [the revised plan](../docs/PLAN_V2.md). Recent imagery selection remains deferred.
 
 The approved pilot uses April 19–May 2, 2015: three training acquisitions and a
 separate May 2 holdout. No four-view group satisfied the initial seven-day
@@ -141,8 +141,9 @@ retains the compact result and report checksum.
   Multithreaded matching is not bit-identical; these runs establish successful
   execution, not identical model bytes or independent geographic accuracy.
 
-Skew correction with a recorded image warp, Skyfall normalization capture,
-training, and independent placement/height validation are still pending.
+Skew correction with a recorded image warp and explicit normalization have now
+passed the [Skyfall handoff checks](../training/PILOT.md). Training and independent
+placement/height validation remain pending.
 
 ### Container attempt history
 

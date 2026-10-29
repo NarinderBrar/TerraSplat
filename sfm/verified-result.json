@@ -84,19 +84,18 @@
   ],
   "visual_review": "Same urban block visible in all four RGB crops; no obvious cloud obstruction. Tint, shadows and vehicles differ. Screening only.",
   "not_executed": [
-    "skew correction",
-    "Skyfall normalization capture",
     "Skyfall training on this new block",
     "independent geographic accuracy validation"
   ],
   "reproduction": "scripts/setup-sfm-cpu.sh completed; pipeline.reconstruct completed on the prepared inputs in two fresh run directories",
   "next_step": {
-    "stage": "skew correction and Skyfall input conversion",
-    "status": "pending",
+    "stage": "measured Stage 1 training",
+    "status": "inputs_ready",
     "requirements": [
-      "record image warp and pixel transform",
-      "preserve original ENU observer and normalization",
-      "retain independent May 2 holdout"
+      "copy prepared scene into a new training run",
+      "require --eval and keep the May 2 holdout",
+      "preserve georeference.json through checkpoint/export",
+      "measure GPU memory and checkpoint results"
     ]
   },
   "runtime": {
@@ -166,5 +165,10 @@
     "holdout_in_database": false,
     "extrinsics_and_skew_preserved": true,
     "repeatability_note": "First run: 2221 points, median 0.2695 px and p95 1.2987 px. Verification rerun: 2233 points, median 0.2736 px and p95 1.3409 px. Multi-threaded matching is not bit-identical."
+  },
+  "skyfall_handoff": {
+    "status": "prepared_and_loader_verified",
+    "result": "training/pilot-verified.json",
+    "result_sha256": "fe519e1cf70cf53434a5163c62d52371b6998269a65faf338c79dcaaaeed1c55"
   }
 }

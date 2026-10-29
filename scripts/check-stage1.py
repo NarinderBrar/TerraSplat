@@ -60,6 +60,7 @@ def main():
         "checks": ["CUDA nearest neighbours", "SSIM forward/backward", "rasterizer forward/backward", "patched Stage 1 CLI import", "optional model modes rejected"],
         "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=SOURCE, text=True).strip(),
         "patch_sha256": hashlib.sha256((ROOT / "adapters/skyfall/stage1-only.patch").read_bytes()).hexdigest(),
+        "prepared_enu_patch_sha256": hashlib.sha256((ROOT / "adapters/skyfall/prepared-enu.patch").read_bytes()).hexdigest(),
     }
     output = ROOT / "artifacts/stage1/environment.json"
     output.parent.mkdir(parents=True, exist_ok=True)
