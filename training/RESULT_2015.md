@@ -39,6 +39,16 @@ final train-view error is low; the holdout error is much larger. The holdout
 camera is the uncorrected RPC-derived camera, so that gap includes cross-date
 appearance change and camera/registration difference, not only model quality.
 
+Visual inspection of `evaluation/comparison.png`: the final holdout render lines
+up with the reference (building outlines, roads and parking lots fall in place),
+but it takes on the warmer colour balance of the April 19 training view
+(`104001000AB24A00`), not the holdout's green-tinted balance. Without an
+appearance model, the cross-date colour mismatch therefore accounts for much of
+the holdout error. Floaters and smears appear near the image borders: the
+right edge of the holdout, the left edge of `104001000AB10600` and the
+bottom-right corner of `104001000A1B5F00`. The initial sparse renders are a
+nearly uniform green field.
+
 ## How the result was produced
 
 - Profile `jax068-2015-stage1-baseline`: 30,000 iterations, resolution factor 2,
