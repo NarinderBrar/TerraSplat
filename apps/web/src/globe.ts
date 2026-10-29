@@ -28,7 +28,6 @@ export class Globe {
   private removeListeners: (() => void)[] = [];
   private hovered?: string;
   private lastStats = '';
-  private detail?: Cesium.ImageryLayer;
   loadedUrls: string[] = [];
   constructor(container: HTMLElement, private onStats: (stats: MapStats) => void,
     private onHover: (text: string, x: number, y: number) => void,
@@ -75,7 +74,6 @@ export class Globe {
       if (key !== this.lastStats) { this.lastStats = key; this.onStats(stats); }
     }));
     this.removeListeners.push(camera.changed.addEventListener(() => {
-      if (this.detail) this.detail.show = camera.positionCartographic.height < 1_000_000;
       scene.requestRender();
     }));
     this.removeListeners.push(camera.moveEnd.addEventListener(() => {
@@ -98,11 +96,11 @@ export class Globe {
     if (this.disposed) return;
     this.viewer.imageryLayers.addImageryProvider(provider);
     if (import.meta.env.VITE_REMOTE_IMAGERY !== 'false') {
-      this.detail = this.viewer.imageryLayers.addImageryProvider(new C.UrlTemplateImageryProvider({
+      // Shown at every height so the globe looks the same zoomed out and in; Natural Earth stays underneath as the instant first frame.
+      this.viewer.imageryLayers.addImageryProvider(new C.UrlTemplateImageryProvider({
         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         maximumLevel: 19, credit: new C.Credit('Imagery © Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community', true),
       }));
-      this.detail.show = this.viewer.camera.positionCartographic.height < 1_000_000;
     }
     this.viewer.scene.requestRender();
   }
