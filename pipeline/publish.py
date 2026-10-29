@@ -295,7 +295,7 @@ def publish(config_path, directory, make_active=False):
                 target.parent.mkdir(exist_ok=True)
                 shutil.copyfile(path, target)
                 evidence[name] = read(target)
-            quality = {}
+            quality = dict(config.get('quality_values', {}))
             for key, ref in config['quality_sources'].items():
                 value = evidence[ref['file']]
                 for part in ref['pointer'].strip('/').split('/'):
@@ -327,6 +327,11 @@ def publish(config_path, directory, make_active=False):
             }
             if ground:
                 manifest['ground'] = ground
+            for key in ('source_label', 'accuracy_label'):
+                if key in config:
+                    manifest[key] = config[key]
+            if not config['dataset_id'].startswith('skyfall-') and any(v is None for v in quality.values()):
+                raise ValueError('Pipeline release quality must be measured')
             validate_document(manifest, 'release-manifest')
             atomic_json(staging / 'release.json', manifest)
             verify_release(staging, read(staging / 'release.json'))

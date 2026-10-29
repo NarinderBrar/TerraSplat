@@ -74,3 +74,28 @@ def test_prepare_preserves_payload_splits_and_reference(tmp_path):
     assert before == {p.relative_to(source): p.read_bytes() for p in source.rglob("*") if p.is_file()}
     with pytest.raises(ValueError, match="new directory"):
         prepare(source, target, metadata)
+
+
+def test_nyc_without_masks_or_cameras_matches_legacy_black_pixel_mask(tmp_path):
+    Image = pytest.importorskip('PIL.Image')
+    source = tmp_path / 'NYC_004'
+    (source / 'images').mkdir(parents=True)
+    for role, name in [('train', 'a'), ('test', 'b')]:
+        pixels = np.array([[[0, 0, 0], [1, 0, 0]], [[0, 1, 0], [0, 0, 1]]], dtype=np.uint8)
+        Image.fromarray(pixels).save(source / f'images/{name}.png')
+        frame = {'file_path': f'./images/{name}.png', 'transform_matrix': np.eye(4).tolist()}
+        (source / f'transforms_{role}.json').write_text(json.dumps({'frames': [frame]}))
+    (source / 'transforms.json').write_text('{}')
+    (source / 'points3D.txt').write_text('1 10 20 30 255 0 0 0\n')
+    geo = {'anchor': {'latitude': 40, 'longitude': -74, 'ellipsoidal_height_m': 0},
+           'assumed_anchor': True, **placement(
+               {'latitude': 40, 'longitude': -74, 'ellipsoidal_height_m': 0},
+               legacy_normalization(np.zeros((1, 3)), {}))}
+    output = tmp_path / 'prepared'
+    prepare(source, output, georeference=geo)
+    np.testing.assert_array_equal(np.load(output / 'masks/a.npy'), [[0, 1], [1, 1]])
+    assert not (source / 'masks').exists()
+    assert not (output / 'cameras').exists()
+    contract = json.loads((output / 'terrasplat-scene.json').read_text())
+    assert contract['train_catalog_ids'] == ['a']
+    assert contract['holdout_catalog_ids'] == ['b']

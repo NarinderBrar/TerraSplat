@@ -128,6 +128,8 @@ def create_app(releases_dir=None, allowed_origins=None):
                 'capture_date_start': min(dates), 'capture_date_end': max(dates),
                 'headline_mae_m': m['quality']['registered_lidar_mae_all_m'],
                 'tileset_url': f'/releases/{m["release_id"]}/{m["tileset_path"]}',
+                'source_label': m.get('source_label', 'TerraSplat raw-imagery pipeline'),
+                'accuracy_label': m.get('accuracy_label', 'Known anchor; no ground control'),
                 'ground_height_m': (m.get('ground') or {}).get('ellipsoidal_height_m')}})
         return {'type': 'FeatureCollection', 'features': features}
 

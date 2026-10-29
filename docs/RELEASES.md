@@ -76,3 +76,7 @@ Part 2 adds `apps/web/` (React/Vite/Cesium), loading the regional index and offe
 
 Publisher tests run in `tests/sfm/`; API tests run separately in `tests/api/` with `.venv-api`.
 The shared `tests/conftest.py` fixture is opt-in, imports publisher dependencies lazily and defines no collection hooks.
+
+Skyfall Stage 1 releases use the authors' prepared data and TerraScope visual registrations;
+see [Skyfall tiles](SKYFALL_TILES.md). Missing independent lidar measurements are null, never zero.
+Pipeline release quality must remain measured.

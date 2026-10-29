@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "id": "skyfall-stage1-registered-core",
+  "block_half_extent_m": 250,
+  "leaf_max_splats": 16384,
+  "extent_sigma": 3,
+  "max_opacity": 0.99,
+  "note": "Fixed 500 m ENU core about the visual registration origin; excludes border context and floaters. NYC_336 uses a scene-specific smaller core to exclude river water. Fixed before evaluation; leaves target 100-400 KB SPZ."
+}

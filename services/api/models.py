@@ -28,14 +28,14 @@ class Polygon(BaseModel):
 
 
 class Quality(BaseModel):
-    registered_lidar_mae_all_m: float
-    registered_lidar_mae_ground_m: float
-    registered_lidar_mae_buildings_m: float
-    registered_lidar_mae_vegetation_m: float
-    registered_lidar_rmse_m: float
+    registered_lidar_mae_all_m: float | None
+    registered_lidar_mae_ground_m: float | None
+    registered_lidar_mae_buildings_m: float | None
+    registered_lidar_mae_vegetation_m: float | None
+    registered_lidar_rmse_m: float | None
     holdout_psnr_db: float
-    horizontal_offset_m: float
-    completeness: float
+    horizontal_offset_m: float | None
+    completeness: float | None
     splats: int
     tiles: int
     glb_bytes: int
@@ -73,6 +73,8 @@ class Manifest(BaseModel):
     files: dict[str, str]
     limitations: str
     ground: Ground | None = None
+    source_label: str | None = None
+    accuracy_label: str | None = None
 
 
 class ReleaseSummary(BaseModel):
@@ -116,9 +118,11 @@ class FootprintProperties(BaseModel):
     title: str
     capture_date_start: str
     capture_date_end: str
-    headline_mae_m: float
+    headline_mae_m: float | None
     tileset_url: str
     ground_height_m: float | None = None
+    source_label: str | None = None
+    accuracy_label: str | None = None
 
 
 class Feature(BaseModel):

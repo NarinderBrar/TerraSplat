@@ -1,0 +1,65 @@
+# Skyfall Stage 1 tiles
+
+Skyfall-GS Stage 1 trained by TerraSplat on the authors' prepared scene;
+visually registered by TerraScope (about 1.3–3.8 m); vertical approximate;
+not produced from TerraSplat's raw-imagery pipeline. These are demonstration
+models, not the authors' finished models or production reconstructions.
+
+## Inputs and recipe
+
+Prepared data: `jayinnn/Skyfall-GS-datasets`, revision
+`82bcd8ae044afcf3182d335a47d0694ba2b4daa2`, 2,337,656,814 bytes at
+`../Ref/Skyfall-GS/data`. The local download manifest records every file hash.
+The pinned [dataset card](https://huggingface.co/datasets/jayinnn/Skyfall-GS-datasets/blob/82bcd8ae044afcf3182d335a47d0694ba2b4daa2/README.md) declares Apache-2.0.
+No finished `*_final.ply` is used. Reference inputs and TerraScope stay read-only.
+
+`configs/train-ref-jax068-recipe.json` fixes the authors' Stage 1 flags:
+30k iterations, appearance model, SH 1, live MoGe pseudo-depth weight 0.5,
+opacity weight 10, no static depth loss. Resolution 2 and a 200k doubling-headroom
+splat cap fit the 6 GB GPU. Holdouts remain excluded from training, priors and
+choices. JAX_068 reuses its existing completed run; the other scenes run serially.
+
+| Scene | Train / test views | Splats | Minutes | Peak GiB | Holdout PSNR | Tiles / levels | GLB bytes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| JAX_068 | 17 / 2 | 149,842 | 53.4 | 2.90 | 18.90 | 17 / 3 | 2,123,248 |
+
+## Placement and crop
+
+`pipeline.skyfall_scenes` converts the registration raster affine and z18 tile
+origin to the geographic model origin, removes Mercator scale with cos(latitude),
+and produces uniform scale, rotation about Up and translation in true ENU metres.
+The rigid ENU-to-ECEF root transform is applied once. Tiling rotates both centres
+and covariance quaternions. Each prepared sparse core is checked against the
+registration raster; legacy normalization is identity for all twelve inputs.
+This verifies frame compatibility, not Stage 1 landmark accuracy.
+
+TerraScope's calibrated street `groundZ` maps to approximate city street altitude
+(12 m orthometric Jacksonville, 5 m New York), converted with local EGM96 via
+pyproj when installed. Without that grid, documented city undulations are
+−29.4 / −32.7 m. These heights are approximate and are never fitted to lidar.
+Derived placement manifests retain the original export hash; training data and
+original exports stay immutable. Existing rendered-depth points are transformed
+through model space for JAX_068; each release records their hash and modal ground.
+
+`configs/tiles-skyfall.json` fixes a 500 m ENU core centred on the visual origin,
+excluding border context and floaters. Removed counts are retained in each plan.
+JAX_068 retains 77,021 / 149,842 centres, removing 72,821. The pilot profile and
+its export gates remain unchanged. Leaves preserve the full retained model;
+parents use moment-matched merges and REPLACE refinement. Every bound includes
+3σ support and all descendants; geometric errors strictly decrease. SH colour
+is baked to DC over training directions only. SPZ v2 is carried in glTF
+`KHR_gaussian_splatting` inside 3D Tiles 1.1.
+
+## JAX_068 lidar check
+
+The visual registration places the model 1.80 m horizontally from DFC2019 lidar
+(−1.0 m east, +1.5 m north); vertical offset is +4.99 m. Registered rendered-depth
+MAE is 1.38 m. This checks TerraScope's visual placement separately from model
+shape; it is not surveyed control. No lidar-derived correction is applied.
+The rendered-depth ground mode is −17.46 m ellipsoidal, close to the neighbouring
+pipeline block. Compact evidence: `training/skyfall-jax-068.json`.
+
+## Status
+
+JAX_068 is published locally as `skyfall-jax-068-stage1-r1`. Remaining scene
+training, app layers and browser/validator evidence are in progress.

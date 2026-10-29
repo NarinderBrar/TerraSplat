@@ -177,16 +177,22 @@ def read_fused_ply(path):
 
 
 def to_enu(splats, model_to_enu):
-    """Bake a uniform-scale, rotation-free model->ENU transform into the splats."""
+    """Bake a positive uniform scale and rotation about Up into positions and covariances."""
     matrix = matrix4(model_to_enu, "model_to_enu")
     linear = matrix[:3, :3]
     scale = float(np.cbrt(np.linalg.det(linear)))
-    if not np.allclose(linear, scale * np.eye(3), rtol=0, atol=1e-9 * abs(scale)):
-        raise ValueError("model_to_enu must be a uniform scale without rotation")
+    if scale <= 0:
+        raise ValueError("model_to_enu must have positive uniform scale")
+    rotation = linear / scale
+    if (not np.allclose(rotation.T @ rotation, np.eye(3), atol=1e-9)
+            or not np.allclose(rotation[:, 2], [0, 0, 1], atol=1e-9)):
+        raise ValueError("model_to_enu must be a uniform scale with rotation about Up only")
+    quaternion = matrix_quaternions(rotation[None])[0]
     return {
         **splats,
         "centres": apply_transform(matrix, splats["centres"]),
         "log_scales": splats["log_scales"] + math.log(scale),
+        "quaternions": quaternion_multiply(quaternion, splats["quaternions"]),
     }
 
 

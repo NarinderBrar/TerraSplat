@@ -97,7 +97,7 @@ def test_view_colour_bake_is_identity_without_rest_and_uses_directions_with_it()
     assert np.allclose(baked, dc - SH_C1 * 0.1 / SH_C0, atol=1e-6)
 
 
-def test_to_enu_scales_positions_and_log_scales_and_rejects_rotation():
+def test_to_enu_scales_positions_and_log_scales_and_rejects_tilt():
     splats = random_splats(5)
     matrix = np.diag([2.0, 2.0, 2.0, 1.0])
     matrix[:3, 3] = [1, 2, 3]
@@ -105,7 +105,7 @@ def test_to_enu_scales_positions_and_log_scales_and_rejects_rotation():
     assert np.allclose(enu["centres"], 2 * splats["centres"] + [1, 2, 3])
     assert np.allclose(enu["log_scales"], splats["log_scales"] + np.log(2))
     rotated = matrix.copy()
-    rotated[:3, :3] = [[0, -2, 0], [2, 0, 0], [0, 0, 2]]
+    rotated[:3, :3] = [[2, 0, 0], [0, 0, -2], [0, 2, 0]]
     with pytest.raises(ValueError, match="rotation"):
         to_enu(splats, rotated.tolist())
 

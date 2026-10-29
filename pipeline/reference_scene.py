@@ -1,4 +1,4 @@
-"""Copy the authors' JAX_068 scene into the existing normalized input contract."""
+"""Copy an authors' prepared JAX or NYC scene into the normalized input contract."""
 
 import argparse
 import json
@@ -52,7 +52,7 @@ def assumed_anchor(metadata, low=-50):
     }
 
 
-def prepare(source, output, metadata, patch_profile="basic-stage1-registered"):
+def prepare(source, output, metadata=None, patch_profile="basic-stage1-registered", georeference=None):
     source, output = Path(source).resolve(), Path(output).resolve()
     if output.exists() or output.is_relative_to(source):
         raise ValueError("Use a new directory outside the reference source")
@@ -74,8 +74,8 @@ def prepare(source, output, metadata, patch_profile="basic-stage1-registered"):
     ]
     xyz = np.array([row[1:4] for row in records], dtype=np.float64)
     norm = legacy_normalization(xyz, transforms["train"])
-    anchor = assumed_anchor(metadata)
-    geographic = placement(anchor, norm)
+    anchor = georeference["anchor"] if georeference else assumed_anchor(metadata)
+    geographic = georeference or placement(anchor, norm)
     normalized = xyz @ np.asarray(norm["rotation"]).T - norm["translation"]
     normalized *= norm["scale"]
     normalized[:, 2] -= norm["z_shift"]
@@ -88,11 +88,20 @@ def prepare(source, output, metadata, patch_profile="basic-stage1-registered"):
             frame = frame.copy()
             name = Path(frame["file_path"]).stem
             names[role].append(name)
-            for relative in (frame["file_path"], f"masks/{name}.npy", f"cameras/{name}.json"):
+            relatives = [frame["file_path"]]
+            relatives += [p for p in (f"masks/{name}.npy", f"cameras/{name}.json") if (source / p).exists()]
+            for relative in relatives:
                 src = read(relative)
                 dst = output / relative
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(src, dst)
+            if not (output / f"masks/{name}.npy").exists():
+                from PIL import Image
+
+                # Match the authors' legacy loader for synthetic NYC images.
+                pixels = np.asarray(Image.open(output / frame["file_path"]).convert("RGB"))
+                (output / "masks").mkdir(exist_ok=True)
+                np.save(output / f"masks/{name}.npy", (~np.all(pixels == 0, axis=-1)).astype(np.uint8))
             c2w = np.array(frame.pop("transform_matrix_rotated", frame["transform_matrix"]), dtype=np.float64)
             c2w[:3, 3] *= norm["scale"]
             c2w[2, 3] -= norm["z_shift"]
@@ -107,7 +116,7 @@ def prepare(source, output, metadata, patch_profile="basic-stage1-registered"):
             stream.write(" ".join(row) + "\n")
     manifest = {
         "version": 1,
-        "id": "ref-jax068",
+        "id": "ref-" + source.name.lower().replace("_", ""),
         "prepared_scene": ".",
         "skyfall": os.path.relpath(
             ROOT
@@ -123,7 +132,7 @@ def prepare(source, output, metadata, patch_profile="basic-stage1-registered"):
     hashes = {str(p.relative_to(output)): digest(p) for p in output.rglob("*") if p.is_file()}
     geo = {
         "anchor": anchor,
-        "assumed_anchor": True,
+        "assumed_anchor": geographic.get("assumed_anchor", True),
         "normalization": norm,
         **geographic,
         "input_sha256": hashes.copy(),
@@ -131,8 +140,9 @@ def prepare(source, output, metadata, patch_profile="basic-stage1-registered"):
         "provenance": {
             "source": str(source),
             "source_sha256": source_hashes,
-            "aoi_metadata_sha256": digest(Path(metadata)),
-            "anchor": "ASSUMED: AOI geographic bounds centre, pilot low bracket -50 minus 20 m; true anchor absent",
+            "aoi_metadata_sha256": digest(Path(metadata)) if metadata else None,
+            "anchor": "TerraScope visual registration" if georeference else (
+                "ASSUMED: AOI geographic bounds centre, pilot low bracket -50 minus 20 m; true anchor absent"),
             "normalization": (
                 "Legacy branch: R/T absent => identity (centre 0, scale 1, z-shift 0); otherwise p99 radius and p1 z"
             ),
@@ -149,7 +159,7 @@ def prepare(source, output, metadata, patch_profile="basic-stage1-registered"):
         "train_catalog_ids": names["train"],
         "holdout_catalog_ids": names["test"],
         "input_sha256": hashes,
-        "assumed_anchor": True,
+        "assumed_anchor": geo["assumed_anchor"],
     }
     (output / "terrasplat-scene.json").write_text(json.dumps(contract, indent=2) + "\n")
     # Verify on a disposable copy: the legacy loader writes points3D.ply.

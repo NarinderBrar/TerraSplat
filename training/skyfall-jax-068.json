@@ -1,0 +1,473 @@
+{
+  "scene": "JAX_068",
+  "label": "Skyfall-GS Stage 1 trained by TerraSplat on the authors' prepared scene; visually registered by TerraScope (about 1.3-3.8 m); vertical approximate; not produced from TerraSplat's raw-imagery pipeline",
+  "training": {
+    "final_splats": 149842,
+    "elapsed_seconds": 3205.4360619590007,
+    "peak_allocated_bytes": 3071959040,
+    "profile_sha256": "6dfdb30c75e28c0a488e2d139bb03949beeb3b5aac6e9b64ea413b7286d1d5cc",
+    "train_catalog_ids": [
+      "JAX_068_011_RGB",
+      "JAX_068_005_RGB",
+      "JAX_068_002_RGB",
+      "JAX_068_006_RGB",
+      "JAX_068_010_RGB",
+      "JAX_068_007_RGB",
+      "JAX_068_020_RGB",
+      "JAX_068_016_RGB",
+      "JAX_068_019_RGB",
+      "JAX_068_001_RGB",
+      "JAX_068_013_RGB",
+      "JAX_068_009_RGB",
+      "JAX_068_015_RGB",
+      "JAX_068_014_RGB",
+      "JAX_068_022_RGB",
+      "JAX_068_004_RGB",
+      "JAX_068_018_RGB"
+    ],
+    "holdout_catalog_ids": [
+      "JAX_068_003_RGB",
+      "JAX_068_012_RGB"
+    ]
+  },
+  "placement": {
+    "registration_sha256": "4572cab344cfdf15138c337385d40683e71e633e5d6917c683e2fa2b0088dc53",
+    "source_export_sha256": "4ca7264118fa087ca8d88a319d4b920dcde66fa96d03284e1d13636efd91be80",
+    "frame_check": {
+      "normalization": {
+        "rotation": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": 1.0,
+        "z_shift": 0.0
+      },
+      "sparse_points": 69027,
+      "p01_model": [
+        -331.0927747019609,
+        -339.99315821434516,
+        15.230672266755148
+      ],
+      "p99_model": [
+        334.1957163917166,
+        335.5502639494757,
+        61.5049163775687
+      ],
+      "registration_raster_contains_sparse_core": true,
+      "limitation": "Frame compatibility only; final-model landmarks are not independent Stage 1 accuracy"
+    },
+    "label": "Skyfall-GS Stage 1 trained by TerraSplat on the authors' prepared scene; visually registered by TerraScope (about 1.3-3.8 m); vertical approximate; not produced from TerraSplat's raw-imagery pipeline",
+    "vertical_method": "TerraScope calibrated groundZ mapped to EGM96 egm96_15.gtx via pyproj; approximate city orthometric street 12 m",
+    "georeference": {
+      "matrix_layout": "row-major",
+      "source_frame": "metric ENU",
+      "model_frame": "Skyfall Z-up",
+      "normalization_equation": "model = scale * (R * enu - T) - [0, 0, z_shift]",
+      "source_to_model": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "model_to_enu": [
+        [
+          1.002545060090373,
+          0.0003681818311645659,
+          0.0,
+          0.0
+        ],
+        [
+          -0.0003681818311645659,
+          1.002545060090373,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0025451276972375,
+          -22.718561659546793
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "enu_to_ecef": [
+        [
+          0.9894342861531981,
+          -0.07325407891764545,
+          0.1251144808023389,
+          798677.8525538159
+        ],
+        [
+          0.1449820450418308,
+          0.49992464419148114,
+          -0.8538475020432569,
+          -5450600.80149891
+        ],
+        [
+          0,
+          0.8629653469589311,
+          0.5052631096251256,
+          3203793.6677297107
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "model_to_ecef": [
+        [
+          0.9919794266878493,
+          -0.07307622322306288,
+          0.1254329131327544,
+          798675.0101327694
+        ],
+        [
+          0.14516696988754468,
+          0.5012503622064363,
+          -0.8560206529699242,
+          -5450581.403311787
+        ],
+        [
+          -0.00031772816167490424,
+          0.8651616456228511,
+          0.5065490687598247,
+          3203782.1888786005
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "anchor": {
+        "longitude": -81.66376054127814,
+        "latitude": 30.34881972282938,
+        "ellipsoidal_height_m": -17.71268384550897
+      },
+      "assumed_anchor": false,
+      "visually_registered": true,
+      "vertical_approximate": true,
+      "ground_model_z": 22.660886808885536,
+      "metres_per_model_unit": 1.0025451276972375,
+      "rotation_about_up_deg": -0.02104171165019772,
+      "label": "Skyfall-GS Stage 1 trained by TerraSplat on the authors' prepared scene; visually registered by TerraScope (about 1.3-3.8 m); vertical approximate; not produced from TerraSplat's raw-imagery pipeline",
+      "vertical_method": "TerraScope calibrated groundZ mapped to EGM96 egm96_15.gtx via pyproj; approximate city orthometric street 12 m"
+    }
+  },
+  "lidar": {
+    "registration": {
+      "placement_measurement": true,
+      "search_range_per_level_px": 5,
+      "dx_px": -2.0,
+      "dy_px": -3.0,
+      "z_offset_m": -4.986756321346961,
+      "splats_offset_from_lidar_m": {
+        "east": -1.0,
+        "north": 1.5,
+        "up": 4.986756321346961,
+        "horizontal": 1.8027756377319946
+      }
+    },
+    "registered": {
+      "all_labelled": {
+        "pixels": 236227,
+        "completeness": 1.0,
+        "bias_m": 0.0032621037849243366,
+        "median_m": -0.25352954864501953,
+        "mae_m": 1.3826837525666364,
+        "rmse_m": 2.453793567267008,
+        "nmad_m": 1.0070825637817382
+      },
+      "ground": {
+        "pixels": 117711,
+        "completeness": 1.0,
+        "bias_m": 0.2111357167661795,
+        "median_m": -0.1423778533935547,
+        "mae_m": 1.2455498779475198,
+        "rmse_m": 2.0914611838380606,
+        "nmad_m": 1.0275165000915527
+      },
+      "building": {
+        "pixels": 109098,
+        "completeness": 1.0,
+        "bias_m": -0.20659589246937135,
+        "median_m": -0.3585500717163086,
+        "mae_m": 1.5165593237332105,
+        "rmse_m": 2.8191482300216597,
+        "nmad_m": 0.9341838031768799
+      },
+      "vegetation": {
+        "pixels": 9418,
+        "completeness": 1.0,
+        "bias_m": -0.16385651824580152,
+        "median_m": -0.24403047561645508,
+        "mae_m": 1.5458403093897377,
+        "rmse_m": 2.0708295381506017,
+        "nmad_m": 1.6788821539878844
+      }
+    },
+    "unregistered": {
+      "all_labelled": {
+        "pixels": 236227,
+        "completeness": 1.0,
+        "bias_m": 5.043204427098424,
+        "median_m": 4.71469403617084,
+        "mae_m": 5.227765435981425,
+        "rmse_m": 5.957603026178369,
+        "nmad_m": 1.0989944434029981
+      },
+      "ground": {
+        "pixels": 117711,
+        "completeness": 1.0,
+        "bias_m": 5.323218304228178,
+        "median_m": 4.8356664991006255,
+        "mae_m": 5.352218347451835,
+        "rmse_m": 5.967272053502589,
+        "nmad_m": 1.10910202349592
+      },
+      "building": {
+        "pixels": 109098,
+        "completeness": 1.0,
+        "bias_m": 4.797710375859745,
+        "median_m": 4.615973230451345,
+        "mae_m": 5.1616664375282495,
+        "rmse_m": 6.027872875161051,
+        "nmad_m": 1.0266749609487131
+      },
+      "vegetation": {
+        "pixels": 9418,
+        "completeness": 1.0,
+        "bias_m": 4.387247377960298,
+        "median_m": 4.348151348531246,
+        "mae_m": 4.437979055768131,
+        "rmse_m": 4.929066085897228,
+        "nmad_m": 1.9383880899530834
+      }
+    }
+  },
+  "crop": {
+    "frame": "metric ENU square centred on the anchor",
+    "half_extent_m": 250,
+    "input_splats": 149842,
+    "owned_splats": 77021,
+    "removed_splats": 72821,
+    "owned_z_range_m": [
+      -46.989799667029864,
+      98.2320233340446
+    ],
+    "max_extent_m": 102.22877683196486,
+    "p99_extent_m": 25.62446026494681
+  },
+  "levels": 3,
+  "encoding": {
+    "tiles": {
+      "r": {
+        "splats": 11428,
+        "glbBytes": 192268,
+        "glbSha256": "ca4409200c55c017278af631b325304bf0bf78c57dbe572a1f5a8bfbf733cfc6",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.0019607994633220605,
+        "scaleError": 0.0312504768371582
+      },
+      "r0": {
+        "splats": 9181,
+        "glbBytes": 157768,
+        "glbSha256": "a3a032275119d6c0762c172e8f45e150976d866fe8250899f6fb5bcd75eb7b71",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.001960744153108984,
+        "scaleError": 0.031247615814208984
+      },
+      "r00": {
+        "splats": 6384,
+        "glbBytes": 110604,
+        "glbSha256": "15dbf7d55b7da4a62dd73143213081257fbe69c8a3d5382dd200a61e52ec4051",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.0019599561355992945,
+        "scaleError": 0.031247973442077637
+      },
+      "r01": {
+        "splats": 4275,
+        "glbBytes": 75876,
+        "glbSha256": "abfa56b7991e3385332f2b8ca3568a5330a6ae7458434327df423983b48d94aa",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.001957681106732778,
+        "scaleError": 0.031247615814208984
+      },
+      "r02": {
+        "splats": 5734,
+        "glbBytes": 102100,
+        "glbSha256": "847a42a2bfa57a30a4737f5f93ceaad3eeca23f0e99e302a1a75316a0fe3b1dc",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.001959426370916728,
+        "scaleError": 0.031248807907104492
+      },
+      "r03": {
+        "splats": 4363,
+        "glbBytes": 77604,
+        "glbSha256": "7f60525d03d99c1abe96dce24c7af2780b91266a341d6173064449d40839f330",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.001960744153108984,
+        "scaleError": 0.03124415874481201
+      },
+      "r1": {
+        "splats": 15222,
+        "glbBytes": 260840,
+        "glbSha256": "ff01822794a1a9119fe5eb2a99cb828c612bdd115ae08a0da53f4dd08a2a94a7",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.001960815875443056,
+        "scaleError": 0.03125041723251343
+      },
+      "r2": {
+        "splats": 9496,
+        "glbBytes": 162264,
+        "glbSha256": "04c97bb40e0445c7cfb53ec15ffebf56cef61da6bc1680236a29a9b7ff9f7c66",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.0019607994633220605,
+        "scaleError": 0.03125041723251343
+      },
+      "r20": {
+        "splats": 6366,
+        "glbBytes": 111236,
+        "glbSha256": "46200d09f566062ba990ad24551b0709013d2ab366432434886cb0db5ed19582",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.0019607994633220605,
+        "scaleError": 0.03125041723251343
+      },
+      "r21": {
+        "splats": 5096,
+        "glbBytes": 89640,
+        "glbSha256": "7cdb74f2ec11599496cfccd09f74b9aa2369530de12a8e491017bf34d9565df9",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.001960395249579694,
+        "scaleError": 0.031245112419128418
+      },
+      "r22": {
+        "splats": 5869,
+        "glbBytes": 103136,
+        "glbSha256": "0de2ce0bb388b6bfc73dc87bf1aa05fe4557c3e97a496e8159e97649de4749c4",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.0019598825923115015,
+        "scaleError": 0.03124713897705078
+      },
+      "r23": {
+        "splats": 5161,
+        "glbBytes": 91872,
+        "glbSha256": "b7c24bd648793ee1d9ce3990ebc9fecda949b66c08947120804046c5442d6d0c",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.0019605882157786025,
+        "scaleError": 0.031248927116394043
+      },
+      "r3": {
+        "splats": 15147,
+        "glbBytes": 257632,
+        "glbSha256": "3ee508dde4454eccbaf1febe06ebeed2350fbf4ba280843284f06caaefc7ce7a",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.0019607618065256016,
+        "scaleError": 0.031249582767486572
+      },
+      "r30": {
+        "splats": 4149,
+        "glbBytes": 73148,
+        "glbSha256": "f70a727fe6a14b68a88f37e73ad9452bda39a22f21e201e961e9f666ad785654",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.0019607618065256016,
+        "scaleError": 0.031248748302459717
+      },
+      "r31": {
+        "splats": 4655,
+        "glbBytes": 82864,
+        "glbSha256": "a607e78b0d10197980b5b73749fc850a00688ef7f6ca8274d9b7b22dc253a2d4",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.001960754087083516,
+        "scaleError": 0.0312461256980896
+      },
+      "r32": {
+        "splats": 4888,
+        "glbBytes": 87508,
+        "glbSha256": "dd0354e33817aaed21274b922db8427ab19153613653494ad038e344c2f2104b",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.001959069852367268,
+        "scaleError": 0.031247854232788086
+      },
+      "r33": {
+        "splats": 4859,
+        "glbBytes": 86888,
+        "glbSha256": "93c22d8891b52cbca012383bbef075cb05141f9e8bce1d4b8e4915d74b419588",
+        "positionError": 0.0001220703125,
+        "opacityError": 0.0019594515266199153,
+        "scaleError": 0.03124547004699707
+      }
+    },
+    "totals": {
+      "splats": 122273,
+      "glbBytes": 2123248
+    },
+    "tilesetSha256": "c288b4c98f7fef565df840804637d3cd1d8d436fb7283591dc36594e982d6432",
+    "planSha256": "ad32b55eb9bea03d6f96a781b0c3c3c3884ac3da39e520740a4589e094fc462b",
+    "generator": "TerraSplat tiler / @adobe/spz 0.2.3"
+  },
+  "quality": {
+    "registered_lidar_mae_all_m": 1.3826837525666364,
+    "registered_lidar_mae_ground_m": 1.2455498779475198,
+    "registered_lidar_mae_buildings_m": 1.5165593237332105,
+    "registered_lidar_mae_vegetation_m": 1.5458403093897377,
+    "registered_lidar_rmse_m": 2.453793567267008,
+    "horizontal_offset_m": 1.8027756377319946,
+    "completeness": 1.0,
+    "holdout_psnr_db": 18.901012125419932,
+    "splats": 77021,
+    "tiles": 17,
+    "glb_bytes": 2123248
+  },
+  "ground": {
+    "ellipsoidal_height_m": -17.46063838184708,
+    "method": "median of the modal 0.5 m bin of the rendered-depth DSM (1 m cells) inside the owned crop",
+    "source_sha256": "edb84c6827f4c1700209f5be8c9c40577e26dba1abc994f32981bb639b974897"
+  }
+}
