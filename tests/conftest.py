@@ -31,6 +31,8 @@ def tiled_release(tmp_path):
     (source / 'tiles-report.json').write_text(json.dumps(report))
     config = json.loads((ROOT / 'configs/releases/jax068-2015-3v.json').read_text())
     config['tiles_dir'] = str(source)
+    config.pop('ground_points', None)  # tests stay independent of local run outputs
+    config['release_id'] = 'jax068-2015-3v-r1'
     config_path = tmp_path / 'config.json'
     config_path.write_text(json.dumps(config))
     return config_path, tmp_path / 'releases', source

@@ -41,6 +41,7 @@ def test_endpoints_and_schema(client):
     assert feature['properties']['release_id'] == manifest['release_id']
     assert feature['properties']['capture_date_start'].startswith('2015-04-19')
     assert feature['properties']['headline_mae_m'] == 3.317
+    assert feature['properties']['ground_height_m'] is None  # fixture release has no ground_points
     index = c.get('/api/index/jacksonville').json()
     assert c.get(index['tileset_url']).json()['asset']['version'] == '1.1'
     assert c.get('/openapi.json').status_code == 200

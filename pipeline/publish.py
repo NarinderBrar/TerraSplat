@@ -153,6 +153,30 @@ def footprint(plan):
         min(heights), max(heights)]
 
 
+def ground_height(points_path, plan, cell_m=1.0, bin_m=0.5):
+    """Display ground: the most common height of the model's own rendered-depth DSM inside the owned crop.
+
+    Points are ENU metres about the plan's anchor. The value comes from the model, not the lidar, so the
+    viewer can place base imagery at the model's ground instead of the ellipsoid.
+    """
+    enu = np.load(points_path)['enu']
+    half = plan['crop']['half_extent_m']
+    enu = enu[(np.abs(enu[:, 0]) <= half) & (np.abs(enu[:, 1]) <= half)]
+    if len(enu) == 0:
+        raise ValueError('No ground points inside the owned crop')
+    cells = np.floor((enu[:, :2] + half) / cell_m).astype(np.int64)
+    key = cells[:, 0] * (int(2 * half / cell_m) + 2) + cells[:, 1]
+    order = np.lexsort((enu[:, 2], key))
+    surface = enu[order, 2][np.r_[key[order][1:] != key[order][:-1], True]]
+    edges = np.arange(np.floor(surface.min()), np.ceil(surface.max()) + bin_m, bin_m)
+    counts, edges = np.histogram(surface, bins=edges)
+    low = edges[counts.argmax()]
+    mode = float(np.median(surface[(surface >= low) & (surface < low + bin_m)]))
+    return {'ellipsoidal_height_m': plan['enu_anchor']['ellipsoidal_height_m'] + mode,
+            'method': f'median of the modal {bin_m:g} m bin of the rendered-depth DSM ({cell_m:g} m cells) inside the owned crop',
+            'source_sha256': sha256(points_path)}
+
+
 def catalog(directory):
     path = directory / 'catalog.json'
     return read(path) if path.exists() else {'schema_version': 1, 'datasets': []}
@@ -277,6 +301,7 @@ def publish(config_path, directory, make_active=False):
                     value = value[int(part)] if isinstance(value, list) else value[part]
                 quality[key] = value
             geometry, bbox = footprint(plan)
+            ground = ground_height(ROOT / config['ground_points'], plan) if 'ground_points' in config else None
             files = {p.relative_to(staging).as_posix(): sha256(p) for p in sorted(staging.rglob('*')) if p.is_file()}
             for name, expected in hashes.items():
                 if files[name] != expected:
@@ -299,6 +324,8 @@ def publish(config_path, directory, make_active=False):
                 'quality': quality, 'evidence': [f'evidence/{Path(n).name}' for n in config['evidence']],
                 'files': files, 'limitations': LIMITATIONS,
             }
+            if ground:
+                manifest['ground'] = ground
             validate_document(manifest, 'release-manifest')
             atomic_json(staging / 'release.json', manifest)
             verify_release(staging, read(staging / 'release.json'))

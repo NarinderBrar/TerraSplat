@@ -53,7 +53,7 @@ test('offline globe, footprint navigation, actual splat fragments and release su
   // Compare the same frame with and without splats: base imagery is coloured too.
   const measure = () => page.evaluate(async () => {
     const map = window.terra, v = map.viewer;
-    const manifest = await fetch('/api/releases/jax068-2015-5v-r1').then(r => r.json());
+    const manifest = await fetch('/api/releases/jax068-2015-5v-r2').then(r => r.json());
     const corners = map.projectFootprint(manifest);
     const canvas = v.canvas, gl = canvas.getContext('webgl2');
     const read = () => {
@@ -91,17 +91,17 @@ test('offline globe, footprint navigation, actual splat fragments and release su
   await page.screenshot({ path: info.outputPath('app-splats-oblique.png') });
   await page.getByText('Limitations & evidence', { exact: true }).click();
   await expect(page.getByText(/No ground control; independent geographic accuracy/)).toBeVisible();
-  await expect(page.getByRole('link', { name: 'result-2015-8w.json' })).toHaveAttribute('href', /releases\/jax068-2015-5v-r1\/evidence/);
+  await expect(page.getByRole('link', { name: 'result-2015-8w.json' })).toHaveAttribute('href', /releases\/jax068-2015-5v-r2\/evidence/);
   await page.getByText('Limitations & evidence', { exact: true }).click();
-  await page.getByLabel('Release · historical 2015').selectOption('jax068-2015-3v-r1');
+  await page.getByLabel('Release · historical 2015').selectOption('jax068-2015-3v-r2');
   await expect(page.getByRole('status')).toContainText('Ready');
-  await expect.poll(() => page.evaluate(() => window.terra.loadedUrls.join(','))).toContain('jax068-2015-3v-r1/tileset.json');
-  await expect.poll(() => glbs.some(url => url.includes('jax068-2015-3v-r1'))).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.terra.loadedUrls.join(','))).toContain('jax068-2015-3v-r2/tileset.json');
+  await expect.poll(() => glbs.some(url => url.includes('jax068-2015-3v-r2'))).toBe(true);
   await expect.poll(() => page.evaluate(() => window.terra.stats().visible), { timeout: 120000 }).toBeGreaterThan(0);
   await page.getByLabel('Tile diagnostics').check();
   await expect(page.getByTestId('tile-stats')).toContainText('visible');
   await page.screenshot({ path: info.outputPath('app-release-3v.png') });
-  await page.getByLabel('Release · historical 2015').selectOption('jax068-2015-5v-r1');
+  await page.getByLabel('Release · historical 2015').selectOption('jax068-2015-5v-r2');
   await expect.poll(() => page.evaluate(() => window.terra.loadedUrls.join(','))).toContain('index/jacksonville/tileset.json');
   // Keyboard access and narrow layout remain usable.
   await page.getByRole('button', { name: '3D Footprints', exact: false }).click();

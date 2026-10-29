@@ -4,6 +4,7 @@ import * as C from 'cesium';
 import { controlMapping } from '../src/controls';
 import { apiUrl, getDatasets, parseDatasets, parseFootprints } from '../src/api';
 import { captureRange, footprintCentre, footprintTooltip, formatBytes } from '../src/format';
+import { groundHeight, groundPatches, heightmap } from '../src/ground';
 import datasets from './fixtures/datasets.json';
 import footprints from './fixtures/footprints.json';
 afterEach(() => vi.unstubAllGlobals());
@@ -65,5 +66,26 @@ describe('Cesium 1.146 regional index compatibility', () => {
     expect(result.root.transform).toEqual(source.root.transform);
     expect(source.root.children[0].content.uri).toBe('../../jax068-2015-5v-r1/tileset.json');
     expect(() => regionalIndexUrl({}, 'http://localhost/')).toThrow('Invalid regional tileset');
+  });
+});
+describe('display ground terrain', () => {
+  const base = parseFootprints(footprints)[0];
+  const feature = { ...base, properties: { ...base.properties, ground_height_m: -20.75 } };
+  const [lon, lat] = footprintCentre(feature);
+  it('uses the release ground near the block and the ellipsoid far away', () => {
+    const patches = groundPatches([feature]);
+    expect(groundHeight(lon, lat, patches)).toBeCloseTo(-20.75, 6);
+    expect(groundHeight(lon + 0.015, lat, patches)).toBeCloseTo(-20.75, 6); // ~1.4 km east
+    expect(groundHeight(lon + 0.2, lat, patches)).toBe(0); // ~19 km east
+    const mid = groundHeight(lon + 0.05, lat, patches); // ~4.8 km: easing zone
+    expect(mid).toBeLessThan(0);
+    expect(mid).toBeGreaterThan(-20.75);
+  });
+  it('skips releases without a ground height and fills heightmaps north row first', () => {
+    expect(groundPatches(parseFootprints(footprints))).toEqual([]);
+    const patches = groundPatches([feature]);
+    const h = heightmap(lon - 0.001, lat - 0.001, lon + 0.001, lat + 0.001, 4, patches);
+    expect([...h].every(v => Math.abs(v + 20.75) < 1e-4)).toBe(true);
+    expect([...heightmap(0, 0, 1, 1, 4, patches)].every(v => v === 0)).toBe(true);
   });
 });

@@ -3,6 +3,7 @@ import { apiUrl, getJson, type Dataset, type Footprint, type Release, type Manif
 import { footprintCentre, footprintTooltip } from './format';
 import { controlMapping } from './controls';
 import { regionalIndexUrl } from './regionalIndex';
+import { groundPatches, heightmap } from './ground';
 
 declare global { interface Window { Cesium: typeof Cesium; terra?: Globe } }
 const C = window.Cesium;
@@ -43,8 +44,8 @@ export class Globe {
     scene.highDynamicRange = false;
     scene.backgroundColor = C.Color.fromCssColorString('#101a24');
     scene.globe.depthTestAgainstTerrain = false;
-    // Pilot uses 0.55 alpha for its optional overlay. Fade further near the
-    // surface so the below-ellipsoid splats stay legible; retain an opaque globe in orbit.
+    // Fallback for releases without a recorded ground height: their splats lie below the ellipsoid, so fade the
+    // globe near the surface to keep them visible. setFootprints replaces this with ground terrain when it can.
     scene.globe.translucency.enabled = true;
     scene.globe.translucency.frontFaceAlphaByDistance = new C.NearFarScalar(800, 0.12, 8000, 1);
     scene.globe.showGroundAtmosphere = false;
@@ -132,6 +133,23 @@ export class Globe {
       } });
     }
     this.footprints.show = false;
+    this.useGroundTerrain(features);
+  }
+  /** Lift the base imagery to each release's model ground so splats sit on an opaque, bright map. */
+  private useGroundTerrain(features: Footprint[]) {
+    const patches = groundPatches(features);
+    if (!patches.length) return;
+    const tiling = new C.GeographicTilingScheme(), size = 32;
+    this.viewer.terrainProvider = new C.CustomHeightmapTerrainProvider({
+      width: size, height: size, tilingScheme: tiling,
+      callback: (x, y, level) => {
+        const r = tiling.tileXYToRectangle(x, y, level);
+        const deg = C.Math.toDegrees;
+        return heightmap(deg(r.west), deg(r.south), deg(r.east), deg(r.north), size, patches);
+      },
+    });
+    this.viewer.scene.globe.translucency.enabled = false;
+    this.viewer.scene.requestRender();
   }
   showFootprints(show: boolean) { this.footprints.show = show; this.viewer.scene.requestRender(); }
   private async load(url: string, resourceUrl = apiUrl(url)) {

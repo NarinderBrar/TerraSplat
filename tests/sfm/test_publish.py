@@ -6,7 +6,8 @@ import numpy as np
 import pytest
 
 from pipeline.publish import (
-    activate, catalog, ecef_to_geodetic, footprint, publish, read, sha256, validate_document, verify_release,
+    activate, catalog, ecef_to_geodetic, footprint, ground_height, publish, read, sha256, validate_document,
+    verify_release,
 )
 
 
@@ -142,3 +143,31 @@ def test_failed_publication_cleans_staging(tiled_release):
         publish(config, releases)
     assert not (releases / cfg['release_id']).exists()
     assert not list((releases / '.staging').iterdir())
+
+
+def ground_points(path, ground=2.0, roofs=12.0, half=125):
+    rng = np.random.default_rng(0)
+    xy = rng.uniform(-half, half, size=(40000, 2))
+    z = np.where(rng.uniform(size=len(xy)) < 0.35, roofs, ground) + rng.normal(0, 0.05, len(xy))
+    outside = np.array([[half + 50, 0, -30.0]])  # floaters outside the owned crop are ignored
+    np.savez_compressed(path, enu=np.vstack([np.column_stack([xy, z]), outside]))
+    return path
+
+
+def test_ground_height_is_the_dominant_surface_level(tmp_path):
+    plan = {'crop': {'half_extent_m': 125}, 'enu_anchor': {'ellipsoidal_height_m': -70}}
+    ground = ground_height(ground_points(tmp_path / 'points.npz'), plan)
+    assert ground['ellipsoidal_height_m'] == pytest.approx(-68.0, abs=0.05)
+    assert len(ground['source_sha256']) == 64
+
+
+def test_publish_records_ground_only_when_configured(tiled_release):
+    config, releases, source = tiled_release
+    assert 'ground' not in publish(config, releases)
+    cfg = read(config)
+    cfg['release_id'] = 'jax068-2015-3v-ground'
+    cfg['ground_points'] = str(ground_points(source / 'depth-points.npz'))
+    config.write_text(json.dumps(cfg))
+    m = publish(config, releases)
+    assert m['ground']['ellipsoidal_height_m'] == pytest.approx(2.0, abs=0.05)
+    validate_document(m, 'release-manifest')

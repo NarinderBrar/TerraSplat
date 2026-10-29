@@ -20,7 +20,8 @@ export interface DatasetDetail extends Dataset { releases: Release[] }
 export interface Footprint {
   type: 'Feature'; geometry: { type: 'Polygon'; coordinates: number[][][] };
   properties: { dataset_id: string; release_id: string; title: string;
-    capture_date_start: string; capture_date_end: string; headline_mae_m: number; tileset_url: string };
+    capture_date_start: string; capture_date_end: string; headline_mae_m: number; tileset_url: string;
+    ground_height_m?: number | null };
 }
 export interface Manifest {
   release_id: string; dataset_id: string; title: string; description: string;
@@ -77,6 +78,7 @@ export function parseFootprints(value: unknown): Footprint[] {
     }
     for (const key of ['dataset_id', 'release_id', 'title', 'capture_date_start', 'capture_date_end', 'tileset_url']) field(p[key], 'string');
     field(p.headline_mae_m, 'number');
+    if (p.ground_height_m != null) field(p.ground_height_m, 'number');
   }
   return collection.features as Footprint[];
 }

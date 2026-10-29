@@ -103,7 +103,8 @@ def create_app(releases_dir=None, allowed_origins=None):
                 return dataset_summary(d) | {'releases': [summary(r['release_id']) for r in d['releases']]}
         raise HTTPException(404, 'Dataset not found')
 
-    @app.get('/api/releases/{release_id}')
+    # Optional manifest fields are omitted, not null, so responses still validate against the release schema.
+    @app.get('/api/releases/{release_id}', response_model_exclude_none=True)
     def release(release_id: str) -> Manifest:
         return manifest(release_id)
 
@@ -126,7 +127,8 @@ def create_app(releases_dir=None, allowed_origins=None):
                 'dataset_id': m['dataset_id'], 'release_id': m['release_id'], 'title': m['title'],
                 'capture_date_start': min(dates), 'capture_date_end': max(dates),
                 'headline_mae_m': m['quality']['registered_lidar_mae_all_m'],
-                'tileset_url': f'/releases/{m["release_id"]}/{m["tileset_path"]}'}})
+                'tileset_url': f'/releases/{m["release_id"]}/{m["tileset_path"]}',
+                'ground_height_m': (m.get('ground') or {}).get('ellipsoidal_height_m')}})
         return {'type': 'FeatureCollection', 'features': features}
 
     @app.get('/api/index/{region}')

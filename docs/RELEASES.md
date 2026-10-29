@@ -62,7 +62,15 @@ the external root applies its own ENU transform exactly once. Child geometric er
 tileset's error of drawing nothing; the index root exceeds its children's errors and spans their bounds.
 `ADD` at the content-free index root supports independent blocks; release hierarchies retain `REPLACE`.
 
-The [read-only API](../services/api/README.md) exposes dataset/release lists, quality and active footprints.
+An optional `ground_points` config entry (a rendered-depth `depth-points.npz`) adds `ground` to the manifest: the
+median of the modal 0.5 m bin of the model's own 1 m DSM inside the owned crop, as an ellipsoidal height. It comes
+from the model, not the lidar. The viewer uses it to place base imagery at the model ground: terrain is the release
+ground within 2 km of each active footprint and eases back to the ellipsoid by 8 km. Without terrain, imagery sits
+on the ellipsoid about 20 m above the Jacksonville ground and would hide the splats. Releases without `ground`
+fall back to fading the globe near the surface. `jax068-2015-*-r2` add this field; the `-r1` releases remain for rollback.
+
+The [read-only API](../services/api/README.md) exposes dataset/release lists, quality and active footprints
+(including `ground_height_m`).
 Part 2 adds `apps/web/` (React/Vite/Cesium), loading the regional index and offering dataset/release selection,
 3D Footprints, quality, navigation and LOD diagnostics. The existing pilot viewer remains separate.
 

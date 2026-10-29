@@ -16,6 +16,12 @@ class Anchor(BaseModel):
     ellipsoidal_height_m: float
 
 
+class Ground(BaseModel):
+    ellipsoidal_height_m: float
+    method: str
+    source_sha256: str
+
+
 class Polygon(BaseModel):
     type: Literal['Polygon'] = 'Polygon'
     coordinates: list[list[list[float]]]
@@ -66,6 +72,7 @@ class Manifest(BaseModel):
     evidence: list[str]
     files: dict[str, str]
     limitations: str
+    ground: Ground | None = None
 
 
 class ReleaseSummary(BaseModel):
@@ -111,6 +118,7 @@ class FootprintProperties(BaseModel):
     capture_date_end: str
     headline_mae_m: float
     tileset_url: str
+    ground_height_m: float | None = None
 
 
 class Feature(BaseModel):
