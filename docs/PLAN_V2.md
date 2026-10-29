@@ -1,8 +1,8 @@
 # TerraSplat plan v2
 
-Status updated 2026-10-29: The authors' recipe on the five-view pilot gives 2.82 → 2.78 m registered lidar MAE, but buildings worsen 2.87 → 3.36 m and holdout PSNR falls 17.73 → 17.21 dB; both fixed viewer gates fail, so the five-view baseline stays. Next: Web app v1 (viewer + API). [Result](../training/RESULT_2015.md#authors-recipe-on-the-pilot).
+More views: 19 training acquisitions plus May 2 holdout; basic/recipe PSNR 16.64/15.49 dB. Both exports fail the existing extent gate, so lidar comparison is blocked and the five-view release stays active. Next: Phase 3: two neighbouring blocks (shared ownership grid). [Result](../training/RESULT_2015.md#nineteen-training-views).
 
-Current implementation scope: pipeline tooling and a minimal validation viewer. Product web app v1 (React/Vite/Cesium viewer + FastAPI for datasets, releases and quality reports) is planned next, reading only pipeline releases; jobs and semantics come later.
+Current implementation scope: pipeline tooling and web app v1 (React/Vite/Cesium viewer + FastAPI for datasets, releases and quality reports), reading pipeline releases. Jobs and semantics come later.
 
 This revision builds on [PLAN.md](PLAN.md) and [RESEARCH.md](RESEARCH.md). Those documents remain the reference for coordinate math, tile/LOD design rules, semantics policy and acceptance gates. This file records what changed: existing local work to reuse, the chosen imagery, hardware limits and the renderer decision.
 
@@ -10,9 +10,9 @@ This revision builds on [PLAN.md](PLAN.md) and [RESEARCH.md](RESEARCH.md). Those
 
 **Reconstruct the approved 250×250 m Jacksonville block from April–May 2015 CORE3D imagery, validate the pipeline, and export georeferenced splat tiles for CesiumJS.** Scale toward 1 km² only after the one-block checks pass.
 
-**Latest user decision (2026-10-29): use the 2015 data for the end-to-end historical demonstration.** Resume from the prepared crops and initial cameras, keeping the three training acquisitions and May 2 holdout. The approved 13-day acquisition-span exception applies to this pilot. Label outputs with their 2015 capture dates.
+**Latest user decision (2026-10-29): use all usable 2014–2015 acquisitions for the historical pilot.** Nineteen training views and the May 2 holdout span 442 days, with unchanged per-view gates and explicit seasonal/construction-change limitations. The five-view model remains active because both 19-view exports fail their extent gate.
 
-Status: the recipe comparison is complete on reference data and the five-view pilot. The pilot fails both fixed height gates; retain the five-view viewer baseline. Web app v1 (viewer + API) is next.
+Status: reference-data and five-view recipe comparisons are complete. Both 19-view profiles trained, but export extent failures block their height comparison; retain the five-view release. Web app v1 is complete. Next: Phase 3: two neighbouring blocks (shared ownership grid).
 
 Recent imagery qualification is deferred and does not block this demonstration. For a future current-city release, separately qualify recent inputs and date-compatible validation. The preceding-12-month freshness target remains provisional for that later work.
 
@@ -20,7 +20,7 @@ Recent imagery qualification is deferred and does not block this demonstration. 
 
 | Topic | Decision | Reason |
 | --- | --- | --- |
-| Active pilot imagery | Approved April 19–May 2, 2015 CORE3D WorldView-3 group, Jacksonville | Complete the historical end-to-end pipeline using already prepared inputs |
+| Active pilot imagery | Five-view baseline; 19-view 2014–2015 CORE3D experiment trained, export blocked | Retain the measured baseline until the fixed lidar rule is established |
 | Current-city imagery | Deferred; no recent dataset selected | A future current-city release requires separate input qualification |
 | Validation data | Independent DSM/lidar/control appropriate to the 2015 pilot; exact epoch, coverage and datum still require verification | Avoid treating scene changes or datum differences as reconstruction error; DFC2019/US3D references are candidates, not accepted ground truth |
 | Delivery format | 3D Tiles + glTF `KHR_gaussian_splatting` + SPZ compression | Open standard; renderer-independent; "load directly in a map" |

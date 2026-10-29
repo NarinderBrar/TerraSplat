@@ -1,0 +1,737 @@
+{
+  "schema_version": 1,
+  "status": "training_complete_export_blocked",
+  "experiment": "Basic Stage 1 and authors' recipe on all usable 2014-2015 pipeline acquisitions; profiles fixed before evaluation, no holdout or lidar tuning.",
+  "assumed_anchor": false,
+  "approved_selection": "configs/jax068-pilot-19v.json",
+  "selection": {
+    "path": "artifacts/imagery/pilot-19v/selection.json",
+    "sha256": "b38ab06d1258509b29ce5a5259b06eb1095c61be8ad3da39ac4054e7aec1b2c4",
+    "span_days": 442.0065911388889,
+    "training_max_convergence_deg": 56.497090862999066,
+    "train": [
+      {
+        "catalog_id": "104001000209A800",
+        "capture_time": "2014-10-05T16:01:38.873575Z",
+        "off_nadir_deg": 18.9,
+        "sat_azimuth_deg": 19.8
+      },
+      {
+        "catalog_id": "1040010002A97700",
+        "capture_time": "2014-10-05T16:01:49.835975Z",
+        "off_nadir_deg": 12.5,
+        "sat_azimuth_deg": 24.0
+      },
+      {
+        "catalog_id": "1040010003371100",
+        "capture_time": "2014-10-11T15:57:20.047375Z",
+        "off_nadir_deg": 17.3,
+        "sat_azimuth_deg": 138.1
+      },
+      {
+        "catalog_id": "10400100031BC200",
+        "capture_time": "2014-10-18T16:07:22.892175Z",
+        "off_nadir_deg": 7.3,
+        "sat_azimuth_deg": 267.3
+      },
+      {
+        "catalog_id": "1040010004550F00",
+        "capture_time": "2014-10-30T15:57:32.330775Z",
+        "off_nadir_deg": 16.1,
+        "sat_azimuth_deg": 111.7
+      },
+      {
+        "catalog_id": "1040010005A0D800",
+        "capture_time": "2014-12-14T16:04:02.890375Z",
+        "off_nadir_deg": 14.5,
+        "sat_azimuth_deg": 42.6
+      },
+      {
+        "catalog_id": "10400100066B8E00",
+        "capture_time": "2014-12-27T16:11:09.278775Z",
+        "off_nadir_deg": 11.7,
+        "sat_azimuth_deg": 218.4
+      },
+      {
+        "catalog_id": "1040010007020F00",
+        "capture_time": "2015-01-21T16:12:53.655775Z",
+        "off_nadir_deg": 21.7,
+        "sat_azimuth_deg": 205.6
+      },
+      {
+        "catalog_id": "1040010006764E00",
+        "capture_time": "2015-01-21T16:13:08.106775Z",
+        "off_nadir_deg": 28.9,
+        "sat_azimuth_deg": 201.9
+      },
+      {
+        "catalog_id": "1040010007980900",
+        "capture_time": "2015-01-27T16:08:45.999175Z",
+        "off_nadir_deg": 4.8,
+        "sat_azimuth_deg": 144.3
+      },
+      {
+        "catalog_id": "1040010008037800",
+        "capture_time": "2015-02-15T16:12:08.581175Z",
+        "off_nadir_deg": 16.2,
+        "sat_azimuth_deg": 3.8
+      },
+      {
+        "catalog_id": "104001000AB24A00",
+        "capture_time": "2015-04-19T16:14:39.732975Z",
+        "off_nadir_deg": 17.7,
+        "sat_azimuth_deg": 187.7
+      },
+      {
+        "catalog_id": "104001000A1B5F00",
+        "capture_time": "2015-04-26T16:24:35.184775Z",
+        "off_nadir_deg": 20.8,
+        "sat_azimuth_deg": 260.3
+      },
+      {
+        "catalog_id": "104001000AB10600",
+        "capture_time": "2015-05-01T16:03:57.708375Z",
+        "off_nadir_deg": 24.3,
+        "sat_azimuth_deg": 85.4
+      },
+      {
+        "catalog_id": "104001000C22D200",
+        "capture_time": "2015-05-21T16:18:49.488775Z",
+        "off_nadir_deg": 5.9,
+        "sat_azimuth_deg": 247.6
+      },
+      {
+        "catalog_id": "104001000C478800",
+        "capture_time": "2015-06-15T16:12:48.813775Z",
+        "off_nadir_deg": 11.1,
+        "sat_azimuth_deg": 111.4
+      },
+      {
+        "catalog_id": "104001000E362D00",
+        "capture_time": "2015-07-05T16:29:54.345175Z",
+        "off_nadir_deg": 24.3,
+        "sat_azimuth_deg": 258.8
+      },
+      {
+        "catalog_id": "1040010013D78C00",
+        "capture_time": "2015-11-01T16:19:54.224175Z",
+        "off_nadir_deg": 11.4,
+        "sat_azimuth_deg": 53.4
+      },
+      {
+        "catalog_id": "1040010016BADB00",
+        "capture_time": "2015-12-21T16:11:08.347975Z",
+        "off_nadir_deg": 29.0,
+        "sat_azimuth_deg": 111.6
+      }
+    ],
+    "holdout": [
+      {
+        "catalog_id": "104001000A22A000",
+        "capture_time": "2015-05-02T16:19:43.108175Z",
+        "off_nadir_deg": 18.4,
+        "sat_azimuth_deg": 218.4
+      }
+    ],
+    "visual_review": {
+      "status": "reviewed_before_sfm",
+      "contact_sheet": "artifacts/imagery/pilot-19v/contact-sheet.png",
+      "contact_sheet_sha256": "742e94f4816773c25291cd860e889e25d153340aff88ca79f651d1faddce367c",
+      "winter_detail": "artifacts/imagery/pilot-19v/winter-review.png",
+      "rejected": [],
+      "finding": "All 20 RGB crops inspected. No visible cloud, haze or obvious RGB misregistration. Winter cast-building shadows are pronounced around the central courtyard but localized; roofs and street features remain readable, with no broad heavy shadow obscuring the block. Retain 19 training acquisitions. Seasonal tint, vegetation, vehicle and illumination changes remain limitations. Holdout reviewed only for source QC, never profile or model selection."
+    }
+  },
+  "profile_fixed_before_evaluation_commit": "6f7dbaa",
+  "holdout_used_for_training_priors_or_choices": false,
+  "profiles": {
+    "basic": {
+      "path": "configs/train-2015-pilot-19v.json",
+      "sha256": "dabfefb11109789537b642b84aa44cf959c2ba37cb92edda5e731f0d218d6ba9"
+    },
+    "recipe": {
+      "path": "configs/train-2015-pilot-19v-recipe.json",
+      "sha256": "a1dcc782906906bf8b4c9313fada508a018c8d1518b6b0ff6c82f87d388984c8"
+    }
+  },
+  "limits": {
+    "max_gaussians": 200000,
+    "doubling_headroom": true,
+    "max_allocated_bytes": 4831838208,
+    "timeout_seconds_both": 7200,
+    "reason": "The 17-view basic run took 26 minutes, close to the former 30-minute basic limit. Both profiles fixed at two hours before evaluation; splat and memory caps unchanged."
+  },
+  "baseline": {
+    "result": "training/result-2015-8w.json",
+    "registered_mae_m": {
+      "all_labelled": 2.817,
+      "ground": 2.768,
+      "building": 2.872,
+      "vegetation": 2.777
+    },
+    "holdout_psnr_db": 17.73
+  },
+  "decision": {
+    "rule": "The run with lower registered all-labelled MAE wins only with >=0.2 m improvement over the five-view basic baseline and no ground/building/vegetation MAE regression >0.3 m.",
+    "status": "not_evaluable",
+    "viewer_release": "jax068-2015-5v-r2",
+    "passes": false,
+    "reason": "Both exports fail the existing 350 m horizontal radial ENU centre envelope. Rendered-depth and lidar checks were not run, so neither MAE improvement nor class-regression gate can be established. Retain the five-view release; no 19-view tiling, publication or activation.",
+    "registered_mae_improvement_m": null,
+    "class_mae_change_m": null,
+    "viewer_run": "pilot-2015-8w-01"
+  },
+  "runs": {
+    "basic": {
+      "run": "artifacts/stage1/pilot-2015-19v-01",
+      "status": "export_blocked",
+      "training": {
+        "profile": "configs/train-2015-pilot-19v.json",
+        "profile_sha256": "dabfefb11109789537b642b84aa44cf959c2ba37cb92edda5e731f0d218d6ba9",
+        "report_sha256": "0493200802a1ab48132dae00dfbbf3375eaca5942496d043e8840eff5b1b4016",
+        "preflight_report_sha256": "be8a677c5a9e23d39a702684900088725c26346cd6a7cdae702c080437cdee32",
+        "final_splats": 114500,
+        "elapsed_seconds": 701.3229359449979,
+        "peak_allocated_mib": 239.3017578125,
+        "peak_reserved_mib": 732.0,
+        "checkpoint_resume_verified": true
+      },
+      "evaluation": {
+        "report_sha256": "f3ce9db446d76659e3ecf6b6e0b4df8267284a5405e28174b194b6f4603f2626",
+        "final_psnr_db": {
+          "104001000209A800": {
+            "role": "train",
+            "psnr_db": 24.662251861251537
+          },
+          "1040010002A97700": {
+            "role": "train",
+            "psnr_db": 26.520964504426793
+          },
+          "1040010003371100": {
+            "role": "train",
+            "psnr_db": 24.4305875135519
+          },
+          "10400100031BC200": {
+            "role": "train",
+            "psnr_db": 28.03202890841289
+          },
+          "1040010004550F00": {
+            "role": "train",
+            "psnr_db": 24.62671109974201
+          },
+          "1040010005A0D800": {
+            "role": "train",
+            "psnr_db": 22.372007802778704
+          },
+          "10400100066B8E00": {
+            "role": "train",
+            "psnr_db": 26.06707800414053
+          },
+          "1040010007020F00": {
+            "role": "train",
+            "psnr_db": 26.41887801324856
+          },
+          "1040010006764E00": {
+            "role": "train",
+            "psnr_db": 24.043114885160346
+          },
+          "1040010007980900": {
+            "role": "train",
+            "psnr_db": 24.852912078399534
+          },
+          "1040010008037800": {
+            "role": "train",
+            "psnr_db": 25.251661814109955
+          },
+          "104001000AB24A00": {
+            "role": "train",
+            "psnr_db": 23.02550188215221
+          },
+          "104001000A1B5F00": {
+            "role": "train",
+            "psnr_db": 24.93693459484508
+          },
+          "104001000AB10600": {
+            "role": "train",
+            "psnr_db": 20.965898231449817
+          },
+          "104001000C22D200": {
+            "role": "train",
+            "psnr_db": 20.807113642318413
+          },
+          "104001000C478800": {
+            "role": "train",
+            "psnr_db": 19.97527012074794
+          },
+          "104001000E362D00": {
+            "role": "train",
+            "psnr_db": 21.506115220924706
+          },
+          "1040010013D78C00": {
+            "role": "train",
+            "psnr_db": 24.984166320221295
+          },
+          "1040010016BADB00": {
+            "role": "train",
+            "psnr_db": 21.531143608356484
+          },
+          "104001000A22A000": {
+            "role": "holdout",
+            "psnr_db": 16.64337022551261
+          }
+        }
+      },
+      "export": {
+        "status": "failed",
+        "manifest_sha256": "0fec0b9831b913e55a30e6506dc3ecc9a01586f370e9086716345bda2be5807d",
+        "fused_ply_sha256": "6d5475273a1b2abf312a3c5bbfdecf33f0ada3c6b75d6591e8a7aa2be9f93425",
+        "round_trip_max_error_m": 1.4357489641873657e-09,
+        "extent": {
+          "frame": "metric ENU at the recorded anchor",
+          "min_m": [
+            -342.2217696083289,
+            -285.0032765593215,
+            -14.230450176599824
+          ],
+          "max_m": [
+            273.65292206683876,
+            374.96126438461073,
+            129.51597115745363
+          ],
+          "span_m": [
+            615.8746916751677,
+            659.9645409439322,
+            143.74642133405345
+          ],
+          "centre_m": [
+            -34.284423770745065,
+            44.978993912644626,
+            57.64276049042691
+          ],
+          "nominal_block_half_extent_m": 145.0,
+          "fraction_within_nominal_half_extent": 0.4911528384279476,
+          "radius_percentiles_m": {
+            "p50": 146.3685450197616,
+            "p95": 252.35144869833292,
+            "p99": 292.75240013112796,
+            "max": 396.34844557718833
+          },
+          "opacity_weighted_radius": {
+            "p50_radius_m": 133.66199067061902,
+            "p90_radius_m": 194.151614007482,
+            "p95_radius_m": 209.4289521245714,
+            "p99_radius_m": 237.96601413108476
+          },
+          "envelope_m": 350.0,
+          "vertical_envelope_m": 250.0,
+          "plausible": false,
+          "note": "Coarse sanity envelope only. Border floaters extend the full bbox beyond the nominal 250 m block plus 20 m halo; this is not an accuracy measurement."
+        },
+        "failures": [
+          "ENU splat-centre bbox exceeds the coarse plausibility envelope"
+        ],
+        "sh_degree": 2,
+        "appearance_colour_mapping": false,
+        "extent_diagnostic": {
+          "radial_envelope_violators": 38,
+          "total_splats": 114500,
+          "max_horizontal_radius_m": 396.34844557718833,
+          "violator_opacity_min": 9.574977593729272e-05,
+          "violator_opacity_max": 0.000575588783249259
+        },
+        "render_equivalence_status": "not_reached: extent gate failed"
+      },
+      "lidar_check": {
+        "status": "not_run",
+        "reason": "Export fails the existing 350 m horizontal radial ENU centre envelope; depth and lidar stages stopped, no gate relaxation."
+      },
+      "visual_review": {
+        "evaluation": "Full comparison.png reviewed: building and road structure recognizable, cross-date colour mismatch and border smearing.",
+        "artifacts": [
+          "artifacts/stage1/pilot-2015-19v-01/evaluation/comparison.png"
+        ],
+        "dsm": "Not generated: export extent gate failed."
+      }
+    },
+    "recipe": {
+      "run": "artifacts/stage1/pilot-2015-19v-recipe-01",
+      "status": "export_blocked",
+      "training": {
+        "profile": "configs/train-2015-pilot-19v-recipe.json",
+        "profile_sha256": "a1dcc782906906bf8b4c9313fada508a018c8d1518b6b0ff6c82f87d388984c8",
+        "report_sha256": "b322aca7ef8c790c9130d72d49aef44b5bbf4d7b3ae8898e7b63361054225dcc",
+        "preflight_report_sha256": "5b1aa22e5269f7c7f876cacdf45e2d06084148d16ee145f7802da180b6492746",
+        "final_splats": 119248,
+        "elapsed_seconds": 2523.9626294290065,
+        "peak_allocated_mib": 2636.115234375,
+        "peak_reserved_mib": 3024.0,
+        "checkpoint_resume_verified": true
+      },
+      "evaluation": {
+        "report_sha256": "ee82ab17f44ca290321982f826856b8b3fcba4e4f47221428e05dda3abe6a198",
+        "final_psnr_db": {
+          "104001000209A800": {
+            "role": "train",
+            "psnr_db": 25.924389933783182
+          },
+          "1040010002A97700": {
+            "role": "train",
+            "psnr_db": 28.77077939997964
+          },
+          "1040010003371100": {
+            "role": "train",
+            "psnr_db": 24.943807079160408
+          },
+          "10400100031BC200": {
+            "role": "train",
+            "psnr_db": 31.967443771285616
+          },
+          "1040010004550F00": {
+            "role": "train",
+            "psnr_db": 28.89489880637727
+          },
+          "1040010005A0D800": {
+            "role": "train",
+            "psnr_db": 27.593434995774388
+          },
+          "10400100066B8E00": {
+            "role": "train",
+            "psnr_db": 31.720342934077465
+          },
+          "1040010007020F00": {
+            "role": "train",
+            "psnr_db": 25.38227842390439
+          },
+          "1040010006764E00": {
+            "role": "train",
+            "psnr_db": 23.19594462385838
+          },
+          "1040010007980900": {
+            "role": "train",
+            "psnr_db": 33.621989765498704
+          },
+          "1040010008037800": {
+            "role": "train",
+            "psnr_db": 26.674428086955253
+          },
+          "104001000AB24A00": {
+            "role": "train",
+            "psnr_db": 27.34958812276554
+          },
+          "104001000A1B5F00": {
+            "role": "train",
+            "psnr_db": 22.7294543774698
+          },
+          "104001000AB10600": {
+            "role": "train",
+            "psnr_db": 21.040629733173212
+          },
+          "104001000C22D200": {
+            "role": "train",
+            "psnr_db": 27.41728856950308
+          },
+          "104001000C478800": {
+            "role": "train",
+            "psnr_db": 29.690910092375155
+          },
+          "104001000E362D00": {
+            "role": "train",
+            "psnr_db": 20.84110751952956
+          },
+          "1040010013D78C00": {
+            "role": "train",
+            "psnr_db": 30.42964074192693
+          },
+          "1040010016BADB00": {
+            "role": "train",
+            "psnr_db": 21.210241769621852
+          },
+          "104001000A22A000": {
+            "role": "holdout",
+            "psnr_db": 15.490613446153752
+          }
+        }
+      },
+      "export": {
+        "status": "failed",
+        "manifest_sha256": "1894ce13dc6c1587884b9f62eb8d0357272d5b217c79c63ee233e453ae3f6fb9",
+        "fused_ply_sha256": "b5de12047184b3e750a13e49dfa0cb416e696e17e1ea39da905957941356be66",
+        "round_trip_max_error_m": 1.439044564245638e-09,
+        "extent": {
+          "frame": "metric ENU at the recorded anchor",
+          "min_m": [
+            -325.4740777826534,
+            -263.85739618056533,
+            -9.26031046814962
+          ],
+          "max_m": [
+            239.0647737224861,
+            317.23161474301475,
+            114.24249345904579
+          ],
+          "span_m": [
+            564.5388515051395,
+            581.0890109235801,
+            123.5028039271954
+          ],
+          "centre_m": [
+            -43.20465203008365,
+            26.687109281224707,
+            52.49109149544809
+          ],
+          "nominal_block_half_extent_m": 145.0,
+          "fraction_within_nominal_half_extent": 0.5931755668858177,
+          "radius_percentiles_m": {
+            "p50": 133.45291996406934,
+            "p95": 221.46733836869245,
+            "p99": 271.39443907590817,
+            "max": 375.8782250265891
+          },
+          "opacity_weighted_radius": {
+            "p50_radius_m": 131.2588123372421,
+            "p90_radius_m": 191.46307059788177,
+            "p95_radius_m": 207.04384074523037,
+            "p99_radius_m": 229.17505202337986
+          },
+          "envelope_m": 350.0,
+          "vertical_envelope_m": 250.0,
+          "plausible": false,
+          "note": "Coarse sanity envelope only. Border floaters extend the full bbox beyond the nominal 250 m block plus 20 m halo; this is not an accuracy measurement."
+        },
+        "failures": [
+          "ENU splat-centre bbox exceeds the coarse plausibility envelope"
+        ],
+        "sh_degree": 1,
+        "appearance_colour_mapping": true,
+        "extent_diagnostic": {
+          "radial_envelope_violators": 16,
+          "total_splats": 119248,
+          "max_horizontal_radius_m": 375.8782250265891,
+          "violator_opacity_min": 9.704384865472093e-05,
+          "violator_opacity_max": 9.746339492266998e-05
+        },
+        "render_equivalence_status": "not_reached: extent gate failed"
+      },
+      "lidar_check": {
+        "status": "not_run",
+        "reason": "Export fails the existing 350 m horizontal radial ENU centre envelope; depth and lidar stages stopped, no gate relaxation."
+      },
+      "visual_review": {
+        "evaluation": "Full comparison.png reviewed: smoother and softer surfaces, warmer winter colours, border smearing remains; holdout appearance differs from reference.",
+        "artifacts": [
+          "artifacts/stage1/pilot-2015-19v-recipe-01/evaluation/comparison.png"
+        ],
+        "dsm": "Not generated: export extent gate failed."
+      }
+    }
+  },
+  "checks": {
+    "sfm_python": {
+      "passed": 89,
+      "skipped": 2,
+      "skip_reason": "pyproj unavailable in sfm environment"
+    },
+    "imagery": {
+      "passed": 34
+    },
+    "api": {
+      "passed": 12
+    },
+    "npm_test": {
+      "passed": 4
+    },
+    "web_unit": {
+      "passed": 8
+    },
+    "web_browser": {
+      "passed": 1,
+      "release": "jax068-2015-5v-r2"
+    },
+    "pilot_browser": {
+      "passed": 1
+    },
+    "browser_visual_review": "Final current-revision app globe, footprints, active top and oblique views, rollback view and narrow layout, plus pilot top/oblique screenshots reviewed. Five-view baseline visible with border streaks and needle-like splats. No viewer changes by this experiment.",
+    "ruff_E_F": "passed: pipeline/reconstruct.py",
+    "gpu_jobs_sequential": true,
+    "commands": [
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-sfm/bin/python -m pytest -q tests/sfm tests/python",
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-imagery/bin/python -m pytest -q tests/imagery",
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-api/bin/python -m pytest -q tests/api",
+      "npm test",
+      "npm --prefix apps/web test",
+      "uvx ruff check --isolated --select E,F --line-length 120 pipeline/reconstruct.py",
+      "npm --prefix apps/web run test:browser",
+      "npm run build && npx playwright test tests/pilot.browser.js"
+    ],
+    "final_unit_revision": "9c90805",
+    "final_browser_revision": "9c90805",
+    "viewer_expectations_and_thresholds_unchanged_by_this_experiment": true,
+    "concurrent_app_work": "a7f2397 and 9c90805 landed during training and published five-view r2 with the same model/quality evidence. Final suites and browser checks use this current revision; active pointer preserved.",
+    "browser_artifacts": [
+      "apps/web/test-results/app.browser.js-offline-glo-30201-ts-and-release-substitution/app-splats-top.png",
+      "apps/web/test-results/app.browser.js-offline-glo-30201-ts-and-release-substitution/app-splats-oblique.png",
+      "test-results/pilot.browser.js-2015-pilo-29243-rint-and-refine-by-distance/pilot-top.png"
+    ]
+  },
+  "commands": [
+    ".venv-imagery/bin/python -m pipeline.acquisitions select artifacts/imagery/acquisitions.json --approved configs/jax068-pilot-19v.json --output artifacts/imagery/pilot-19v/selection.json",
+    ".venv-imagery/bin/python -m pipeline.sources artifacts/imagery/pilot-19v/selection.json --max-total-gib 30 --output artifacts/imagery/pilot-19v/sources.json",
+    ".venv-imagery/bin/python -m pipeline.block_inputs artifacts/imagery/pilot-19v/selection.json artifacts/imagery/pilot-19v/sources.json --output artifacts/imagery/pilot-19v/inputs",
+    ".venv-imagery/bin/python -m pipeline.satellite_sfm artifacts/imagery/pilot-19v/selection.json --output artifacts/imagery/pilot-19v/calibration",
+    ".venv-sfm/bin/python -m pipeline.reconstruct --inputs artifacts/imagery/pilot-19v/inputs --calibration artifacts/imagery/pilot-19v/calibration --approved configs/jax068-pilot-19v.json --output artifacts/imagery/pilot-19v/sfm",
+    ".venv-sfm/bin/python -m pipeline.skyfall_inputs --reconstruction artifacts/imagery/pilot-19v/sfm --inputs artifacts/imagery/pilot-19v/inputs --approved configs/jax068-pilot-19v.json --output artifacts/imagery/pilot-19v/skyfall",
+    "source scripts/stage1-env.sh && python scripts/check-skyfall-inputs.py --scene artifacts/imagery/pilot-19v/skyfall && python -m pipeline.phase2 artifacts/imagery/pilot-19v/skyfall/phase2-manifest.json --output artifacts/imagery/pilot-19v/skyfall/preflight-report.json",
+    ".venv-stage1/bin/python -m pipeline.training --scene artifacts/imagery/pilot-19v/skyfall --profile configs/train-2015-pilot-19v.json --output artifacts/stage1/pilot-2015-19v-01",
+    ".venv-stage1/bin/python -m pipeline.evaluation --run artifacts/stage1/pilot-2015-19v-01",
+    ".venv-stage1/bin/python -m pipeline.export --run artifacts/stage1/pilot-2015-19v-01 --selection artifacts/imagery/pilot-19v/selection.json",
+    ".venv-stage1/bin/python -m pipeline.training --scene artifacts/imagery/pilot-19v/skyfall --profile configs/train-2015-pilot-19v-recipe.json --output artifacts/stage1/pilot-2015-19v-recipe-01",
+    ".venv-stage1/bin/python -m pipeline.evaluation --run artifacts/stage1/pilot-2015-19v-recipe-01",
+    ".venv-stage1/bin/python -m pipeline.export --run artifacts/stage1/pilot-2015-19v-recipe-01 --selection artifacts/imagery/pilot-19v/selection.json"
+  ],
+  "limitations": [
+    "One 250 m block; lidar acquisition date unknown.",
+    "Wider acquisition span includes seasonal and construction change.",
+    "Joint recipe comparison, not an isolated MoGe ablation.",
+    "Known ENU anchor: registration shift measures placement relative to this lidar.",
+    "No production-readiness claim."
+  ],
+  "environment_setup": "source scripts/stage1-env.sh",
+  "preparation": {
+    "disk_free_before_download_gib": 30.9951,
+    "total_source_gib": 28.8337,
+    "new_download_gib": 19.652,
+    "source_budget_gib": 30,
+    "reserve_gib": 5,
+    "rpc_calibration": {
+      "report": "artifacts/imagery/pilot-19v/calibration/calibration-report.json",
+      "status": "passed",
+      "report_sha256": "f98f780e41cb963cd6c41f9a5bb9bf51399ebd2aad2b4f8ddc243cbecd1911d5"
+    },
+    "sources": {
+      "path": "artifacts/imagery/pilot-19v/sources.json",
+      "status": "downloaded",
+      "products": 40,
+      "report_sha256": "ad3d8a6e0bab4d5e37e2649da1bda5c99d73446798bb326d11953a06e7474ec3",
+      "total_source_bytes": 30959961285,
+      "reused_products": 12
+    },
+    "rgb": {
+      "path": "artifacts/imagery/pilot-19v/inputs/inputs-report.json",
+      "status": "prepared_for_review",
+      "min_valid_fraction": 1.0,
+      "max_height_parallax_msi_pixels": 0.025390954080832306
+    }
+  },
+  "sparse_reconstruction": {
+    "status": "reconstructed",
+    "first_attempt": {
+      "path": "artifacts/imagery/pilot-19v/sfm-attempt01/reconstruction-report.json",
+      "report_sha256": "9ff8d449f93c373095b2f78a08a8ec9029a0328542cda2d903e4609c3bcd87f4",
+      "status": "failed",
+      "error": "COLMAP database image/camera mapping differs from training inputs",
+      "features_elapsed_seconds": 33.89218646799418,
+      "holdout_in_database": false
+    },
+    "fix": {
+      "commit": "a81cd6b",
+      "description": "Single-thread feature extraction preserves image_id == camera_id required by the pinned initializer. Existing mapping check unchanged; fresh attempt passed. No geometry or quality gate changed."
+    },
+    "report": "artifacts/imagery/pilot-19v/sfm/reconstruction-report.json",
+    "report_sha256": "0410e60c3fecfcf23c039925dc9488b3b8001620ff8f5907da98a9d3ba3263ed",
+    "points": 23931,
+    "observations": 85988,
+    "reprojection_px": {
+      "observations": 85988,
+      "median": 0.40769236004047604,
+      "p95": 1.4813077856488517,
+      "max": 2.615003710231858
+    },
+    "track_lengths": {
+      "2": 11873,
+      "3": 4667,
+      "4": 2517,
+      "5": 1427,
+      "6": 874,
+      "7": 615,
+      "8": 439,
+      "9": 356,
+      "10": 272,
+      "11": 222,
+      "12": 174,
+      "13": 128,
+      "14": 101,
+      "15": 72,
+      "16": 69,
+      "17": 46,
+      "18": 42,
+      "19": 30
+    },
+    "commands": [
+      {
+        "name": "features",
+        "elapsed_seconds": 84.37127487399994,
+        "returncode": 0
+      },
+      {
+        "name": "matching",
+        "elapsed_seconds": 751.0598454140054,
+        "returncode": 0
+      },
+      {
+        "name": "triangulation-32",
+        "elapsed_seconds": 2.169813651998993,
+        "returncode": 0
+      },
+      {
+        "name": "bundle-adjustment-32",
+        "elapsed_seconds": 0.8673778060037876,
+        "returncode": 0
+      },
+      {
+        "name": "triangulation-2",
+        "elapsed_seconds": 2.16986608300067,
+        "returncode": 0
+      },
+      {
+        "name": "bundle-adjustment-2",
+        "elapsed_seconds": 0.7161498240020592,
+        "returncode": 0
+      }
+    ],
+    "holdout_in_database": false,
+    "database_training_images": 19,
+    "pair_count": 171,
+    "database_image_camera_ids_match": true
+  },
+  "scene": {
+    "path": "artifacts/imagery/pilot-19v/skyfall",
+    "contract_sha256": "0741bccf11200a16cc112b1654830837a21382724b09e0e31a633627b08130e0",
+    "loader_verification": "passed",
+    "phase2_preflight": "passed",
+    "files_unchanged_after_runs": true,
+    "verified_payload_files": 68,
+    "phase2_preflight_report_sha256": "553589737ccfea3feb9b51acf88dacb8172a614e3deab55a8758f165f4492a74"
+  },
+  "pseudo_views": {
+    "generation": "Synthetic 60-degree FOV orbit cameras around random targets; elevation 80 to 45 degrees, radius 300 to 250 model units. No acquisition camera poses or RGBs read.",
+    "appearance_ids": "random.randint(0, num_train_cams - 1), num_train_cams=19 from scene.getTrainCameras(); holdout excluded.",
+    "source": "adapters/skyfall/stage1-pseudo-depth.patch",
+    "moge_commit": "aca893a40faf6905cb722d6614cc37cb87ea06f7",
+    "weights_revision": "ad326bfb61facd6c52b5a825bc1e34d7c97d9672"
+  },
+  "tiling": {
+    "status": "not_selected",
+    "reason": "Both exports fail; fixed lidar decision rule cannot be established.",
+    "active_release": "jax068-2015-5v-r2",
+    "rollback_release": "jax068-2015-5v-r1"
+  },
+  "interpretation": "Both fixed profiles train within the existing splat and memory caps, but out-of-envelope splat centres stop export. Appearance PSNR alone cannot establish a height improvement. Whether pipeline data reaches about 1.4 m registered MAE remains unanswered; no holdout/lidar tuning and no gates relaxed.",
+  "next": "Phase 3: two neighbouring blocks (shared ownership grid)",
+  "commands_not_executed": [
+    ".venv-stage1/bin/python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-19v-01 --output artifacts/validation/pilot-2015-19v-01-depth",
+    ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-19v-01/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-19v-01-depth/lidar --points artifacts/validation/pilot-2015-19v-01-depth/depth-points.npz",
+    ".venv-stage1/bin/python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-19v-recipe-01 --output artifacts/validation/pilot-2015-19v-recipe-01-depth",
+    ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-19v-recipe-01/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-19v-recipe-01-depth/lidar --points artifacts/validation/pilot-2015-19v-recipe-01-depth/depth-points.npz"
+  ],
+  "completed": "2026-10-29"
+}

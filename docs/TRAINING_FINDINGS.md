@@ -17,8 +17,16 @@ one 250 m block. Treat these as directions, not guarantees.
 | Pipeline `pilot-2015-8w-01` | 5 | Basic Stage 1 | 17.73 dB | 2.82 m | 2.77 | 2.87 | 2.78 | 4.17 |
 | Pipeline `pilot-2015-8w-depth-01` | 5 | Static MoGe priors on satellite images | 15.18 dB | 7.83 m | 7.48 | 8.51 | 3.94 | 10.66 |
 | Pipeline `pilot-2015-8w-recipe-01` | 5 | Authors' Stage 1 recipe | 17.21 dB | 2.78 m | 2.30 | 3.36 | 2.19 | 5.09 |
+| Pipeline `pilot-2015-19v-01` | 19 | Basic Stage 1 | 16.64 dB | — | — | — | — | — |
+| Pipeline `pilot-2015-19v-recipe-01` | 19 | Authors' Stage 1 recipe | 15.49 dB | — | — | — | — | — |
 | Authors' data `ref-jax068-01` | 17 | Basic Stage 1 | 21.35 dB | 2.36 m | 2.67 | 2.06 | 1.93 | 4.03 |
 | Authors' data `ref-jax068-recipe-01` | 17 | Authors' Stage 1 recipe | 18.90 dB | **1.38 m** | 1.24 | 1.52 | 1.62 | 2.43 |
+
+The 19-view runs trained successfully but failed the existing 350 m radial
+ENU export envelope (maximum centre radius 396.35 m basic, 375.88 m recipe).
+Depth/lidar validation stopped; dashes mean unmeasured, not a regression score.
+The five-view release stays active because neither run establishes the fixed
+lidar decision rule. [Details](../training/RESULT_2015.md#nineteen-training-views).
 
 - **Basic Stage 1** uses the pilot settings: resolution 2, SH 2, no appearance
   model, no depth losses.
@@ -37,7 +45,7 @@ one 250 m block. Treat these as directions, not guarantees.
    views (3.32 → 2.82 → 2.36 m), and buildings gained the most. The 17-view
    run also used the authors' cameras, so not all of that gain comes from
    view count alone.
-2. **The authors' recipe helps only once there are enough views.**
+2. **The authors' recipe helped with the authors' 17-view data, but not the five-view pilot.**
    - With 17 views it cut MAE by 41% (2.36 → 1.38 m), improving every class.
    - With 5 views it made almost no difference overall (2.82 → 2.78 m) and
      made buildings worse (2.87 → 3.36 m), while ground and vegetation
@@ -46,6 +54,9 @@ one 250 m block. Treat these as directions, not guarantees.
      viewpoints and asks MoGe for depth. With few views, the buildings are
      still smeared needle-like splats, so those renders and MoGe's depth are
      poor.
+   - The pipeline's own 19-view height comparison remains blocked at export;
+     it does not yet verify that recipe gain. Holdout PSNR fell to 16.64 dB
+     basic and 15.49 dB recipe across the 442-day acquisition span.
 3. **Do not use static MoGe priors on the satellite images**
    (`--lambda_depth`). The authors leave this off.
    - MoGe values were about 1,900–7,800 units with only about 0.2 units of
@@ -70,6 +81,8 @@ one 250 m block. Treat these as directions, not guarantees.
    | Basic, 17 views | 0.5 GiB | 26 min |
    | Recipe, 5 views | 2.65 GiB | 42.5 min |
    | Recipe, 17 views | 2.9 GiB | 53.4 min |
+   | Basic, pipeline 19 views | 0.23 GiB | 11.7 min |
+   | Recipe, pipeline 19 views | 2.57 GiB | 42.1 min |
 
    All runs used a 6 GB RTX 3060 Laptop GPU at resolution 2.
 
@@ -99,8 +112,10 @@ one 250 m block. Treat these as directions, not guarantees.
 
 ## Open questions
 
-- Whether pipeline data with about 15–20 views reaches the authors'-data
-  result (about 1.4 m MAE) with the pipeline's own cameras and a known anchor.
+- Whether pipeline data reaches about 1.4 m MAE with its own cameras and a
+  known anchor remains unanswered: both 19-view exports fail the existing
+  extent gate before rendered-depth lidar validation. Any future treatment of
+  low-opacity outliers needs a declared policy before another evaluation.
 - Where the recipe starts to help: somewhere between 5 and 17 views.
 - How much seasonal and building change a wider date window adds.
 - Whether full resolution (resolution 1) or Stage 2 refinement on a larger

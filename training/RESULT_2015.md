@@ -460,3 +460,81 @@ Checks: 69 SfM/Python tests pass (two pyproj-dependent tests skip there and
 pass in the imagery environment); 34 imagery tests, four reference-adapter
 tests, Ruff E/F and four npm tests pass. Viewer files and browser thresholds
 are unchanged; conditional recipe tiling/browser checks were not needed.
+
+## Nineteen training views
+
+The approved [selection](../configs/jax068-pilot-19v.json) uses all 19 usable
+training acquisitions from October 5, 2014 to December 21, 2015 (442.007 days),
+with May 2 held out. All 20 RGB crops were inspected before SfM; none was
+rejected. No clouds, haze or obvious RGB misregistration were visible. Winter
+building shadows are pronounced around the central courtyard but localized;
+roofs and street features remain readable. Seasonal tint, vegetation, vehicles
+and illumination vary. Per-view gates remain unchanged.
+
+All 40 PAN/MSI sources were verified (28.83 GiB total, 19.65 GiB newly fetched).
+The initial parallel feature extraction failed the image/camera ID check;
+single-thread extraction preserves the ordering required by the pinned
+initializer. The fresh reconstruction registered all 19 training views with
+23,931 points and 85,988 observations; median/p95/max residuals are
+0.408/1.481/2.615 px, with tracks of 2–19 views. The holdout is absent from the
+COLMAP database. Loader verification and GPU preflight pass.
+
+Both profiles were committed before evaluation (`6f7dbaa`): basic Stage 1 and
+the unchanged authors' recipe, each at resolution 2, 200k splat doubling cap
+and 4.5 GiB allocation budget. Both time limits are two hours; the previous
+30-minute basic limit was close to the 26-minute 17-view reference run.
+No holdout or lidar tuning. Compact evidence:
+[result-2015-19v.json](result-2015-19v.json).
+
+| Metric | 3v basic | 5v basic | 5v recipe | 19v basic | 19v recipe |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Holdout PSNR (dB) | 17.57 | 17.73 | 17.21 | 16.64 | 15.49 |
+| Registered MAE all (m) | 3.32 | 2.82 | 2.78 | — | — |
+| Ground (m) | 2.93 | 2.77 | 2.30 | — | — |
+| Buildings (m) | 3.70 | 2.87 | 3.36 | — | — |
+| Vegetation (m) | 3.75 | 2.78 | 2.19 | — | — |
+| Registered RMSE (m) | 5.04 | 4.17 | 5.09 | — | — |
+| Registered NMAD (m) | 2.99 | 2.82 | 1.47 | — | — |
+| Completeness | 99.0% | 99.6% | 99.8% | — | — |
+| Horizontal offset (m) | 1.8 | 1.6 | 1.8 | — | — |
+| Splats | 102,543 | 107,464 | 134,252 | 114,500 | 119,248 |
+| Training time (min) | 9.0 | 10.7 | 42.5 | 11.7 | 42.1 |
+| Peak allocated memory (MiB) | 214.9 | 214.3 | 2,708.7 | 239.3 | 2,636.1 |
+
+Basic training completed 30k steps and checkpoint/resume validation, but export
+failed the existing ENU extent gate: 38 splat centres exceed the 350 m
+horizontal radius, reaching 396.35 m. The full centre bbox spans
+616 × 660 × 144 m. Attributes are finite and transform round trip passes
+(1.44e-9 m), but these do not supersede the extent gate. Export failure stopped depth rendering and lidar
+validation; dashes denote unmeasured values. No extent gate was relaxed.
+The RGB comparison was reviewed: recognizable building/road structure,
+cross-date colour mismatch and border smearing.
+
+The recipe also completed 30k steps and checkpoint/resume validation, but its
+export fails the same radial gate: 16 centres exceed 350 m, reaching 375.88 m;
+the bbox spans 565 × 581 × 124 m. The violating splats have low opacity
+(basic 0.000096–0.000576; recipe about 0.000097), but the existing gate applies
+to every centre. No pruning or gate change was introduced after evaluation.
+The recipe's RGB comparison was reviewed: smoother, softer surfaces and warmer
+winter colours, with border smears remaining. Its holdout PSNR is 15.49 dB.
+Neither run produced a depth DSM or `dsm-comparison.png`; render equivalence
+was not reached because extent validation precedes it.
+
+The fixed decision remains: lower registered all-labelled MAE among the two
+runs, at least 0.2 m better than five-view basic, with no class more than
+0.3 m worse. Neither run establishes the lidar rule, so no 19-view tiling,
+release or activation was performed. The five-view model stays active
+(`jax068-2015-5v-r2`, published by concurrent app work using the same five-view
+run and quality evidence). More views alone did not improve
+held-out appearance here; the wider seasonal span and basic model's lack of
+appearance correction are confounding factors. Whether pipeline cameras and
+this recipe reach about 1.4 m MAE remains unanswered because export blocked
+height measurement. One block, lidar date unknown; no production-readiness claim.
+
+Checks: 89 SfM/Python tests pass (two pyproj-dependent skips), 34 imagery,
+12 API, four root JavaScript and eight web unit tests pass. App and old pilot
+browser tests pass; this experiment changed no expectations or thresholds. Screenshots
+were reviewed. Ruff E/F passes on `pipeline/reconstruct.py`.
+Next: Phase 3: two neighbouring blocks (shared ownership grid). The export
+extent blocker remains recorded; the more-views experiment is complete with
+height comparison blocked.

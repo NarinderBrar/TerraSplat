@@ -1,6 +1,6 @@
 # TerraSplat build plan
 
-Research date: 2026-10-28; status updated 2026-10-29: the authors' recipe on the five-view pilot gives 2.82 → 2.78 m registered lidar MAE, but buildings worsen 2.87 → 3.36 m and holdout PSNR falls 17.73 → 17.21 dB; both fixed viewer gates fail, so the five-view baseline stays. Next: Web app v1 (viewer + API). [Result](../training/RESULT_2015.md#authors-recipe-on-the-pilot).
+More views: 19 training acquisitions plus May 2 holdout; basic/recipe PSNR 16.64/15.49 dB. Both exports fail the existing extent gate, so lidar comparison is blocked and the five-view release stays active. Next: Phase 3: two neighbouring blocks (shared ownership grid). [Result](../training/RESULT_2015.md#nineteen-training-views).
 
 The design below is an engineering proposal. Current upstream capabilities and local evidence are documented separately in [RESEARCH.md](RESEARCH.md). Thresholds are proposed acceptance targets, not measured results.
 

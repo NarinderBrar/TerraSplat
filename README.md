@@ -2,7 +2,7 @@
 
 Pipeline for turning suitable satellite imagery into georeferenced, tiled Gaussian splats. Phase 0 includes a static Cesium diagnostic viewer.
 
-The authors' recipe on the five-view pilot gives 2.82 → 2.78 m registered lidar MAE, but buildings worsen 2.87 → 3.36 m and holdout PSNR falls 17.73 → 17.21 dB; both fixed viewer gates fail, so the five-view baseline stays. Web app v1 now reads published releases. [Result](training/RESULT_2015.md#authors-recipe-on-the-pilot).
+More views: 19 training acquisitions plus May 2 holdout; basic/recipe PSNR 16.64/15.49 dB. Both exports fail the existing extent gate, so lidar comparison is blocked and the five-view release stays active. Next: Phase 3: two neighbouring blocks (shared ownership grid). [Result](training/RESULT_2015.md#nineteen-training-views).
 
 ```bash
 npm ci

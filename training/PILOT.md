@@ -1,8 +1,9 @@
 # 2015 pilot: verified Skyfall inputs
 
-The authors' recipe on the five-view pilot gives 2.82 → 2.78 m registered lidar MAE, but buildings worsen 2.87 → 3.36 m and holdout PSNR falls 17.73 → 17.21 dB; both fixed viewer gates fail, so the five-view baseline stays. Next: Web app v1 (viewer + API). [Result](RESULT_2015.md#authors-recipe-on-the-pilot).
+More views: 19 training acquisitions plus May 2 holdout; basic/recipe PSNR 16.64/15.49 dB. Both exports fail the existing extent gate, so lidar comparison is blocked and the five-view release stays active. Next: Phase 3: two neighbouring blocks (shared ownership grid). [Result](RESULT_2015.md#nineteen-training-views).
 
-The current scene is `artifacts/imagery/skyfall-2015-02`.
+The original three-view scene is `artifacts/imagery/skyfall-2015-02`; the 19-view
+scene is `artifacts/imagery/pilot-19v/skyfall`.
 [pilot-verified.json](pilot-verified.json) records the result and artifact hashes.
 It is separate from the older, unregistered JAX_068 environment diagnostic in
 [verified-result.json](verified-result.json).
