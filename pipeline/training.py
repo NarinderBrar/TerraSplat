@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import math
 from pathlib import Path
 import shutil
 import subprocess
@@ -14,6 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def validate_profile(profile):
+    depth = profile.get("lambda_depth", 0)
+    if type(depth) not in (int, float) or not math.isfinite(depth) or depth < 0:
+        raise ValueError("lambda_depth must be finite and nonnegative")
     if profile.get("version") != 1:
         raise ValueError("Unsupported training profile")
     for key in (
@@ -64,7 +68,7 @@ def training_command(python, data, model, metrics, profile, target, checkpoint=N
         "--kernel_size",
         "0.1",
         "--lambda_depth",
-        "0",
+        str(profile.get("lambda_depth", 0)),
         "--lambda_opacity",
         "0",
         "--lambda_pseudo_depth",

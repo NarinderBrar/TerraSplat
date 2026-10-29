@@ -45,3 +45,19 @@ def test_copied_training_scene_keeps_georeference_and_rejects_changed_payload(tm
     georef.write_text('{"anchor":"changed"}')
     with pytest.raises(ValueError, match="payload changed"):
         copy_scene(source, tmp_path / "failed")
+
+
+def test_depth_weight_defaults_to_zero_and_passes_static_weight(profile):
+    command = training_command("python", "input", "model", "metrics", profile, 1000)
+    assert command[command.index("--lambda_depth") + 1] == "0"
+    profile["lambda_depth"] = 0.5
+    command = training_command("python", "input", "model", "metrics", profile, 1000)
+    assert command[command.index("--lambda_depth") + 1] == "0.5"
+    assert command[command.index("--lambda_pseudo_depth") + 1] == "0"
+
+
+@pytest.mark.parametrize("weight", [-0.1, float("nan"), float("inf"), "0.5", True, None])
+def test_depth_weight_must_be_finite_and_nonnegative(profile, weight):
+    profile["lambda_depth"] = weight
+    with pytest.raises(ValueError, match="lambda_depth"):
+        validate_profile(profile)

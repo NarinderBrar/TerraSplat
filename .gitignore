@@ -29,3 +29,4 @@ public/cesium/
 .venv-sfm/
 # Pilot tiles are generated into artifacts/ and linked here for local viewing.
 public/tiles/
+.venv-moge/
