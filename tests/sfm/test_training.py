@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from pipeline.phase2 import digest
-from pipeline.training import copy_scene, training_command, validate_profile
+from pipeline.training import copy_scene, training_command, training_manifest, validate_profile
 
 
 @pytest.fixture
@@ -82,3 +82,24 @@ def test_optional_loss_weights_must_be_finite(profile, key):
     profile[key] = float('nan')
     with pytest.raises(ValueError, match=key):
         validate_profile(profile)
+
+
+def test_recipe_adapter_selection_preserves_prepared_scene(tmp_path):
+    original = {
+        "prepared_scene": ".", "georeference": "georeference.json",
+        "skyfall": "../../.external/skyfall-gs",
+        "skyfall_patch_profile": "basic-stage1-registered",
+        "expected_skyfall_commit": "pinned",
+    }
+    path = tmp_path / "phase2-manifest.json"
+    path.write_text(json.dumps(original))
+    before = path.read_bytes()
+    recipe = json.loads(Path("configs/train-2015-pilot-8w-recipe.json").read_text())
+    selected = training_manifest(tmp_path, recipe)
+    assert selected["prepared_scene"] == str(tmp_path)
+    assert selected["georeference"] == str(tmp_path / "georeference.json")
+    assert selected["skyfall"].endswith("/.external/skyfall-gs-pseudo")
+    assert selected["skyfall_patch_profile"] == "stage1-pseudo-depth"
+    assert selected["expected_skyfall_commit"] == "pinned"
+    assert path.read_bytes() == before
+    assert training_manifest(tmp_path, {})["skyfall"] == str((tmp_path / original["skyfall"]).resolve())

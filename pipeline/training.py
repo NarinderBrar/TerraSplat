@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 
 from pipeline.phase2 import digest, preflight
@@ -171,22 +172,38 @@ def validate_outputs(model, iteration, skyfall=None):
     }
 
 
+def training_manifest(scene, profile):
+    """Select an audited adapter without rewriting the prepared scene contract."""
+    manifest = json.loads((scene / "phase2-manifest.json").read_text())
+    for key in ("prepared_scene", "georeference", "skyfall"):
+        manifest[key] = str((scene / manifest[key]).resolve())
+    if "skyfall" in profile:
+        manifest["skyfall"] = str((ROOT / profile["skyfall"]).resolve())
+    if "skyfall_patch_profile" in profile:
+        manifest["skyfall_patch_profile"] = profile["skyfall_patch_profile"]
+    return manifest
+
+
 def train(scene, output, profile_path):
     scene, output = Path(scene).resolve(), Path(output).resolve()
     profile = json.loads(Path(profile_path).read_text())
     validate_profile(profile)
     if output.exists():
         raise ValueError("Use a new training output directory")
-    manifest = json.loads((scene / "phase2-manifest.json").read_text())
+    manifest = training_manifest(scene, profile)
     if manifest["skyfall_patch_profile"] != profile.get("skyfall_patch_profile", "basic-stage1-registered"):
         raise ValueError("Training profile and scene adapter disagree")
     backend = (ROOT / profile.get("skyfall", ".external/skyfall-gs")).resolve()
     if backend != (scene / manifest["skyfall"]).resolve():
         raise ValueError("Training profile and audited Skyfall checkout disagree")
-    audit = preflight(scene / "phase2-manifest.json", check_environment=True)
+    with tempfile.TemporaryDirectory(prefix="terrasplat-preflight-") as temporary:
+        manifest_path = Path(temporary) / "phase2-manifest.json"
+        manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
+        audit = preflight(manifest_path, check_environment=True)
     if audit["status"] != "passed":
         raise ValueError(audit["failures"])
     output.mkdir(parents=True)
+    (output / "phase2-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     data, model = output / "input", output / "model"
     contract = copy_scene(scene, data)
     model.mkdir()
