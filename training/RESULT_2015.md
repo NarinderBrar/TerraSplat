@@ -173,44 +173,66 @@ Limitations:
 ## Independent lidar check
 
 ```
+source scripts/stage1-env.sh
+python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-04 \
+  --output artifacts/validation/pilot-2015-04-depth
 .venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-04/export \
-  --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-04
+  --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-04-depth/lidar \
+  --points artifacts/validation/pilot-2015-04-depth/depth-points.npz
 ```
+
+Without `--points`, `dsm_validation` uses the cruder splat-footprint DSM.
 
 Reference: the DFC2019 Track 3 truth for JAX_068, an HSIP airborne lidar DSM at
 0.5 m in UTM 17N with ground, building and vegetation classes. It covers the
 whole block; its centre is within 1.4 m of ours. Heights are WGS84 ellipsoidal:
 the ground median is −17.4 m, where orthometric heights would be about +12 m
-here. It is independent of our imagery, RPCs and SfM. The three files were range-extracted from
-the Sat-NeRF `EarthVision2022` `dataset.zip` into ignored
+here. It is independent of our imagery, RPCs and SfM. The three files were
+range-extracted from the Sat-NeRF `EarthVision2022` `dataset.zip` into ignored
 `artifacts/reference/`; their hashes are in
 [validation-2015-04.json](validation-2015-04.json). The lidar flight date is
 not published.
 
-The splat DSM uses only the recorded transform chain: model → ENU → ECEF →
-UTM with ellipsoidal heights. Each splat with opacity ≥ 0.5 is drawn as a
-footprint disc at its centre height, keeping the maximum per 0.5 m cell.
-Skyfall-GS's `dsmr` then registers it to the lidar. A synthetic test fixes
-the sign of its shift.
+Both DSMs are placed only through the recorded transform chain: model → ENU →
+ECEF → UTM with ellipsoidal heights. Skyfall-GS's `dsmr` then registers each
+DSM to the lidar; a synthetic test fixes the sign of its shift.
 
-| 250 m block | Bias | MAE | NMAD | Completeness |
-| --- | ---: | ---: | ---: | ---: |
-| Unregistered, all labelled | −1.07 m | 4.54 m | 2.88 m | 82% |
-| Unregistered, ground | −0.88 m | 4.02 m | 2.69 m | 80% |
-| Unregistered, buildings | −1.08 m | 4.94 m | 2.89 m | 85% |
-| Registered, all labelled | +0.06 m | 4.22 m | 2.69 m | 82% |
+- Rendered depth (primary): the fused model is rendered from a synthetic,
+  nearly orthographic nadir camera: 17 km altitude, 0.98° field of view,
+  0.25 m pixels. Building lean is at most 0.26 m for 30 m at the block edge.
+  Expected depth (alpha-weighted depth divided by alpha, alpha ≥ 0.5) is
+  back-projected, and the maximum height per 0.5 m cell is kept.
+- Splat footprints (diagnostic): each splat with opacity ≥ 0.5 is drawn as a
+  disc at its centre height.
 
-- Absolute placement: the splat surface sits 1.5 m west and 1.0 m south of
-  the lidar (1.8 m horizontal, about 5 GSD) and about 1.1 m below it. No
-  ground control was used; this is within the few-metre accuracy typical of
-  WorldView-3 RPCs without it. dsmr resolves shifts to the 0.5 m grid.
-- Ground and building biases agree to within 0.2 m, which argues against
-  large scene change since the lidar flight but does not rule it out.
-- MAE is dominated by the splat DSM itself: centre heights drawn as discs
-  scatter along the needle-shaped splats, as the speckled comparison image
-  shows. Skyfall builds its DSM from rendered depth instead, so these MAE
-  values are not comparable to published numbers.
+| 250 m block, rendered depth | Bias | Median | MAE | NMAD | Completeness |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Unregistered, all labelled | +0.15 m | −0.19 m | 3.50 m | 3.16 m | 99% |
+| Unregistered, ground | +0.62 m | +0.16 m | 2.99 m | 2.92 m | 99% |
+| Unregistered, buildings | −0.20 m | −0.49 m | 4.01 m | 3.36 m | 99% |
+| Registered, all labelled | 0.00 m | −0.40 m | 3.32 m | 2.99 m | 99% |
+| Registered, ground | +0.28 m | −0.13 m | 2.93 m | 2.85 m | 99% |
+| Registered, buildings | −0.16 m | −0.63 m | 3.70 m | 3.08 m | 99% |
 
-Next: a rendered-depth DSM for a fair shape comparison, and optionally a
-horizontal correction of about 1.8 m recorded as a separate, versioned
-georeference adjustment. Then scaling to more blocks.
+The footprint DSM reads −1.07 m bias, 4.54 m MAE and 82% completeness
+unregistered.
+
+- Horizontal placement: both DSMs give the same offset. The splat surface
+  sits 1.5 m west and 1.0 m south of the lidar, 1.8 m horizontally or about
+  5 GSD, resolved on the 0.5 m grid. No ground control was used; this is
+  within the few-metre accuracy typical of WorldView-3 RPCs without it.
+- Vertical placement: with rendered depth the surface is within about
+  0.2–0.6 m of the lidar (mean +0.15 m, median −0.19 m; dsmr offset
+  +0.24 m). The footprint DSM's −1.07 m came from using splat centres.
+- Shape: MAE is about 3 m on ground and 3.7 m on buildings after
+  registration. Edges and roofs are smeared because three satellite views
+  constrain heights poorly; the comparison image shows building-sized
+  over- and under-estimates. These values come from one nadir camera and a
+  Stage 1 model trained on 3 views, so they are not directly comparable to
+  Skyfall's published numbers.
+- The lidar date is unknown, so some disagreement may be scene change.
+
+Next: optionally record the 1.8 m horizontal offset as a separate, versioned
+georeference adjustment (it would then no longer be independent of this
+lidar), improve height quality with more views or depth supervision, and
+scale to more blocks.

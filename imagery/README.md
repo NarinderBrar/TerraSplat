@@ -1,6 +1,6 @@
 # CORE3D imagery preparation
 
-Latest status (2026-10-29): the approved 2015 CORE3D inputs below completed CPU sparse reconstruction, a verified [Skyfall handoff](../training/PILOT.md), measured Stage 1 training and holdout evaluation, including deskewing and source-mask preservation. See [the measured result](../training/RESULT_2015.md); fusion/export and Cesium 3D Tiles delivery are complete; an independent lidar check measured 1.8 m horizontal and 1.1 m vertical offsets. Recent imagery selection is deferred. See [the revised plan](../docs/PLAN_V2.md).
+Latest status (2026-10-29): the approved 2015 CORE3D inputs below completed CPU sparse reconstruction, a verified [Skyfall handoff](../training/PILOT.md), measured Stage 1 training and holdout evaluation, including deskewing and source-mask preservation. See [the measured result](../training/RESULT_2015.md); fusion/export and Cesium 3D Tiles delivery are complete; an independent lidar check measured a 1.8 m horizontal offset, within about 0.2–0.6 m vertically. Recent imagery selection is deferred. See [the revised plan](../docs/PLAN_V2.md).
 
 The [29 October source qualification](qualification/2026-10-29/README.md) retains the earlier free-source search and unresolved recent-data findings. It is background evidence, not a prerequisite for the selected historical pilot.
 

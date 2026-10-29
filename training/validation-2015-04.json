@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "status": "measured",
   "export_manifest_sha256": "57256537b1b8cfc665ced12cf683bc7636fb933b30e971f2132f7043657cf02b",
   "fused_ply_sha256": "b2d5b9a58bb974b6d627636eb77b57179cab2fede2317939ac9ab771fd04dd7a",
@@ -22,107 +22,230 @@
     "heights": "WGS84 ellipsoidal (ground median about -17 m; orthometric would be about +12 m here)",
     "acquisition_date": "unknown (HSIP U.S. Cities lidar; not stated in the DFC2019/US3D papers)"
   },
-  "method": {
-    "splats": "fused export centres placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights",
-    "dsm": "max centre height over each splat's footprint disc (1 sigma, capped at 3.0 m), opacity >= 0.5",
-    "splats_used": 31219,
-    "registration": "Skyfall-GS/Sat-NeRF dsmr: recursive NCC shift, z offset, no z scaling",
-    "evaluated_extent": "250 m block (ENU square) inside the truth grid; CLS 65 (unlabelled) and water excluded from all_labelled",
-    "deviation": "Skyfall builds its DSM from rendered depth; this uses splat footprints, so registered MAE is not directly comparable to published numbers"
-  },
-  "command": "python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-04/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-04",
   "reference_download": "DFC2019/Track3-Truth/JAX_068_{DSM.tif,DSM.txt,CLS.tif} and DFC2019/readme.txt range-extracted from https://github.com/centreborelli/satnerf/releases/download/EarthVision2022/dataset.zip",
-  "unregistered": {
-    "all_labelled": {
-      "pixels": 194222,
-      "completeness": 0.822,
-      "bias_m": -1.067,
-      "median_m": -0.938,
-      "mae_m": 4.537,
-      "rmse_m": 7.599,
-      "nmad_m": 2.879
+  "commands": {
+    "rendered_depth": [
+      "source scripts/stage1-env.sh && python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-04 --output artifacts/validation/pilot-2015-04-depth",
+      ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-04/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-04-depth/lidar --points artifacts/validation/pilot-2015-04-depth/depth-points.npz"
+    ],
+    "splat_footprints": [
+      ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-04/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-04"
+    ]
+  },
+  "rendered_depth": {
+    "render": {
+      "camera": {
+        "type": "synthetic nadir, near-orthographic",
+        "altitude_m": 17000.0,
+        "half_extent_m": 145.0,
+        "pixel_m": 0.25,
+        "pixels": 1160,
+        "fov_deg": 0.9773748905306346,
+        "max_lean_m_for_30m_at_edge": 0.25588235294117645
+      },
+      "depth": "alpha-weighted view depth / alpha (Skyfall rasterizer), alpha >= 0.50",
+      "points": 1321983,
+      "alpha_coverage": 0.9824487217598098
     },
-    "ground": {
-      "pixels": 93774,
-      "completeness": 0.797,
-      "bias_m": -0.879,
-      "median_m": -0.918,
-      "mae_m": 4.024,
-      "rmse_m": 6.776,
-      "nmad_m": 2.688
+    "method": {
+      "placement": "fused export placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights",
+      "dsm": "max height per cell of back-projected rendered depth (see depth-report.json)",
+      "depth_points": 1321983,
+      "depth_points_sha256": "b9a3116bf03215c9bfc39b9471e8daf560e2555f32443a0c03699e361ad1ccd1",
+      "deviation": "Same rendered-depth principle as Skyfall, from one synthetic nadir camera instead of its camera path",
+      "registration": "Skyfall-GS/Sat-NeRF dsmr: recursive NCC shift, z offset, no z scaling",
+      "evaluated_extent": "250 m block (ENU square) inside the truth grid; CLS 65 (unlabelled) and water excluded from all_labelled"
     },
-    "building": {
-      "pixels": 92660,
-      "completeness": 0.849,
-      "bias_m": -1.082,
-      "median_m": -0.934,
-      "mae_m": 4.941,
-      "rmse_m": 8.296,
-      "nmad_m": 2.885
+    "unregistered": {
+      "all_labelled": {
+        "pixels": 233574,
+        "completeness": 0.989,
+        "bias_m": 0.15,
+        "median_m": -0.189,
+        "mae_m": 3.497,
+        "rmse_m": 5.374,
+        "nmad_m": 3.155
+      },
+      "ground": {
+        "pixels": 116363,
+        "completeness": 0.989,
+        "bias_m": 0.624,
+        "median_m": 0.155,
+        "mae_m": 2.986,
+        "rmse_m": 4.433,
+        "nmad_m": 2.919
+      },
+      "building": {
+        "pixels": 107836,
+        "completeness": 0.988,
+        "bias_m": -0.203,
+        "median_m": -0.486,
+        "mae_m": 4.006,
+        "rmse_m": 6.223,
+        "nmad_m": 3.358
+      },
+      "vegetation": {
+        "pixels": 9375,
+        "completeness": 0.995,
+        "bias_m": -1.672,
+        "median_m": -1.499,
+        "mae_m": 3.98,
+        "rmse_m": 5.496,
+        "nmad_m": 4.13
+      }
     },
-    "vegetation": {
-      "pixels": 7788,
-      "completeness": 0.827,
-      "bias_m": -3.136,
-      "median_m": -1.981,
-      "mae_m": 5.906,
-      "rmse_m": 8.272,
-      "nmad_m": 5.899
+    "registration": {
+      "dx_px": -3.0,
+      "dy_px": 2.0,
+      "z_offset_m": -0.24,
+      "splats_offset_from_lidar_m": {
+        "east": -1.5,
+        "north": -1.0,
+        "up": 0.24,
+        "horizontal": 1.803
+      }
+    },
+    "registered": {
+      "all_labelled": {
+        "pixels": 233503,
+        "completeness": 0.988,
+        "bias_m": 0.002,
+        "median_m": -0.401,
+        "mae_m": 3.317,
+        "rmse_m": 5.035,
+        "nmad_m": 2.992
+      },
+      "ground": {
+        "pixels": 116174,
+        "completeness": 0.987,
+        "bias_m": 0.276,
+        "median_m": -0.126,
+        "mae_m": 2.926,
+        "rmse_m": 4.321,
+        "nmad_m": 2.847
+      },
+      "building": {
+        "pixels": 107953,
+        "completeness": 0.99,
+        "bias_m": -0.16,
+        "median_m": -0.634,
+        "mae_m": 3.699,
+        "rmse_m": 5.685,
+        "nmad_m": 3.081
+      },
+      "vegetation": {
+        "pixels": 9376,
+        "completeness": 0.996,
+        "bias_m": -1.545,
+        "median_m": -1.38,
+        "mae_m": 3.752,
+        "rmse_m": 5.268,
+        "nmad_m": 3.712
+      }
     }
   },
-  "registration": {
-    "dx_px": -3.0,
-    "dy_px": 2.0,
-    "z_offset_m": 1.072,
-    "splats_offset_from_lidar_m": {
-      "east": -1.5,
-      "north": -1.0,
-      "up": -1.072,
-      "horizontal": 1.803
-    }
-  },
-  "registered": {
-    "all_labelled": {
-      "pixels": 194051,
-      "completeness": 0.821,
-      "bias_m": 0.058,
-      "median_m": 0.166,
-      "mae_m": 4.216,
-      "rmse_m": 7.318,
-      "nmad_m": 2.692
+  "splat_footprints": {
+    "method": {
+      "placement": "fused export placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights",
+      "dsm": "max centre height over each splat's footprint disc (1 sigma, capped at 3.0 m), opacity >= 0.5",
+      "splats_used": 31219,
+      "deviation": "Skyfall builds its DSM from rendered depth; this uses splat footprints, so registered MAE is not directly comparable to published numbers",
+      "registration": "Skyfall-GS/Sat-NeRF dsmr: recursive NCC shift, z offset, no z scaling",
+      "evaluated_extent": "250 m block (ENU square) inside the truth grid; CLS 65 (unlabelled) and water excluded from all_labelled"
     },
-    "ground": {
-      "pixels": 93175,
-      "completeness": 0.792,
-      "bias_m": 0.033,
-      "median_m": 0.151,
-      "mae_m": 3.83,
-      "rmse_m": 6.758,
-      "nmad_m": 2.544
+    "unregistered": {
+      "all_labelled": {
+        "pixels": 194222,
+        "completeness": 0.822,
+        "bias_m": -1.067,
+        "median_m": -0.938,
+        "mae_m": 4.537,
+        "rmse_m": 7.599,
+        "nmad_m": 2.879
+      },
+      "ground": {
+        "pixels": 93774,
+        "completeness": 0.797,
+        "bias_m": -0.879,
+        "median_m": -0.918,
+        "mae_m": 4.024,
+        "rmse_m": 6.776,
+        "nmad_m": 2.688
+      },
+      "building": {
+        "pixels": 92660,
+        "completeness": 0.849,
+        "bias_m": -1.082,
+        "median_m": -0.934,
+        "mae_m": 4.941,
+        "rmse_m": 8.296,
+        "nmad_m": 2.885
+      },
+      "vegetation": {
+        "pixels": 7788,
+        "completeness": 0.827,
+        "bias_m": -3.136,
+        "median_m": -1.981,
+        "mae_m": 5.906,
+        "rmse_m": 8.272,
+        "nmad_m": 5.899
+      }
     },
-    "building": {
-      "pixels": 93124,
-      "completeness": 0.854,
-      "bias_m": 0.205,
-      "median_m": 0.186,
-      "mae_m": 4.523,
-      "rmse_m": 7.847,
-      "nmad_m": 2.668
+    "registration": {
+      "dx_px": -3.0,
+      "dy_px": 2.0,
+      "z_offset_m": 1.072,
+      "splats_offset_from_lidar_m": {
+        "east": -1.5,
+        "north": -1.0,
+        "up": -1.072,
+        "horizontal": 1.803
+      }
     },
-    "vegetation": {
-      "pixels": 7752,
-      "completeness": 0.823,
-      "bias_m": -1.416,
-      "median_m": -0.105,
-      "mae_m": 5.147,
-      "rmse_m": 7.186,
-      "nmad_m": 5.229
+    "registered": {
+      "all_labelled": {
+        "pixels": 194051,
+        "completeness": 0.821,
+        "bias_m": 0.058,
+        "median_m": 0.166,
+        "mae_m": 4.216,
+        "rmse_m": 7.318,
+        "nmad_m": 2.692
+      },
+      "ground": {
+        "pixels": 93175,
+        "completeness": 0.792,
+        "bias_m": 0.033,
+        "median_m": 0.151,
+        "mae_m": 3.83,
+        "rmse_m": 6.758,
+        "nmad_m": 2.544
+      },
+      "building": {
+        "pixels": 93124,
+        "completeness": 0.854,
+        "bias_m": 0.205,
+        "median_m": 0.186,
+        "mae_m": 4.523,
+        "rmse_m": 7.847,
+        "nmad_m": 2.668
+      },
+      "vegetation": {
+        "pixels": 7752,
+        "completeness": 0.823,
+        "bias_m": -1.416,
+        "median_m": -0.105,
+        "mae_m": 5.147,
+        "rmse_m": 7.186,
+        "nmad_m": 5.229
+      }
     }
   },
   "interpretation": [
-    "Absolute placement: the splat surface sits 1.5 m west, 1.0 m south (1.8 m horizontal, about 5 GSD) and about 1.1 m below the lidar; dsmr resolves shifts on the 0.5 m grid.",
-    "That is within the typical no-ground-control accuracy of WorldView-3 RPCs (a few metres CE90); no ground control was used.",
-    "MAE of 4-5 m is dominated by the splat DSM itself: centre heights drawn as footprint discs scatter along the needle-shaped splats. A rendered-depth DSM (Skyfall's method) is the next refinement.",
-    "The lidar acquisition date is unknown, so scene change since the flight cannot be ruled out; ground and building results agree, which argues against large change."
+    "Horizontal placement: both DSM methods find the same offset; the splat surface sits 1.5 m west and 1.0 m south of the lidar (1.8 m, about 5 GSD), resolved on the 0.5 m grid. No ground control was used.",
+    "Vertical placement: with the rendered-depth DSM the bias is +0.15 m mean / -0.19 m median and dsmr finds +0.24 m; the -1.07 m footprint-DSM bias came from using splat centres.",
+    "Shape: rendered-depth MAE is 3.3 m registered (2.9 m ground, 3.7 m buildings) with 99% completeness; three views constrain heights poorly.",
+    "The DSM uses one synthetic nadir camera, not Skyfall's camera path, and this is a Stage 1 model from 3 views, so MAE is not directly comparable to published numbers.",
+    "The lidar acquisition date is unknown; scene change since the flight cannot be ruled out."
   ]
 }
