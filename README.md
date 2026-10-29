@@ -2,7 +2,7 @@
 
 Pipeline for turning suitable satellite imagery into georeferenced, tiled Gaussian splats. Phase 0 includes a static Cesium diagnostic viewer.
 
-Phase 0 and the historical 2015 pipeline through Cesium tiles are complete. The authors' 17-view JAX_068 data gives 2.36 m registered lidar MAE with pilot settings and 1.38 m with their recipe; holdout PSNR falls 21.35 → 18.90 dB. The anchor is assumed, so these are shape results; see [the comparison](training/RESULT_2015.md#authors-jax_068-data). Widening the pipeline view set and testing the geometry recipe are next; the five-view viewer baseline is retained.
+The authors' recipe on the five-view pilot gives 2.82 → 2.78 m registered lidar MAE, but buildings worsen 2.87 → 3.36 m and holdout PSNR falls 17.73 → 17.21 dB; both fixed viewer gates fail, so the five-view baseline stays. Next: Web app v1 (viewer + API). [Result](training/RESULT_2015.md#authors-recipe-on-the-pilot).
 
 ```bash
 npm ci

@@ -1,6 +1,6 @@
 # 2015 pilot: verified Skyfall inputs
 
-The 2015 pilot reaches Cesium delivery; its five-view viewer baseline is retained. Authors' 17-view JAX_068 data measures 2.36 m registered lidar MAE with pilot settings and 1.38 m with their recipe; holdout PSNR falls 21.35 → 18.90 dB. These are assumed-anchor shape results on one block, with lidar date unknown ([comparison](RESULT_2015.md#authors-jax_068-data)); widen the pipeline view set and test the geometry recipe next.
+The authors' recipe on the five-view pilot gives 2.82 → 2.78 m registered lidar MAE, but buildings worsen 2.87 → 3.36 m and holdout PSNR falls 17.73 → 17.21 dB; both fixed viewer gates fail, so the five-view baseline stays. Next: Web app v1 (viewer + API). [Result](RESULT_2015.md#authors-recipe-on-the-pilot).
 
 The current scene is `artifacts/imagery/skyfall-2015-02`.
 [pilot-verified.json](pilot-verified.json) records the result and artifact hashes.

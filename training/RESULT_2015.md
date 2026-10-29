@@ -403,3 +403,60 @@ All four reference-adapter tests pass in the imagery environment.
 
 One block, authors' cameras rather than pipeline cameras, assumed anchor and
 lidar date unknown; no placement-accuracy or production-readiness claim.
+
+## Authors' recipe on the pilot
+
+`pilot-2015-8w-recipe-01` applies the same authors' recipe to the unchanged
+five-view scene and its captured ENU anchor. The
+[profile](../configs/train-2015-pilot-8w-recipe.json) was fixed before evaluation:
+live MoGe pseudo views, appearance model, opacity weight 10, SH 1, resolution 2
+and the 200k doubling-headroom cap; static satellite depth stays off. The
+runner selects and preflights the recipe adapter through a separate manifest,
+without changing the scene. All 30 source files remain unchanged. Compact
+evidence: [result-2015-8w-recipe.json](result-2015-8w-recipe.json).
+
+Pseudo cameras are synthetic 60° orbit views around random model-space targets.
+Their appearance IDs sample only `0..len(scene.getTrainCameras())-1` (five
+training embeddings); generation reads no holdout pose or image. May 2 stays
+out of training, pseudo views, priors and setting choices. No lidar tuning.
+
+| | 5 views | 5 views + recipe |
+| --- | ---: | ---: |
+| Holdout May 2 PSNR | 17.73 dB | 17.21 dB |
+| Training-view PSNR | 23.98–38.08 dB | 21.48–31.02 dB |
+| Registered MAE, all labelled | 2.82 m | 2.78 m |
+| ground / buildings / vegetation | 2.77 / 2.87 / 2.78 m | 2.30 / 3.36 / 2.19 m |
+| Registered RMSE / NMAD | 4.17 / 2.82 m | 5.09 / 1.47 m |
+| Registered completeness | 99.6% | 99.8% |
+| Horizontal offset from lidar | 1.6 m (1.5 W, 0.5 N) | 1.8 m (1.5 W, 1.0 N) |
+| Unregistered median height error | −0.92 m | −1.92 m |
+| Splats | 107,464 | 134,252 |
+| Train time, 30k steps | 10.7 min | 42.5 min |
+| Peak allocated tensor memory | 214.3 MiB | 2,708.7 MiB |
+
+**Retain the five-view baseline in Cesium.** The rule fixed before the run
+requires at least 0.2 m improvement in all-labelled registered MAE and no class
+regression above 0.3 m. The measured improvement is only 0.035 m; buildings
+worsen by 0.487 m. Both gates fail, so no recipe tiles or viewer switch were
+made. Degree-1 SH is supported by the tiler's existing linear SH bake.
+
+Both DSM and evaluation comparisons were reviewed against the baseline. Ground
+and roof surfaces look smoother, with less streaking, but false high structure
+persists around the large cross-shaped building and its courtyard. RGB renders
+are softer, with visible colour changes, including a greener holdout. Lower
+NMAD alongside higher building MAE and RMSE means the central error spread
+shrinks while large errors remain costly. The reference-data gain does not
+transfer to this five-view pilot as a useful overall height improvement.
+
+The known anchor makes the registration shift a placement measurement here:
+1.5 m west, 1.0 m north and 0.68 m low. The unregistered median is 1.92 m low;
+median and fitted vertical offset differ because the errors are asymmetric.
+Appearance-aware export passes, with 1.44e-9 m transform round trip and
+≥113.17 dB fused/raw render equivalence using the fixed appearance embedding.
+No holdout appearance fitting. One block, lidar date unknown; no broader
+accuracy or production-readiness claim. Next: Web app v1 (viewer + API).
+
+Checks: 69 SfM/Python tests pass (two pyproj-dependent tests skip there and
+pass in the imagery environment); 34 imagery tests, four reference-adapter
+tests, Ruff E/F and four npm tests pass. Viewer files and browser thresholds
+are unchanged; conditional recipe tiling/browser checks were not needed.

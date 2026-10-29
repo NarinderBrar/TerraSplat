@@ -1,0 +1,423 @@
+{
+  "schema_version": 1,
+  "status": "measured",
+  "experiment": "Authors Stage 1 recipe on the unchanged five-view 2015 pilot; fixed before evaluation, no holdout or lidar tuning.",
+  "assumed_anchor": false,
+  "approved_selection": "configs/jax068-pilot-8w.json",
+  "selection": {
+    "sha256": "e684c99bb35c005eceea9bed51fe47d855a469f3a2c2838496685fefde5412a0",
+    "span_days": 56.999,
+    "training_max_convergence_deg": 49.65,
+    "train": [
+      {
+        "catalog_id": "104001000AB24A00",
+        "date": "2015-04-19",
+        "off_nadir_deg": 17.7,
+        "sat_azimuth_deg": 187.7
+      },
+      {
+        "catalog_id": "104001000A1B5F00",
+        "date": "2015-04-26",
+        "off_nadir_deg": 20.8,
+        "sat_azimuth_deg": 260.3
+      },
+      {
+        "catalog_id": "104001000AB10600",
+        "date": "2015-05-01",
+        "off_nadir_deg": 24.3,
+        "sat_azimuth_deg": 85.4
+      },
+      {
+        "catalog_id": "104001000C22D200",
+        "date": "2015-05-21",
+        "off_nadir_deg": 5.9,
+        "sat_azimuth_deg": 247.6
+      },
+      {
+        "catalog_id": "104001000C478800",
+        "date": "2015-06-15",
+        "off_nadir_deg": 11.1,
+        "sat_azimuth_deg": 111.4
+      }
+    ],
+    "holdout": [
+      {
+        "catalog_id": "104001000A22A000",
+        "date": "2015-05-02"
+      }
+    ],
+    "excluded": {
+      "104001000B564400": "2015-05-14, whole-image cloud cover 12.7% exceeds the 10% gate"
+    },
+    "visual_review": "All six RGB crops show the same cloud-free block; lighting, shadows and vehicles vary."
+  },
+  "sparse_reconstruction": {
+    "report_sha256": "2808fdcc455898c9b095c3b212e807d9cac5e95f676a341a6fb32beb2ae11fa2",
+    "points": 5618,
+    "observations": 14391,
+    "reprojection_px": {
+      "median": 0.314,
+      "p95": 1.369,
+      "max": 2.125
+    },
+    "track_lengths": {
+      "2": 3567,
+      "3": 1244,
+      "4": 513,
+      "5": 291
+    },
+    "baseline_points": 2233
+  },
+  "scene": {
+    "path": "artifacts/imagery/pilot-8w/skyfall",
+    "contract_sha256": "7adb31c36d838834fd2a32fe1922fbae4a7d265d4d7231c134d6eb45f451bf3b",
+    "files_unchanged_after_run": true
+  },
+  "holdout_used_for_training_priors_or_choices": false,
+  "pseudo_views": {
+    "generation": "Synthetic 60-degree FOV orbit cameras around random targets; elevation 80 to 45 degrees, radius 300 to 250 model units. No acquisition camera poses or RGBs read.",
+    "appearance_ids": "random.randint(0, num_train_cams - 1), num_train_cams=5 from scene.getTrainCameras(); holdout excluded.",
+    "source": "adapters/skyfall/stage1-pseudo-depth.patch",
+    "moge_commit": "aca893a40faf6905cb722d6614cc37cb87ea06f7",
+    "weights_revision": "ad326bfb61facd6c52b5a825bc1e34d7c97d9672"
+  },
+  "run": "artifacts/stage1/pilot-2015-8w-recipe-01",
+  "baseline": {
+    "result": "training/result-2015-8w.json",
+    "training": {
+      "profile": "configs/train-2015-pilot-8w.json",
+      "report_sha256": "942efbf510ad8d4ee6a3d811f3189c503ffb7d4b27023cc60deb9024536fe2ad",
+      "final_splats": 107464,
+      "peak_allocated_mib": 214.3,
+      "elapsed_seconds": 639.7
+    },
+    "evaluation": {
+      "report_sha256": "a6279a2d6a344064d94487159ccd6ed79bfcdc3e29f4e118c7a201b5684adb3e",
+      "final_psnr_db": {
+        "104001000AB24A00": {
+          "role": "train",
+          "psnr_db": 28.84
+        },
+        "104001000A1B5F00": {
+          "role": "train",
+          "psnr_db": 28.2
+        },
+        "104001000AB10600": {
+          "role": "train",
+          "psnr_db": 23.98
+        },
+        "104001000C22D200": {
+          "role": "train",
+          "psnr_db": 38.08
+        },
+        "104001000C478800": {
+          "role": "train",
+          "psnr_db": 36.05
+        },
+        "104001000A22A000": {
+          "role": "holdout",
+          "psnr_db": 17.73
+        }
+      },
+      "baseline_holdout_psnr_db": 17.57
+    },
+    "lidar_check": {
+      "depth_report_sha256": "822461edd502e541fd28ce8905bbb43bb602e3e975eb342340bc0ee3d82ff285",
+      "alpha_coverage": 0.9935,
+      "registration": {
+        "splats_offset_from_lidar_m": {
+          "east": -1.5,
+          "north": 0.5,
+          "up": -0.824,
+          "horizontal": 1.581
+        }
+      },
+      "unregistered": {
+        "all_labelled": {
+          "completeness": 0.996,
+          "bias_m": -0.776,
+          "median_m": -0.919,
+          "mae_m": 3.042,
+          "rmse_m": 4.557,
+          "nmad_m": 2.832
+        },
+        "ground": {
+          "completeness": 0.996,
+          "bias_m": -0.226,
+          "median_m": -0.609,
+          "mae_m": 2.875,
+          "rmse_m": 4.193,
+          "nmad_m": 2.897
+        },
+        "building": {
+          "completeness": 0.996,
+          "bias_m": -1.227,
+          "median_m": -1.149,
+          "mae_m": 3.208,
+          "rmse_m": 4.964,
+          "nmad_m": 2.726
+        },
+        "vegetation": {
+          "completeness": 1.0,
+          "bias_m": -2.41,
+          "median_m": -2.504,
+          "mae_m": 3.199,
+          "rmse_m": 3.949,
+          "nmad_m": 2.835
+        }
+      },
+      "registered": {
+        "all_labelled": {
+          "completeness": 0.996,
+          "bias_m": 0.048,
+          "median_m": -0.101,
+          "mae_m": 2.817,
+          "rmse_m": 4.172,
+          "nmad_m": 2.823
+        },
+        "ground": {
+          "completeness": 0.996,
+          "bias_m": 0.568,
+          "median_m": 0.241,
+          "mae_m": 2.768,
+          "rmse_m": 4.002,
+          "nmad_m": 2.875
+        },
+        "building": {
+          "completeness": 0.996,
+          "bias_m": -0.39,
+          "median_m": -0.373,
+          "mae_m": 2.872,
+          "rmse_m": 4.399,
+          "nmad_m": 2.702
+        },
+        "vegetation": {
+          "completeness": 1.0,
+          "bias_m": -1.354,
+          "median_m": -1.435,
+          "mae_m": 2.777,
+          "rmse_m": 3.516,
+          "nmad_m": 2.993
+        }
+      }
+    }
+  },
+  "profile_fixed_before_evaluation_commit": "d911368",
+  "decision": {
+    "rule": "Switch viewer if registered all-labelled MAE improves by at least 0.2 m and no class MAE worsens by more than 0.3 m.",
+    "registered_mae_improvement_m": 0.0347,
+    "class_mae_change_m": {
+      "ground": -0.4727,
+      "building": 0.4873,
+      "vegetation": -0.5829
+    },
+    "passes": false,
+    "viewer_run": "pilot-2015-8w-01",
+    "reason": "Only 0.035 m all-labelled MAE improvement (<0.2 m); building MAE increases 0.487 m (>0.3 m). Retain baseline; conditional tiling and browser checks not run."
+  },
+  "training": {
+    "profile": "configs/train-2015-pilot-8w-recipe.json",
+    "profile_sha256": "8e232c55915e6ce37ba4528c07a2eecc33bfd0afb597cfe4b9cc869e780c7dd5",
+    "report_sha256": "a78a08e8ff647cf903f46975fc53a5a7df43e7009f68587fbbf99a2493fd5c8d",
+    "preflight_report_sha256": "e006ac7a83dae5258aafdb3ee5971ffcaa6a8389cbb9d93cf94f7877f8794d3a",
+    "final_splats": 134252,
+    "elapsed_seconds": 2551.1378,
+    "peak_allocated_mib": 2708.7251,
+    "peak_reserved_mib": 3142.0,
+    "checkpoint_resume_verified": true
+  },
+  "evaluation": {
+    "report_sha256": "814b18deeabe8864b84bc8c70b80379d98baed9f4db9645633d6c3a8a9953e5f",
+    "final_psnr_db": {
+      "104001000AB24A00": {
+        "role": "train",
+        "psnr_db": 25.4119
+      },
+      "104001000A1B5F00": {
+        "role": "train",
+        "psnr_db": 23.6492
+      },
+      "104001000AB10600": {
+        "role": "train",
+        "psnr_db": 21.4831
+      },
+      "104001000C22D200": {
+        "role": "train",
+        "psnr_db": 30.2078
+      },
+      "104001000C478800": {
+        "role": "train",
+        "psnr_db": 31.0152
+      },
+      "104001000A22A000": {
+        "role": "holdout",
+        "psnr_db": 17.2071
+      }
+    },
+    "baseline_holdout_psnr_db": 17.73
+  },
+  "export": {
+    "manifest_sha256": "b2a505031ae763ec3c30fbe69b74b3072da59ea2d16cfdc5c34f673d5123f464",
+    "fused_ply_sha256": "0089507702fcbedf6c00c9fb4c634045ac3c16769de3dd98de5f819ff42f32ed",
+    "round_trip_max_error_m": 1.44426e-09,
+    "render_equivalence_min_psnr_db": 113.1759,
+    "appearance_colour_mapping": true,
+    "sh_degree": 1
+  },
+  "lidar_check": {
+    "reference": "DFC2019 JAX_068 lidar DSM, see training/validation-2015-04.json",
+    "rendered_depth": {
+      "depth_report_sha256": "5b10d6121ab7c318009603238a17eefb04f9f89c2dc6d31ef398ec8878ec586b",
+      "lidar_report_sha256": "f7ed887f882f28c96051e599b6101c4569ded66d3ad22ea6b35d18337dc46740",
+      "alpha_coverage": 0.9923,
+      "registration": {
+        "placement_measurement": true,
+        "search_range_per_level_px": 5,
+        "dx_px": -3.0,
+        "dy_px": -2.0,
+        "z_offset_m": 0.6777,
+        "splats_offset_from_lidar_m": {
+          "east": -1.5,
+          "north": 1.0,
+          "up": -0.6777,
+          "horizontal": 1.8028
+        }
+      },
+      "unregistered": {
+        "all_labelled": {
+          "pixels": 235716,
+          "completeness": 0.9978,
+          "bias_m": -0.7519,
+          "median_m": -1.9175,
+          "mae_m": 3.185,
+          "rmse_m": 5.2959,
+          "nmad_m": 1.4673
+        },
+        "ground": {
+          "pixels": 117518,
+          "completeness": 0.9984,
+          "bias_m": -0.5033,
+          "median_m": -1.6366,
+          "mae_m": 2.6397,
+          "rmse_m": 3.94,
+          "nmad_m": 1.588
+        },
+        "building": {
+          "pixels": 108792,
+          "completeness": 0.9972,
+          "bias_m": -0.9407,
+          "median_m": -2.2155,
+          "mae_m": 3.8142,
+          "rmse_m": 6.5622,
+          "nmad_m": 1.2697
+        },
+        "vegetation": {
+          "pixels": 9406,
+          "completeness": 0.9987,
+          "bias_m": -1.6725,
+          "median_m": -2.0596,
+          "mae_m": 2.7202,
+          "rmse_m": 3.292,
+          "nmad_m": 2.2192
+        }
+      },
+      "registered": {
+        "all_labelled": {
+          "pixels": 235687,
+          "completeness": 0.9977,
+          "bias_m": -0.0609,
+          "median_m": -1.2068,
+          "mae_m": 2.7823,
+          "rmse_m": 5.0949,
+          "nmad_m": 1.4658
+        },
+        "ground": {
+          "pixels": 117525,
+          "completeness": 0.9984,
+          "bias_m": 0.1536,
+          "median_m": -0.9179,
+          "mae_m": 2.2953,
+          "rmse_m": 3.6811,
+          "nmad_m": 1.5929
+        },
+        "building": {
+          "pixels": 108758,
+          "completeness": 0.9969,
+          "bias_m": -0.2539,
+          "median_m": -1.5326,
+          "mae_m": 3.3593,
+          "rmse_m": 6.3975,
+          "nmad_m": 1.2435
+        },
+        "vegetation": {
+          "pixels": 9404,
+          "completeness": 0.9985,
+          "bias_m": -0.5094,
+          "median_m": -0.9595,
+          "mae_m": 2.1941,
+          "rmse_m": 2.8109,
+          "nmad_m": 2.2186
+        }
+      }
+    },
+    "baseline_registered_mae_m": {
+      "all_labelled": 2.817,
+      "ground": 2.768,
+      "building": 2.872,
+      "vegetation": 2.777
+    }
+  },
+  "commands": [
+    ".venv-stage1/bin/python -m pipeline.training --scene artifacts/imagery/pilot-8w/skyfall --profile configs/train-2015-pilot-8w-recipe.json --output artifacts/stage1/pilot-2015-8w-recipe-01",
+    ".venv-stage1/bin/python -m pipeline.evaluation --run artifacts/stage1/pilot-2015-8w-recipe-01",
+    ".venv-stage1/bin/python -m pipeline.export --run artifacts/stage1/pilot-2015-8w-recipe-01 --selection artifacts/imagery/pilot-8w/selection.json",
+    ".venv-stage1/bin/python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-8w-recipe-01 --output artifacts/validation/pilot-2015-8w-recipe-01-depth",
+    ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-8w-recipe-01/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-8w-recipe-01-depth/lidar --points artifacts/validation/pilot-2015-8w-recipe-01-depth/depth-points.npz",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-sfm/bin/python -m pytest -q tests/sfm tests/python",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-imagery/bin/python -m pytest -q tests/imagery",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-imagery/bin/python -m pytest -q tests/sfm/test_reference_scene.py",
+    "uvx ruff check --isolated --select E,F --line-length 120 pipeline/training.py tests/sfm/test_training.py",
+    "npm test"
+  ],
+  "limitations": [
+    "One block; lidar acquisition date unknown.",
+    "Joint recipe comparison, not an isolated MoGe ablation.",
+    "Known ENU anchor: registration shift measures placement relative to this lidar.",
+    "No production-readiness claim."
+  ],
+  "visual_review": {
+    "dsm": "Smoother ground and roof surfaces, less streaking; false high structure persists around the large cross-shaped building and courtyard.",
+    "evaluation": "Softer final RGB renders and visible colour changes; holdout greener than baseline.",
+    "artifacts": [
+      "artifacts/validation/pilot-2015-8w-recipe-01-depth/lidar/dsm-comparison.png",
+      "artifacts/stage1/pilot-2015-8w-recipe-01/evaluation/comparison.png"
+    ],
+    "baseline_comparisons_reviewed": true
+  },
+  "interpretation": "Ground and vegetation improve, but building MAE and overall RMSE worsen. Lower NMAD indicates narrower central error spread while large errors remain costly. The 17-view reference recipe gain does not transfer to this five-view pilot as a useful overall height improvement. Known anchor makes registration a placement measurement: 1.5 m west, 1.0 m north, 0.68 m low. One block, lidar date unknown.",
+  "tiling": {
+    "status": "not_selected",
+    "viewer": "artifacts/tiles/pilot-2015-8w-01",
+    "degree_1_supported": "pipeline.tiling.sh_colour handles three linear SH coefficients; camera_centres reads transforms_train.json only.",
+    "viewer_files_and_browser_thresholds_unchanged": true
+  },
+  "checks": {
+    "sfm_python": {
+      "passed": 69,
+      "skipped": 2,
+      "skip_reason": "pyproj unavailable in sfm environment"
+    },
+    "imagery": {
+      "passed": 34
+    },
+    "reference_adapter_in_imagery": {
+      "passed": 4
+    },
+    "ruff_E_F": "passed: pipeline/training.py tests/sfm/test_training.py",
+    "npm_test": {
+      "passed": 4
+    },
+    "gpu_jobs_sequential": true
+  },
+  "environment_setup": "source scripts/stage1-env.sh"
+}
