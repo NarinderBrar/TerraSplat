@@ -1,6 +1,6 @@
 # TerraSplat build plan
 
-Research date: 2026-10-28. Status: proposed architecture; no training, format conversion, or browser benchmarks were executed for this plan.
+Research date: 2026-10-28; status updated 2026-10-29: the 2015 pilot reaches Cesium tiles; static MoGe depth supervision regressed five-view lidar MAE 2.82 → 7.83 m and holdout PSNR 17.73 → 15.18 dB. Retain the baseline; product web app v1 is next.
 
 The design below is an engineering proposal. Current upstream capabilities and local evidence are documented separately in [RESEARCH.md](RESEARCH.md). Thresholds are proposed acceptance targets, not measured results.
 
@@ -177,4 +177,4 @@ Estimate cost using measured GPU-hours × selected rate, plus preprocessing, sto
 
 Choose and verify a recent imagery source, acceptable capture age, within-group acquisition span, date-compatible validation evidence and access/derivative rights; target AOI size and GSD; available GPU/VRAM; horizontal/vertical accuracy requirement; hosting and access model; and whether generated detail is a desired product mode. Resolve these when needed by the phase gates. No purchases, external uploads, or deployments are part of this planning work.
 
-Next implementation priority: further height work for the 2015 pilot (depth supervision or a wider view set) before more blocks; the independent lidar check measured a 1.8 m horizontal offset, within about 0.2–0.6 m vertically, and 3.3 m MAE ([details](../training/RESULT_2015.md#independent-lidar-check)), and five training views cut MAE to 2.8 m ([details](../training/RESULT_2015.md#five-training-views)). Fusion, tiling and Cesium delivery are complete; see [the tiles result](../training/RESULT_2015.md#3d-tiles-and-cesium). CPU SfM, deskewing, explicit normalization, the real Skyfall loader, a 30,000-iteration training run and holdout evaluation now pass; see [the measured result](../training/RESULT_2015.md). Recent imagery qualification resumes only for later current-city work.
+Next implementation priority: product web app v1 reading pipeline releases. The fixed-weight MoGe experiment regressed registered lidar MAE from 2.82 to 7.83 m and holdout PSNR from 17.73 to 15.18 dB; retain the five-view baseline ([depth supervision](../training/RESULT_2015.md#depth-supervision)). Historical training, fusion, tiling and Cesium delivery are complete. Broader geographic validation and recent imagery qualification remain later work.

@@ -1,11 +1,6 @@
 # 2015 pilot: verified Skyfall inputs
 
-The approved April 19–May 2, 2015 Jacksonville block is prepared and measured
-Stage 1 training has completed. Skew correction, explicit normalization, the
-real Skyfall loader, GPU-enabled preflight, a 30,000-iteration training run and
-holdout evaluation have passed. See [the measured result](RESULT_2015.md). This
-is a historical demonstration; independent geographic accuracy has not been
-validated.
+The 2015 Jacksonville pilot has completed Stage 1, holdout evaluation and Cesium delivery. Five-view registered lidar MAE is 2.82 m; static MoGe depth supervision regressed it to 7.83 m and holdout PSNR from 17.73 to 15.18 dB. Retain the five-view baseline ([depth supervision](RESULT_2015.md#depth-supervision)); product web app v1 reading pipeline releases is next. This is one historical block with lidar of unknown date.
 
 The current scene is `artifacts/imagery/skyfall-2015-02`.
 [pilot-verified.json](pilot-verified.json) records the result and artifact hashes.

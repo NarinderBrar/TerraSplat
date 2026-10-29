@@ -283,7 +283,53 @@ is 1.197 versus 0.031 for three views (position error stays 0.12 mm). The
 footprint check tests the transform chain only, not independent placement
 or height accuracy.
 
-Next: depth supervision or more views from a wider window to push heights
-further; optionally record the horizontal offset as a separate, versioned
-georeference adjustment (it would then no longer be independent of this
-lidar); then scale to more blocks.
+## Depth supervision
+
+`pilot-2015-8w-depth-01` repeats the five-view run with static MoGe camera-z
+priors and fixed `lambda_depth: 0.5` (Skyfall default). The May 2 holdout is
+excluded from priors, training and setting choices; neither holdout nor lidar
+was used to tune the weight. IDU and pseudo-depth remain disabled. Compact
+evidence: [result-2015-8w-depth.json](result-2015-8w-depth.json).
+
+MoGe commit `aca893a40faf6905cb722d6614cc37cb87ea06f7` runs separately in
+`.venv-moge` with CUDA PyTorch 2.7.1; exact versions and source setup are in
+[requirements-moge.txt](requirements-moge.txt). `Ruicheng/moge-vitl` weights
+are pinned to HF revision `ad326bfb61facd6c52b5a825bc1e34d7c97d9672`.
+`pipeline.depth_priors` reads full-resolution training RGBs and supplies each
+camera's horizontal FOV (0.012–0.060°) to `infer()`. Default inference level 9
+returns full-sized depth maps; invalid mask/nonfinite pixels become NaN in
+single-channel float32 EXRs. Valid fractions are 91.45–99.81%. The new
+`skyfall-moge` scene hashes the priors and preserves the georeference. The
+actual loader and GPU preflight pass; Skyfall sources are unchanged.
+
+Skyfall resizes depth by nearest neighbour at training resolution 2, masks it,
+zeroes nonfinite samples and applies `1 − Pearson correlation`. Logged EMA
+depth loss is non-zero (0.000057–0.772; final 0.000383). Training completed
+30,000 iterations in 669 s with 100,476 splats and 214.7 MiB peak allocated
+memory. Fused export passed (1.4e-9 m round trip, ≥96.1 dB render equivalence).
+
+| | 5 views | 5 views + MoGe depth |
+| --- | ---: | ---: |
+| Holdout May 2 PSNR | 17.73 dB | 15.18 dB |
+| Training-view PSNR | 23.98–38.08 dB | 16.78–17.21 dB |
+| Lidar, registered MAE, all labelled | 2.82 m | 7.83 m |
+| ground / buildings / vegetation | 2.77 / 2.87 / 2.78 m | 7.48 / 8.51 / 3.94 m |
+| Registered RMSE / NMAD | 4.17 / 2.82 m | 10.66 / 5.94 m |
+| Horizontal offset returned by registration | 1.6 m (1.5 W, 0.5 N) | 38.9 m (37.5 E, 10.5 S) |
+| Unregistered median height error | −0.92 m | +16.80 m |
+| Registered completeness | 99.6% | 84.1% |
+
+The depth-supervised DSM is nearly flat and loses roof structure. The 38.9 m
+registration shift is unreliable for this degraded shape; its registered
+errors also use reduced overlap, so it is not a trustworthy placement
+measurement. The unregistered MAE is 15.51 m. Two inspected MoGe maps (April 19
+and June 15) show roof shapes plus broad gradients, but those priors did not
+produce useful geometry here. Near-orthographic satellite views are a weak
+setting for MoGe, and a small masked Pearson loss, which includes zero-filled
+padding, does not establish correct surface shape. This fixed-weight test
+regressed both appearance and heights; retain the five-view baseline. One
+block, one lidar of unknown date; no production or broader accuracy claim.
+
+Checks: 63 SfM/Python tests and 34 imagery tests pass; Ruff E/F passes. Next:
+product web app v1 reading pipeline releases; further height experiments
+require a separate protocol.

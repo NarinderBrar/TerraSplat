@@ -1,6 +1,6 @@
 # SatelliteSfM handoff for the Jacksonville pilot
 
-Latest status (2026-10-29): the approved 2015 CORE3D pilot completed CPU sparse reconstruction, skew correction, Skyfall input conversion, measured Stage 1 training and holdout evaluation. The actual loader and GPU-enabled preflight pass; the trained run produced 102,543 splats with 214.9 MiB peak allocated tensor memory. See [the measured result](../training/RESULT_2015.md), [the training handoff](../training/PILOT.md) and [the revised plan](../docs/PLAN_V2.md). Fusion/export and Cesium 3D Tiles delivery are complete ([tiles](../training/RESULT_2015.md#3d-tiles-and-cesium)); an independent lidar check measured a 1.8 m horizontal offset, within about 0.2–0.6 m vertically ([details](../training/RESULT_2015.md#independent-lidar-check)); [five training views](../training/RESULT_2015.md#five-training-views) cut height MAE from 3.3 m to 2.8 m. Recent imagery selection remains deferred.
+Latest status (2026-10-29): the 2015 pipeline reaches Cesium tiles. Five-view registered lidar MAE is 2.82 m; static MoGe depth supervision regressed it to 7.83 m and holdout PSNR from 17.73 to 15.18 dB ([depth supervision](../training/RESULT_2015.md#depth-supervision)). Retain the five-view baseline; product web app v1 reading pipeline releases is next. Recent imagery selection remains deferred.
 
 The approved pilot uses April 19–May 2, 2015: three training acquisitions and a
 separate May 2 holdout. No four-view group satisfied the initial seven-day

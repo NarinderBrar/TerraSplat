@@ -1,8 +1,8 @@
 # TerraSplat plan v2
 
-Updated: 2026-10-29. Status: Phase 0 compatibility fixture passes; Phase 2 has completed CPU sparse reconstruction and a verified Skyfall input handoff for the approved 2015 pilot. See [PHASE0.md](PHASE0.md) and [PHASE2.md](PHASE2.md). Phase 1 remains incomplete.
+Updated: 2026-10-29. Status: Phase 0 compatibility passes; the 2015 pilot reaches Cesium tiles. Static MoGe depth supervision regressed five-view registered lidar MAE 2.82 → 7.83 m and holdout PSNR 17.73 → 15.18 dB; retain the baseline ([result](../training/RESULT_2015.md#depth-supervision)). Phase 1 remains incomplete.
 
-Current implementation scope: pipeline tooling and a minimal validation viewer. Product web app features are deferred.
+Current implementation scope: pipeline tooling and a minimal validation viewer. Product web app v1 (React/Vite/Cesium viewer + FastAPI for datasets, releases and quality reports) is planned next, reading only pipeline releases; jobs and semantics come later.
 
 This revision builds on [PLAN.md](PLAN.md) and [RESEARCH.md](RESEARCH.md). Those documents remain the reference for coordinate math, tile/LOD design rules, semantics policy and acceptance gates. This file records what changed: existing local work to reuse, the chosen imagery, hardware limits and the renderer decision.
 
@@ -11,6 +11,8 @@ This revision builds on [PLAN.md](PLAN.md) and [RESEARCH.md](RESEARCH.md). Those
 **Reconstruct the approved 250×250 m Jacksonville block from April–May 2015 CORE3D imagery, validate the pipeline, and export georeferenced splat tiles for CesiumJS.** Scale toward 1 km² only after the one-block checks pass.
 
 **Latest user decision (2026-10-29): use the 2015 data for the end-to-end historical demonstration.** Resume from the prepared crops and initial cameras, keeping the three training acquisitions and May 2 holdout. The approved 13-day acquisition-span exception applies to this pilot. Label outputs with their 2015 capture dates.
+
+Status: five-view Stage 1 and the fixed-weight MoGe depth comparison are measured; depth regressed (MAE 2.82 → 7.83 m, holdout PSNR 17.73 → 15.18 dB). Retain the baseline; product web app v1 reading pipeline releases is next.
 
 Recent imagery qualification is deferred and does not block this demonstration. For a future current-city release, separately qualify recent inputs and date-compatible validation. The preceding-12-month freshness target remains provisional for that later work.
 
@@ -55,7 +57,7 @@ Record this chain in `georeference.json` (see PLAN.md §5). For the historical b
 
 ### Active historical pilot
 
-Use the existing 250 m block with a 20 m halo, three training acquisitions (April 19, April 26 and May 1, 2015), and the May 2 holdout. Crops, RGB preparation, RPC-derived cameras, CPU sparse reconstruction, deskewing, Skyfall conversion, measured Stage 1 training, holdout evaluation, fused export and 3D Tiles delivery in CesiumJS are complete. The actual loader and GPU-enabled preflight pass. The run preserved the ENU origin and pixel/normalization transforms, and the holdout stayed out of calibration and fitting. See [the measured result](../training/RESULT_2015.md). An independent lidar check measured a 1.8 m horizontal offset, within about 0.2–0.6 m vertically, and 3.3 m MAE. A five-view run (April 19–June 15, same May 2 holdout) cut registered MAE to 2.8 m; see [five training views](../training/RESULT_2015.md#five-training-views). Next: depth supervision or a wider view set, then more blocks.
+Use the existing 250 m block with a 20 m halo, three training acquisitions (April 19, April 26 and May 1, 2015), and the May 2 holdout. Crops, RGB preparation, RPC-derived cameras, CPU sparse reconstruction, deskewing, Skyfall conversion, measured Stage 1 training, holdout evaluation, fused export and 3D Tiles delivery in CesiumJS are complete. The actual loader and GPU-enabled preflight pass. The run preserved the ENU origin and pixel/normalization transforms, and the holdout stayed out of calibration and fitting. See [the measured result](../training/RESULT_2015.md). An independent lidar check measured a 1.8 m horizontal offset, within about 0.2–0.6 m vertically, and 3.3 m MAE. A five-view run (April 19–June 15, same May 2 holdout) cut registered MAE to 2.8 m; see [five training views](../training/RESULT_2015.md#five-training-views). Static MoGe depth supervision regressed registered MAE to 7.83 m and holdout PSNR to 15.18 dB ([depth supervision](../training/RESULT_2015.md#depth-supervision)); retain the five-view baseline. Product web app v1 is next.
 
 ### Recent imagery qualification — deferred
 
@@ -165,10 +167,12 @@ Estimates are planning guesses, not measurements. Stack and layout follow PLAN.m
 1. ~~Run measured one-block Skyfall-GS Stage 1 training~~ **Completed** on a copy of the verified prepared scene with `--eval`: 30,000 iterations, 102,543 splats, 214.9 MiB peak allocated tensor memory. Held-out May 2 PSNR 17.57 dB; training views 30.05–42.37 dB. See [the measured result](../training/RESULT_2015.md). The 6 GB GPU budget was not stressed.
 2. ~~Fuse/export the result with the captured transforms~~ **Completed**: 102,543 splats, fused render matches the trained model (≥105.9 dB), transform round trip 1.4e-9 m. See [the fused export](../training/RESULT_2015.md#fused-export). Splats extend past the block; the tiler must crop or flag border floaters.
 3. ~~Verify independent validation data~~ **Measured** against the DFC2019 JAX_068 lidar DSM (full coverage, WGS84 ellipsoidal heights, flight date unpublished): with no ground control, the surface sits 1.8 m off horizontally and within about 0.2–0.6 m vertically. The rendered-depth DSM has 99% completeness and 3.3 m registered MAE. See [the lidar check](../training/RESULT_2015.md#independent-lidar-check).
-5. ~~Improve heights with more views~~ **Measured**: five training views (April 19–June 15, 2015) cut registered MAE from 3.32 m to 2.82 m (buildings 3.70 → 2.87 m); holdout PSNR 17.73 dB. See [five training views](../training/RESULT_2015.md#five-training-views).
-4. ~~View the historical tiles in CesiumJS before scale-up~~ **Completed** for the 2015 pilot: 17 SPZ tiles in 3 levels, REPLACE refinement verified in Cesium, 91.5% of top-view pixels inside the block square. See [the tiles result](../training/RESULT_2015.md#3d-tiles-and-cesium).
+4. ~~Improve heights with more views~~ **Measured**: five training views (April 19–June 15, 2015) cut registered MAE from 3.32 m to 2.82 m (buildings 3.70 → 2.87 m); holdout PSNR 17.73 dB. See [five training views](../training/RESULT_2015.md#five-training-views).
+5. ~~View the historical tiles in CesiumJS before scale-up~~ **Completed** for the 2015 pilot: 17 SPZ tiles in 3 levels, REPLACE refinement verified in Cesium, 91.5% of top-view pixels inside the block square. See [the tiles result](../training/RESULT_2015.md#3d-tiles-and-cesium).
+6. ~~Test static MoGe depth supervision on five views~~ **Measured regression**: fixed `lambda_depth: 0.5`; registered MAE 2.82 → 7.83 m, holdout PSNR 17.73 → 15.18 dB. Registration is unreliable for the flattened surface (38.9 m shift, 84.1% overlap); retain the baseline. See [depth supervision](../training/RESULT_2015.md#depth-supervision).
+7. Build product web app v1: React/Vite/Cesium viewer and FastAPI for datasets, releases and quality reports, reading only pipeline releases. Jobs and semantics come later.
 
-Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation, RPC-derived initial cameras, CPU matching/bundle adjustment/sparse reconstruction, deskewing, the verified Skyfall handoff, measured Stage 1 training and holdout evaluation. The sparse model has 2,233 points with median residual 0.274 px and p95 1.341 px. Its explicit three-train/one-holdout split, masks and normalization pass the real loader; independent geographic accuracy remains unverified. Training quality is appearance-only; the fused export is complete. The prepared Skyfall JAX_068 diagnostic is separate from this raw-imagery block.
+Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation, RPC-derived initial cameras, CPU matching/bundle adjustment/sparse reconstruction, deskewing, the verified Skyfall handoff, measured Stage 1 training and holdout evaluation. The sparse model has 2,233 points with median residual 0.274 px and p95 1.341 px. Its explicit three-train/one-holdout split, masks and normalization pass the real loader; independent geographic accuracy remains unverified. The static MoGe depth experiment regressed; the five-view baseline and its fused export remain the reference. The prepared Skyfall JAX_068 diagnostic is separate from this raw-imagery block.
 
 ## Sources
 

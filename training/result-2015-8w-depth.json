@@ -1,0 +1,439 @@
+{
+  "schema_version": 1,
+  "status": "measured",
+  "experiment": "Same five-view Stage 1 profile and May 2 holdout as pilot-2015-8w-01, plus fixed lambda_depth=0.5 and static MoGe camera-z priors on training views only. No holdout or lidar tuning.",
+  "approved_selection": "configs/jax068-pilot-8w.json",
+  "selection": {
+    "sha256": "e684c99bb35c005eceea9bed51fe47d855a469f3a2c2838496685fefde5412a0",
+    "span_days": 56.999,
+    "training_max_convergence_deg": 49.65,
+    "train": [
+      {
+        "catalog_id": "104001000AB24A00",
+        "date": "2015-04-19",
+        "off_nadir_deg": 17.7,
+        "sat_azimuth_deg": 187.7
+      },
+      {
+        "catalog_id": "104001000A1B5F00",
+        "date": "2015-04-26",
+        "off_nadir_deg": 20.8,
+        "sat_azimuth_deg": 260.3
+      },
+      {
+        "catalog_id": "104001000AB10600",
+        "date": "2015-05-01",
+        "off_nadir_deg": 24.3,
+        "sat_azimuth_deg": 85.4
+      },
+      {
+        "catalog_id": "104001000C22D200",
+        "date": "2015-05-21",
+        "off_nadir_deg": 5.9,
+        "sat_azimuth_deg": 247.6
+      },
+      {
+        "catalog_id": "104001000C478800",
+        "date": "2015-06-15",
+        "off_nadir_deg": 11.1,
+        "sat_azimuth_deg": 111.4
+      }
+    ],
+    "holdout": [
+      {
+        "catalog_id": "104001000A22A000",
+        "date": "2015-05-02"
+      }
+    ],
+    "excluded": {
+      "104001000B564400": "2015-05-14, whole-image cloud cover 12.7% exceeds the 10% gate"
+    },
+    "visual_review": "All six RGB crops show the same cloud-free block; lighting, shadows and vehicles vary."
+  },
+  "sparse_reconstruction": {
+    "report_sha256": "2808fdcc455898c9b095c3b212e807d9cac5e95f676a341a6fb32beb2ae11fa2",
+    "points": 5618,
+    "observations": 14391,
+    "reprojection_px": {
+      "median": 0.314,
+      "p95": 1.369,
+      "max": 2.125
+    },
+    "track_lengths": {
+      "2": 3567,
+      "3": 1244,
+      "4": 513,
+      "5": 291
+    },
+    "baseline_points": 5618
+  },
+  "training": {
+    "profile": "configs/train-2015-pilot-8w-depth.json",
+    "report_sha256": "805c8631042fde8aaecc501018362296d8ea21a4176bad5f151c2e048cd47ade",
+    "final_splats": 100476,
+    "peak_allocated_mib": 214.7,
+    "elapsed_seconds": 669.4,
+    "lambda_depth": 0.5,
+    "logged_ema_depth_loss": {
+      "min": 5.74e-05,
+      "max": 0.7721312,
+      "last": 0.0003833,
+      "nonzero_samples": 6000
+    },
+    "training_log_sha256": {
+      "training-1000.log": "a4762adca8c324bd6a99d4eee16974585f96f22fef2d40074828c99a4a7df299",
+      "training-30000.log": "940517fca91f57677b7aa4c717782d81b0133dca66bda17d58a030b4b30b4c0d"
+    }
+  },
+  "evaluation": {
+    "report_sha256": "eb8fbf1273e48726005d152e34cc6913da33e625cba6018c93f723639a41c236",
+    "final_psnr_db": {
+      "104001000AB24A00": {
+        "role": "train",
+        "psnr_db": 17.21
+      },
+      "104001000A1B5F00": {
+        "role": "train",
+        "psnr_db": 16.78
+      },
+      "104001000AB10600": {
+        "role": "train",
+        "psnr_db": 17.13
+      },
+      "104001000C22D200": {
+        "role": "train",
+        "psnr_db": 16.84
+      },
+      "104001000C478800": {
+        "role": "train",
+        "psnr_db": 16.84
+      },
+      "104001000A22A000": {
+        "role": "holdout",
+        "psnr_db": 15.18
+      }
+    },
+    "baseline_holdout_psnr_db": 17.73
+  },
+  "export": {
+    "manifest_sha256": "b703e07beffc92eac02b30adc8545a460b7ec2c3219d75628c6994bb72238fd5",
+    "fused_ply_sha256": "bf6fd7f21ded1551a2ccb2b67d2a558f4a26024c391802ca8921e827f10a1b62",
+    "round_trip_max_error_m": 1.4117354144869756e-09,
+    "render_equivalence_min_psnr_db": 96.09849535890653
+  },
+  "lidar_check": {
+    "reference": "DFC2019 JAX_068 lidar DSM, see training/validation-2015-04.json",
+    "report_sha256": "5bd40f9aa3cc82c7dd73464211cb2e486b9390f2fab405daa36a69f7915d0803",
+    "rendered_depth": {
+      "depth_report_sha256": "9b0529bdf4025104a610cc03430bae3a3ac8ed373c645de1410208d844b1f874",
+      "alpha_coverage": 1.0,
+      "registration": {
+        "dx_px": 75.0,
+        "dy_px": 21.0,
+        "z_offset_m": -10.506014062999432,
+        "splats_offset_from_lidar_m": {
+          "east": 37.5,
+          "north": -10.5,
+          "up": 10.506014062999432,
+          "horizontal": 38.942264957241505
+        }
+      },
+      "unregistered": {
+        "all_labelled": {
+          "pixels": 236227,
+          "completeness": 1.0,
+          "bias_m": 13.221155120822235,
+          "median_m": 16.798336416482925,
+          "mae_m": 15.50893216968123,
+          "rmse_m": 16.87540081727655,
+          "nmad_m": 6.856044401238486
+        },
+        "ground": {
+          "pixels": 117711,
+          "completeness": 1.0,
+          "bias_m": 19.820082869018812,
+          "median_m": 18.829757349565625,
+          "mae_m": 19.82631670259741,
+          "rmse_m": 20.179086472866217,
+          "nmad_m": 2.4583684836627913
+        },
+        "building": {
+          "pixels": 109098,
+          "completeness": 1.0,
+          "bias_m": 5.703677096430265,
+          "median_m": 7.84184274636209,
+          "mae_m": 10.650613961784753,
+          "rmse_m": 12.128489431434929,
+          "nmad_m": 7.329120108872931
+        },
+        "vegetation": {
+          "pixels": 9418,
+          "completeness": 1.0,
+          "bias_m": 17.826743710453545,
+          "median_m": 17.71068345475942,
+          "mae_m": 17.826743710453545,
+          "rmse_m": 18.698318205934395,
+          "nmad_m": 5.702575186239369
+        }
+      },
+      "registered": {
+        "all_labelled": {
+          "pixels": 198600,
+          "completeness": 0.8407167681933055,
+          "bias_m": 0.045332214875523774,
+          "median_m": 3.7660722732543945,
+          "mae_m": 7.832283450140574,
+          "rmse_m": 10.66253809909858,
+          "nmad_m": 5.9418795965194695
+        },
+        "ground": {
+          "pixels": 89696,
+          "completeness": 0.7620018519934416,
+          "bias_m": 7.433852190918,
+          "median_m": 7.38650369644165,
+          "mae_m": 7.4847956065924475,
+          "rmse_m": 7.7872064772785725,
+          "nmad_m": 1.5826714279174803
+        },
+        "building": {
+          "pixels": 99562,
+          "completeness": 0.912592348164036,
+          "bias_m": -6.912231857048038,
+          "median_m": -2.820094108581543,
+          "mae_m": 8.510121104515193,
+          "rmse_m": 13.038531929915104,
+          "nmad_m": 6.530231187343597
+        },
+        "vegetation": {
+          "pixels": 9342,
+          "completeness": 0.9919303461456785,
+          "bias_m": 3.255384276291462,
+          "median_m": 3.252197265625,
+          "mae_m": 3.944614543059326,
+          "rmse_m": 4.782691677391565,
+          "nmad_m": 3.1825728549957275
+        }
+      },
+      "visual_review": "DSM comparison: prediction is nearly flat; building-sized signed errors remain after the large registration shift. The offset is unreliable for this degraded shape."
+    },
+    "baseline_registered_mae_m": {
+      "all_labelled": 2.817,
+      "ground": 2.768,
+      "building": 2.872,
+      "vegetation": 2.777
+    }
+  },
+  "commands": [
+    "uv venv --python 3.12 .venv-moge",
+    "uv pip install --python .venv-moge/bin/python -r training/requirements-moge.txt",
+    ".venv-moge/bin/python -m pipeline.depth_priors --revision ad326bfb61facd6c52b5a825bc1e34d7c97d9672",
+    "source scripts/stage1-env.sh && python scripts/check-skyfall-inputs.py --scene artifacts/imagery/pilot-8w/skyfall-moge && python -m pipeline.phase2 artifacts/imagery/pilot-8w/skyfall-moge/phase2-manifest.json --output artifacts/imagery/pilot-8w/skyfall-moge/preflight-report.json",
+    "source scripts/stage1-env.sh && python -m pipeline.training --scene artifacts/imagery/pilot-8w/skyfall-moge --profile configs/train-2015-pilot-8w-depth.json --output artifacts/stage1/pilot-2015-8w-depth-01",
+    "source scripts/stage1-env.sh && python -m pipeline.evaluation --run artifacts/stage1/pilot-2015-8w-depth-01",
+    "source scripts/stage1-env.sh && python -m pipeline.export --run artifacts/stage1/pilot-2015-8w-depth-01 --selection artifacts/imagery/pilot-8w/selection.json",
+    "source scripts/stage1-env.sh && python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-8w-depth-01 --output artifacts/validation/pilot-2015-8w-depth-01-depth",
+    ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-8w-depth-01/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-8w-depth-01-depth/lidar --points artifacts/validation/pilot-2015-8w-depth-01-depth/depth-points.npz"
+  ],
+  "interpretation": "Static MoGe depth at fixed lambda_depth=0.5 degraded the five-view pilot: holdout PSNR 17.73 to 15.18 dB; registered lidar MAE 2.82 to 7.83 m, RMSE 4.17 to 10.66 m. The rendered DSM is nearly flat, with roofs lost. Registration found a 38.94 m horizontal shift and retained only 84.1% coverage, so its offset is not a reliable placement estimate and the registered error uses a reduced overlap. Unregistered median error is +16.80 m. MoGe priors on near-orthographic satellite views are weak; their visible roof shapes did not translate into useful geometry with this masked Pearson loss. The loss includes zero-filled padding, so a small depth loss alone does not demonstrate correct surface shape. Keep the five-view baseline; no lambda tuning used the holdout or lidar. One block, one lidar of unknown date; no production or broader independent accuracy claim.",
+  "depth_priors": {
+    "version": 1,
+    "status": "generated",
+    "model_id": "Ruicheng/moge-vitl",
+    "model_revision": "ad326bfb61facd6c52b5a825bc1e34d7c97d9672",
+    "moge_commit": "aca893a40faf6905cb722d6614cc37cb87ea06f7",
+    "generator_sha256": "dfb7b87972f69dd1f21de51fec0f2ab9b9503b10da0cf79ed2142ad008ddf01d",
+    "source_manifest_sha256": "7adb31c36d838834fd2a32fe1922fbae4a7d265d4d7231c134d6eb45f451bf3b",
+    "georeference_sha256": "0dc6e2618377735d137d584c2237ae5f26fcf35c0700bd5ed8e8060035312651",
+    "fov_x_used": true,
+    "depth_convention": "camera z; relative scale and offset; float32 EXR Y",
+    "inference": {
+      "resolution_level": 9,
+      "apply_mask": true,
+      "precision": "float32"
+    },
+    "holdout_used": false,
+    "images": [
+      {
+        "catalog_id": "104001000AB24A00",
+        "shape": [
+          1232,
+          961
+        ],
+        "fov_x_degrees": 0.04015835536472249,
+        "valid_fraction": 0.9968790964498561,
+        "depth_min": 1928.658935546875,
+        "depth_max": 1928.9088134765625,
+        "image_sha256": "01815abb35d304212c755a49a1f22a84f98dd74bef33ed074be5bb69fae8087f",
+        "mask_sha256": "b288c2956fff7674e819d6706aa098b3ac0ce4977ab9ca49a9b07312b9066c8f",
+        "depth_sha256": "75066af6e3b9188f955c47f9744c694a420a84437a62abcbe89f706d5c702976"
+      },
+      {
+        "catalog_id": "104001000A1B5F00",
+        "shape": [
+          994,
+          1247
+        ],
+        "fov_x_degrees": 0.06011138625432842,
+        "valid_fraction": 0.9903777113361807,
+        "depth_min": 1699.0660400390625,
+        "depth_max": 1699.5908203125,
+        "image_sha256": "8dbd42b611064468b2ce1088cb05639541d8568ccb34d6f4ac6448e4f4516ac6",
+        "mask_sha256": "b61a04c3ec485bf43d3582f915ea4b17a4953f5eb0236eb0a6cbf2167afe8fa9",
+        "depth_sha256": "7f753cd53d6aba4adfc1e9665f0a01726d58b76739ca8d7eebde5452538b9f11"
+      },
+      {
+        "catalog_id": "104001000AB10600",
+        "shape": [
+          908,
+          1357
+        ],
+        "fov_x_degrees": 0.015093498433065311,
+        "valid_fraction": 0.9145181291979262,
+        "depth_min": 6917.39599609375,
+        "depth_max": 6917.61328125,
+        "image_sha256": "19bad507c1ffcb7904a9e7c6eb058993690daa202aa138a4860595993c054c12",
+        "mask_sha256": "ba7f3de905ee53c306795afb7bf548a5b1e2f8d3c0c83752393074a926a2cac7",
+        "depth_sha256": "4f5c03ae74fd8ba937a15faae32b73f7e482a9f7ee8f32353ded1c053529fca8"
+      },
+      {
+        "catalog_id": "104001000C22D200",
+        "shape": [
+          1000,
+          1068
+        ],
+        "fov_x_degrees": 0.012258093800777687,
+        "valid_fraction": 0.998128277153558,
+        "depth_min": 7770.00341796875,
+        "depth_max": 7770.19580078125,
+        "image_sha256": "0f81416a0379c1f27ea30bd484220243dec81a3ff844fafbad8c1feed84d78d7",
+        "mask_sha256": "475e4d2583d3ba89df2fb85aa08d3ded2d11e3d13de7be6b827aea2a25b4684f",
+        "depth_sha256": "d08638d3b4d43e6666e01682d154c54701ce47accca9adc038eee2fc397bc805"
+      },
+      {
+        "catalog_id": "104001000C478800",
+        "shape": [
+          1037,
+          1180
+        ],
+        "fov_x_degrees": 0.01357201460454313,
+        "valid_fraction": 0.9754245460340291,
+        "depth_min": 7205.25439453125,
+        "depth_max": 7205.455078125,
+        "image_sha256": "063e60adf4746d84364c6ffa6cc861670c0302734bcc2959d658d48cb356b036",
+        "mask_sha256": "b820a467d81f2a98a0924970a5a2aa24587e4bc62f16b771ff94d2929feedb66",
+        "depth_sha256": "1776cc9f4fcb390fe87cca0a8fe124c32ca03103032b4125fddf38c4bd6c83c6"
+      }
+    ],
+    "report_sha256": "24f36e8b59b4a9c4d5fec51d393bc44a4092fd1c5a5be7b1162f523a3e347543",
+    "scene_manifest_sha256": "2761fe79d79c0c25d9d23394383000301eb137bced51e8fd23443a84d50ba8b3",
+    "requirements": "training/requirements-moge.txt",
+    "loader_report_sha256": "c3dbddf17261a13243439353c787158c32676d1c1d757351430236ec1acfe4ed",
+    "preflight_report_sha256": "e06b0537003332ad8ed51361d8a03c7929a8805be0f74f2b7a577e36ce665073",
+    "weights_sha256": "da96b09a0485a3c45a5aa455e67743c8b4efc4dd8437c1f2aa93c2b4303d957f",
+    "visual_review": "April 19 and June 15 priors show building shapes plus broad scene gradients; relative camera-z only."
+  },
+  "baseline": {
+    "run": "artifacts/stage1/pilot-2015-8w-01",
+    "result_sha256": "33219c0bf7c29b6a68090bf3adf7daa3b45902464ff035a5ba4d2bd2c1457c22",
+    "holdout_psnr_db": 17.73,
+    "training_psnr_range_db": [
+      23.98,
+      38.08
+    ],
+    "lidar_rendered_depth": {
+      "depth_report_sha256": "822461edd502e541fd28ce8905bbb43bb602e3e975eb342340bc0ee3d82ff285",
+      "alpha_coverage": 0.9935,
+      "registration": {
+        "splats_offset_from_lidar_m": {
+          "east": -1.5,
+          "north": 0.5,
+          "up": -0.824,
+          "horizontal": 1.581
+        }
+      },
+      "unregistered": {
+        "all_labelled": {
+          "completeness": 0.996,
+          "bias_m": -0.776,
+          "median_m": -0.919,
+          "mae_m": 3.042,
+          "rmse_m": 4.557,
+          "nmad_m": 2.832
+        },
+        "ground": {
+          "completeness": 0.996,
+          "bias_m": -0.226,
+          "median_m": -0.609,
+          "mae_m": 2.875,
+          "rmse_m": 4.193,
+          "nmad_m": 2.897
+        },
+        "building": {
+          "completeness": 0.996,
+          "bias_m": -1.227,
+          "median_m": -1.149,
+          "mae_m": 3.208,
+          "rmse_m": 4.964,
+          "nmad_m": 2.726
+        },
+        "vegetation": {
+          "completeness": 1.0,
+          "bias_m": -2.41,
+          "median_m": -2.504,
+          "mae_m": 3.199,
+          "rmse_m": 3.949,
+          "nmad_m": 2.835
+        }
+      },
+      "registered": {
+        "all_labelled": {
+          "completeness": 0.996,
+          "bias_m": 0.048,
+          "median_m": -0.101,
+          "mae_m": 2.817,
+          "rmse_m": 4.172,
+          "nmad_m": 2.823
+        },
+        "ground": {
+          "completeness": 0.996,
+          "bias_m": 0.568,
+          "median_m": 0.241,
+          "mae_m": 2.768,
+          "rmse_m": 4.002,
+          "nmad_m": 2.875
+        },
+        "building": {
+          "completeness": 0.996,
+          "bias_m": -0.39,
+          "median_m": -0.373,
+          "mae_m": 2.872,
+          "rmse_m": 4.399,
+          "nmad_m": 2.702
+        },
+        "vegetation": {
+          "completeness": 1.0,
+          "bias_m": -1.354,
+          "median_m": -1.435,
+          "mae_m": 2.777,
+          "rmse_m": 3.516,
+          "nmad_m": 2.993
+        }
+      }
+    }
+  },
+  "validation": {
+    "sfm_python_tests": {
+      "passed": 63
+    },
+    "imagery_tests": {
+      "passed": 34,
+      "warnings": 19
+    },
+    "ruff": "passed (E,F; line length 120)",
+    "commands": [
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-sfm/bin/python -m pytest -q tests/sfm tests/python",
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-imagery/bin/python -m pytest -q tests/imagery",
+      "uvx ruff check --isolated --select E,F --line-length 120 pipeline/depth_priors.py pipeline/training.py tests/sfm/test_depth_priors.py tests/sfm/test_training.py"
+    ]
+  }
+}
