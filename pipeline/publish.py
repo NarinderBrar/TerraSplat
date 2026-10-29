@@ -173,7 +173,8 @@ def ground_height(points_path, plan, cell_m=1.0, bin_m=0.5):
     low = edges[counts.argmax()]
     mode = float(np.median(surface[(surface >= low) & (surface < low + bin_m)]))
     return {'ellipsoidal_height_m': plan['enu_anchor']['ellipsoidal_height_m'] + mode,
-            'method': f'median of the modal {bin_m:g} m bin of the rendered-depth DSM ({cell_m:g} m cells) inside the owned crop',
+            'method': (f'median of the modal {bin_m:g} m bin of the rendered-depth DSM ({cell_m:g} m cells) '
+                       'inside the owned crop'),
             'source_sha256': sha256(points_path)}
 
 
