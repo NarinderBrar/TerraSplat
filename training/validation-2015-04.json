@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "status": "measured",
+  "export_manifest_sha256": "57256537b1b8cfc665ced12cf683bc7636fb933b30e971f2132f7043657cf02b",
+  "fused_ply_sha256": "b2d5b9a58bb974b6d627636eb77b57179cab2fede2317939ac9ab771fd04dd7a",
+  "reference": {
+    "aoi": "JAX_068",
+    "source": "DFC2019 Track3-Truth (HSIP airborne lidar, ANPS about 0.8 m), via the Sat-NeRF EarthVision2022 dataset.zip",
+    "files_sha256": {
+      "JAX_068_CLS.tif": "e877941431cfa3b0b70fa6f5c7ada257108a3c73b3b0d75cdf83edb890e73e62",
+      "JAX_068_DSM.tif": "ab128081136c07e34ee25df3dff5edf9db845b9cecdef8d991148ea9c0214529",
+      "JAX_068_DSM.txt": "b982868b9c13a776b1cd4c85af01246775808bd064545fde29c00d9f66c8f61b",
+      "readme.txt": "b50af409243c8c875a61196603b9f4e882fdcc7db0786932840658c8eb1cfb01"
+    },
+    "grid": {
+      "utm_epsg": 32617,
+      "west": 436078.995946,
+      "north": 3357751.999923,
+      "resolution_m": 0.5,
+      "size": 512
+    },
+    "heights": "WGS84 ellipsoidal (ground median about -17 m; orthometric would be about +12 m here)",
+    "acquisition_date": "unknown (HSIP U.S. Cities lidar; not stated in the DFC2019/US3D papers)"
+  },
+  "method": {
+    "splats": "fused export centres placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights",
+    "dsm": "max centre height over each splat's footprint disc (1 sigma, capped at 3.0 m), opacity >= 0.5",
+    "splats_used": 31219,
+    "registration": "Skyfall-GS/Sat-NeRF dsmr: recursive NCC shift, z offset, no z scaling",
+    "evaluated_extent": "250 m block (ENU square) inside the truth grid; CLS 65 (unlabelled) and water excluded from all_labelled",
+    "deviation": "Skyfall builds its DSM from rendered depth; this uses splat footprints, so registered MAE is not directly comparable to published numbers"
+  },
+  "command": "python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-04/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-04",
+  "reference_download": "DFC2019/Track3-Truth/JAX_068_{DSM.tif,DSM.txt,CLS.tif} and DFC2019/readme.txt range-extracted from https://github.com/centreborelli/satnerf/releases/download/EarthVision2022/dataset.zip",
+  "unregistered": {
+    "all_labelled": {
+      "pixels": 194222,
+      "completeness": 0.822,
+      "bias_m": -1.067,
+      "median_m": -0.938,
+      "mae_m": 4.537,
+      "rmse_m": 7.599,
+      "nmad_m": 2.879
+    },
+    "ground": {
+      "pixels": 93774,
+      "completeness": 0.797,
+      "bias_m": -0.879,
+      "median_m": -0.918,
+      "mae_m": 4.024,
+      "rmse_m": 6.776,
+      "nmad_m": 2.688
+    },
+    "building": {
+      "pixels": 92660,
+      "completeness": 0.849,
+      "bias_m": -1.082,
+      "median_m": -0.934,
+      "mae_m": 4.941,
+      "rmse_m": 8.296,
+      "nmad_m": 2.885
+    },
+    "vegetation": {
+      "pixels": 7788,
+      "completeness": 0.827,
+      "bias_m": -3.136,
+      "median_m": -1.981,
+      "mae_m": 5.906,
+      "rmse_m": 8.272,
+      "nmad_m": 5.899
+    }
+  },
+  "registration": {
+    "dx_px": -3.0,
+    "dy_px": 2.0,
+    "z_offset_m": 1.072,
+    "splats_offset_from_lidar_m": {
+      "east": -1.5,
+      "north": -1.0,
+      "up": -1.072,
+      "horizontal": 1.803
+    }
+  },
+  "registered": {
+    "all_labelled": {
+      "pixels": 194051,
+      "completeness": 0.821,
+      "bias_m": 0.058,
+      "median_m": 0.166,
+      "mae_m": 4.216,
+      "rmse_m": 7.318,
+      "nmad_m": 2.692
+    },
+    "ground": {
+      "pixels": 93175,
+      "completeness": 0.792,
+      "bias_m": 0.033,
+      "median_m": 0.151,
+      "mae_m": 3.83,
+      "rmse_m": 6.758,
+      "nmad_m": 2.544
+    },
+    "building": {
+      "pixels": 93124,
+      "completeness": 0.854,
+      "bias_m": 0.205,
+      "median_m": 0.186,
+      "mae_m": 4.523,
+      "rmse_m": 7.847,
+      "nmad_m": 2.668
+    },
+    "vegetation": {
+      "pixels": 7752,
+      "completeness": 0.823,
+      "bias_m": -1.416,
+      "median_m": -0.105,
+      "mae_m": 5.147,
+      "rmse_m": 7.186,
+      "nmad_m": 5.229
+    }
+  },
+  "interpretation": [
+    "Absolute placement: the splat surface sits 1.5 m west, 1.0 m south (1.8 m horizontal, about 5 GSD) and about 1.1 m below the lidar; dsmr resolves shifts on the 0.5 m grid.",
+    "That is within the typical no-ground-control accuracy of WorldView-3 RPCs (a few metres CE90); no ground control was used.",
+    "MAE of 4-5 m is dominated by the splat DSM itself: centre heights drawn as footprint discs scatter along the needle-shaped splats. A rendered-depth DSM (Skyfall's method) is the next refinement.",
+    "The lidar acquisition date is unknown, so scene change since the flight cannot be ruled out; ground and building results agree, which argues against large change."
+  ]
+}

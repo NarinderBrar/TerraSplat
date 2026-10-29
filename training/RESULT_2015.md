@@ -170,5 +170,47 @@ Limitations:
   so `pilot.html` hides the globe, or makes it translucent for the optional
   OpenStreetMap overlay.
 
-Next: independent placement and height validation against date-compatible
-reference data, then scaling to more blocks.
+## Independent lidar check
+
+```
+.venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-04/export \
+  --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-04
+```
+
+Reference: the DFC2019 Track 3 truth for JAX_068, an HSIP airborne lidar DSM at
+0.5 m in UTM 17N with ground, building and vegetation classes. It covers the
+whole block; its centre is within 1.4 m of ours. Heights are WGS84 ellipsoidal:
+the ground median is −17.4 m, where orthometric heights would be about +12 m
+here. It is independent of our imagery, RPCs and SfM. The three files were range-extracted from
+the Sat-NeRF `EarthVision2022` `dataset.zip` into ignored
+`artifacts/reference/`; their hashes are in
+[validation-2015-04.json](validation-2015-04.json). The lidar flight date is
+not published.
+
+The splat DSM uses only the recorded transform chain: model → ENU → ECEF →
+UTM with ellipsoidal heights. Each splat with opacity ≥ 0.5 is drawn as a
+footprint disc at its centre height, keeping the maximum per 0.5 m cell.
+Skyfall-GS's `dsmr` then registers it to the lidar. A synthetic test fixes
+the sign of its shift.
+
+| 250 m block | Bias | MAE | NMAD | Completeness |
+| --- | ---: | ---: | ---: | ---: |
+| Unregistered, all labelled | −1.07 m | 4.54 m | 2.88 m | 82% |
+| Unregistered, ground | −0.88 m | 4.02 m | 2.69 m | 80% |
+| Unregistered, buildings | −1.08 m | 4.94 m | 2.89 m | 85% |
+| Registered, all labelled | +0.06 m | 4.22 m | 2.69 m | 82% |
+
+- Absolute placement: the splat surface sits 1.5 m west and 1.0 m south of
+  the lidar (1.8 m horizontal, about 5 GSD) and about 1.1 m below it. No
+  ground control was used; this is within the few-metre accuracy typical of
+  WorldView-3 RPCs without it. dsmr resolves shifts to the 0.5 m grid.
+- Ground and building biases agree to within 0.2 m, which argues against
+  large scene change since the lidar flight but does not rule it out.
+- MAE is dominated by the splat DSM itself: centre heights drawn as discs
+  scatter along the needle-shaped splats, as the speckled comparison image
+  shows. Skyfall builds its DSM from rendered depth instead, so these MAE
+  values are not comparable to published numbers.
+
+Next: a rendered-depth DSM for a fair shape comparison, and optionally a
+horizontal correction of about 1.8 m recorded as a separate, versioned
+georeference adjustment. Then scaling to more blocks.
