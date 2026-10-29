@@ -73,39 +73,24 @@ def load_ply_model(gaussians, path):
     gaussians._opacity = torch.nn.Parameter(named("opacity"))
     gaussians._scaling = torch.nn.Parameter(columns("scale_"))
     gaussians._rotation = torch.nn.Parameter(columns("rot_"))
-    gaussians.filter_3D = named("filter_3D")
+    if "filter_3D" in data.dtype.names:
+        gaussians.filter_3D = named("filter_3D")
+    else:
+        gaussians.filter_3D = torch.zeros(count, 1, device="cuda")
     gaussians.active_sh_degree = gaussians.max_sh_degree
 
 
-def evaluate(run):
-    import torch
-
-    run = Path(run).resolve()
-    report_path = run / "training-report.json"
-    training = json.loads(report_path.read_text())
-    if training["status"] != "trained":
-        raise ValueError("A completed, verified training run is required")
-    model, data = Path(training["model"]), Path(training["input_scene"])
-    for relative, expected in training["phases"][-1]["outputs"]["sha256"].items():
-        if digest(model / relative) != expected:
-            raise ValueError("Trained model changed before evaluation")
-    initial = model / "point_cloud/iteration_0/point_cloud.ply"
-    if (
-        digest(initial) != training["initial_ply_sha256"]
-        or digest(model / "georeference.json") != training["georeference_sha256"]
-    ):
-        raise ValueError("Initial model or georeference changed")
+def render_context(training, model):
     sys.path.insert(0, str(ROOT / ".external/skyfall-gs"))
     from arguments import ModelParams, PipelineParams
     from scene import Scene, GaussianModel
-    from gaussian_renderer import render
 
     parser = argparse.ArgumentParser()
     mp, pp = ModelParams(parser), PipelineParams(parser)
     profile = training["profile"]
     arguments = [
         "-s",
-        str(data),
+        str(training["input_scene"]),
         "-m",
         str(model),
         "--eval",
@@ -122,11 +107,63 @@ def evaluate(run):
     gaussians = GaussianModel(profile["sh_degree"], False, 4, 32)
     scene = Scene(mp.extract(args), gaussians, load_iteration=profile["iterations"])
     pipeline = pp.extract(args)
-    output = run / "evaluation"
-    output.mkdir(exist_ok=False)
     views = [("train", c) for c in scene.getTrainCameras()] + [
         ("holdout", c) for c in scene.getTestCameras()
     ]
+    return gaussians, views, pipeline
+
+
+def render_ply(gaussians, views, pipeline, ply):
+    import torch
+    from gaussian_renderer import render
+
+    load_ply_model(gaussians, ply)
+    renders = {}
+    with torch.no_grad():
+        for role, camera in views:
+            result = render(
+                camera,
+                gaussians,
+                pipeline,
+                torch.zeros(3, device="cuda"),
+                0.1,
+                testing=role == "holdout",
+            )
+            rgb = result["render"].clamp(0, 1).permute(1, 2, 0).cpu().numpy()
+            alpha = result["render_alpha"].squeeze().cpu().numpy()
+            if not np.isfinite(alpha).all():
+                raise ValueError("Nonfinite rendered alpha")
+            renders[(role, camera.image_name)] = {
+                "role": role,
+                "catalog_id": camera.image_name,
+                "rgb": rgb,
+                "alpha": alpha,
+                "reference": camera.original_image.permute(1, 2, 0).cpu().numpy(),
+                "valid": camera.original_mask.squeeze().cpu().numpy().astype(bool),
+            }
+    return renders
+
+
+def evaluate(run):
+    run = Path(run).resolve()
+    report_path = run / "training-report.json"
+    training = json.loads(report_path.read_text())
+    if training["status"] != "trained":
+        raise ValueError("A completed, verified training run is required")
+    model = Path(training["model"])
+    for relative, expected in training["phases"][-1]["outputs"]["sha256"].items():
+        if digest(model / relative) != expected:
+            raise ValueError("Trained model changed before evaluation")
+    initial = model / "point_cloud/iteration_0/point_cloud.ply"
+    if (
+        digest(initial) != training["initial_ply_sha256"]
+        or digest(model / "georeference.json") != training["georeference_sha256"]
+    ):
+        raise ValueError("Initial model or georeference changed")
+    gaussians, views, pipeline = render_context(training, model)
+    profile = training["profile"]
+    output = run / "evaluation"
+    output.mkdir(exist_ok=False)
     records = {"initial": [], "final": []}
     previews = {}
     for stage, ply in (
@@ -136,38 +173,26 @@ def evaluate(run):
             model / f"point_cloud/iteration_{profile['iterations']}/point_cloud.ply",
         ),
     ):
-        load_ply_model(gaussians, ply)
-        with torch.no_grad():
-            for role, camera in views:
-                result = render(
-                    camera,
-                    gaussians,
-                    pipeline,
-                    torch.zeros(3, device="cuda"),
-                    0.1,
-                    testing=role == "holdout",
+        renders = render_ply(gaussians, views, pipeline, ply)
+        for role, camera in views:
+            rendered = renders[(role, camera.image_name)]
+            rgb, alpha = rendered["rgb"], rendered["alpha"]
+            reference, valid = rendered["reference"], rendered["valid"]
+            record = {
+                "catalog_id": camera.image_name,
+                "role": role,
+                **image_metrics(reference, rgb, valid),
+                "alpha_coverage_above_0_01": float(np.mean(alpha[valid] > 0.01)),
+                "mean_alpha": float(np.mean(alpha[valid])),
+            }
+            records[stage].append(record)
+            png = output / f"{stage}-{camera.image_name}.png"
+            Image.fromarray(np.rint(rgb * 255).astype(np.uint8)).save(png)
+            previews[(stage, camera.image_name)] = Image.open(png).copy()
+            if stage == "initial":
+                previews[("reference", camera.image_name)] = Image.fromarray(
+                    np.rint(reference * 255).astype(np.uint8)
                 )
-                rgb = result["render"].clamp(0, 1).permute(1, 2, 0).cpu().numpy()
-                alpha = result["render_alpha"].squeeze().cpu().numpy()
-                if not np.isfinite(alpha).all():
-                    raise ValueError("Nonfinite rendered alpha")
-                reference = camera.original_image.permute(1, 2, 0).cpu().numpy()
-                valid = camera.original_mask.squeeze().cpu().numpy().astype(bool)
-                record = {
-                    "catalog_id": camera.image_name,
-                    "role": role,
-                    **image_metrics(reference, rgb, valid),
-                    "alpha_coverage_above_0_01": float(np.mean(alpha[valid] > 0.01)),
-                    "mean_alpha": float(np.mean(alpha[valid])),
-                }
-                records[stage].append(record)
-                png = output / f"{stage}-{camera.image_name}.png"
-                Image.fromarray(np.rint(rgb * 255).astype(np.uint8)).save(png)
-                previews[(stage, camera.image_name)] = Image.open(png).copy()
-                if stage == "initial":
-                    previews[("reference", camera.image_name)] = Image.fromarray(
-                        np.rint(reference * 255).astype(np.uint8)
-                    )
     canvas = Image.new("RGB", (1200, 440 * len(views)), "#20252b")
     draw = ImageDraw.Draw(canvas)
     for row, (role, camera) in enumerate(views):
