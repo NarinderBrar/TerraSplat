@@ -208,7 +208,9 @@ def reconstruct(inputs, calibration, approved, output, source, colmap):
                 "--SiftExtraction.use_gpu",
                 "0",
                 "--SiftExtraction.num_threads",
-                "3",
+                # The pinned initializer requires image_id == camera_id;
+                # parallel extraction can finish images out of camera order.
+                "1",
                 "--SiftExtraction.max_image_size",
                 "10000",
                 "--SiftExtraction.domain_size_pooling",
@@ -235,7 +237,8 @@ def reconstruct(inputs, calibration, approved, output, source, colmap):
                 )
             report["features"] = dict(
                 conn.execute(
-                    "SELECT images.name, keypoints.rows FROM images JOIN keypoints ON images.image_id=keypoints.image_id"
+                    "SELECT images.name, keypoints.rows FROM images "
+                    "JOIN keypoints ON images.image_id=keypoints.image_id"
                 )
             )
         run_command(
