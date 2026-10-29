@@ -319,16 +319,25 @@ memory. Fused export passed (1.4e-9 m round trip, ≥96.1 dB render equivalence)
 | Unregistered median height error | −0.92 m | +16.80 m |
 | Registered completeness | 99.6% | 84.1% |
 
-The depth-supervised DSM is nearly flat and loses roof structure. The 38.9 m
-registration shift is unreliable for this degraded shape; its registered
-errors also use reduced overlap, so it is not a trustworthy placement
-measurement. The unregistered MAE is 15.51 m. Two inspected MoGe maps (April 19
-and June 15) show roof shapes plus broad gradients, but those priors did not
-produce useful geometry here. Near-orthographic satellite views are a weak
-setting for MoGe, and a small masked Pearson loss, which includes zero-filled
-padding, does not establish correct surface shape. This fixed-weight test
-regressed both appearance and heights; retain the five-view baseline. One
-block, one lidar of unknown date; no production or broader accuracy claim.
+The depth-supervised DSM is nearly flat and loses roof structure. Its 38.9 m
+registration shift is unreliable; registered errors use only 84.1% overlap.
+Unregistered MAE is 15.51 m.
+
+Diagnosis: static priors are around 1,900–7,800 units with only about 0.2 units
+of variation within each image. Skyfall sets masked/padded pixels to zero
+before Pearson correlation. The inside-versus-padding step dominates the
+loss and mainly enforces flat depth. This run tested a padding-dominated
+flattening loss, not MoGe's shape signal. Valid-pixel correlations against
+the five-view baseline's expected depth are 0.746, 0.965, −0.129, 0.483 and
+0.175 for AB24A00, A1B5F00, AB10600, C22D200 and C478800, respectively
+(full IDs in the compact JSON).
+
+The authors disable static satellite-image priors (`--lambda_depth 0`) and
+instead use MoGe on rendered pseudo views inside training
+(`--lambda_pseudo_depth 0.5`), an appearance model and `--lambda_opacity 10`.
+Their pseudo-view variant was untested by this experiment. Retain the
+five-view baseline; no weight tuning used holdout or lidar. One block,
+lidar date unknown; no broader accuracy claim.
 
 Checks: 63 SfM/Python tests and 34 imagery tests pass; Ruff E/F passes. Next:
 product web app v1 reading pipeline releases; further height experiments

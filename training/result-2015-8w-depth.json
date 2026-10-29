@@ -234,7 +234,7 @@
     "source scripts/stage1-env.sh && python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-8w-depth-01 --output artifacts/validation/pilot-2015-8w-depth-01-depth",
     ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-8w-depth-01/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-8w-depth-01-depth/lidar --points artifacts/validation/pilot-2015-8w-depth-01-depth/depth-points.npz"
   ],
-  "interpretation": "Static MoGe depth at fixed lambda_depth=0.5 degraded the five-view pilot: holdout PSNR 17.73 to 15.18 dB; registered lidar MAE 2.82 to 7.83 m, RMSE 4.17 to 10.66 m. The rendered DSM is nearly flat, with roofs lost. Registration found a 38.94 m horizontal shift and retained only 84.1% coverage, so its offset is not a reliable placement estimate and the registered error uses a reduced overlap. Unregistered median error is +16.80 m. MoGe priors on near-orthographic satellite views are weak; their visible roof shapes did not translate into useful geometry with this masked Pearson loss. The loss includes zero-filled padding, so a small depth loss alone does not demonstrate correct surface shape. Keep the five-view baseline; no lambda tuning used the holdout or lidar. One block, one lidar of unknown date; no production or broader independent accuracy claim.",
+  "interpretation": "Padding-dominated static-prior loss flattened the DSM; this does not isolate MoGe shape quality. Authors disable this static path and use rendered pseudo-view supervision, untested by this run. Measured regression and reduced-overlap registration remain as recorded.",
   "depth_priors": {
     "version": 1,
     "status": "generated",
@@ -435,5 +435,22 @@
       "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH= .venv-imagery/bin/python -m pytest -q tests/imagery",
       "uvx ruff check --isolated --select E,F --line-length 120 pipeline/depth_priors.py pipeline/training.py tests/sfm/test_depth_priors.py tests/sfm/test_training.py"
     ]
+  },
+  "diagnosis": {
+    "mechanism": "Zero-filled padding dominates Pearson correlation due to large prior offset and tiny within-image variation; mainly enforces flat depth rather than MoGe shape.",
+    "valid_pixel_pearson_vs_baseline_expected_depth": {
+      "104001000AB24A00": 0.746,
+      "104001000A1B5F00": 0.965,
+      "104001000AB10600": -0.129,
+      "104001000C22D200": 0.483,
+      "104001000C478800": 0.175
+    },
+    "authors_stage1": {
+      "lambda_depth": 0,
+      "lambda_pseudo_depth": 0.5,
+      "appearance_enabled": true,
+      "lambda_opacity": 10,
+      "tested_by_this_run": false
+    }
   }
 }
