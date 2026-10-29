@@ -1,0 +1,44 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -81.66506065249939,
+              30.347692130283743
+            ],
+            [
+              -81.66246047019156,
+              30.347692130283747
+            ],
+            [
+              -81.66246044038016,
+              30.349947285381486
+            ],
+            [
+              -81.6650606823108,
+              30.349947285381486
+            ],
+            [
+              -81.66506065249939,
+              30.347692130283743
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "dataset_id": "jax068-2015",
+        "release_id": "jax068-2015-5v-r1",
+        "title": "JAX_068 historical 5-view baseline",
+        "capture_date_start": "2015-04-19T16:14:39.732975Z",
+        "capture_date_end": "2015-06-15T16:12:48.813775Z",
+        "headline_mae_m": 2.817,
+        "tileset_url": "/releases/jax068-2015-5v-r1/tileset.json"
+      }
+    }
+  ]
+}
