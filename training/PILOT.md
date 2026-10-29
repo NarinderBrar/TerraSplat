@@ -105,5 +105,5 @@ the prepared inputs. The 30,000-iteration run produced 102,543 splats with
 PSNR and training views 30.05–42.37 dB. Those are masked appearance metrics, not
 height or placement accuracy. See [the result](RESULT_2015.md) for the full
 table, hashes and limitations. The basic Stage 1 restrictions still apply: IDU
-and pseudo-depth modes are disabled. The next step is fusion/export preserving
-the recorded placement, then tiling and Cesium delivery.
+and pseudo-depth modes are disabled. Fusion/export preserving the recorded placement
+is complete ([fused export](RESULT_2015.md#fused-export)); next is tiling and Cesium delivery.

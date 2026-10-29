@@ -55,7 +55,7 @@ Record this chain in `georeference.json` (see PLAN.md §5). For the historical b
 
 ### Active historical pilot
 
-Use the existing 250 m block with a 20 m halo, three training acquisitions (April 19, April 26 and May 1, 2015), and the May 2 holdout. Crops, RGB preparation, RPC-derived cameras, CPU sparse reconstruction, deskewing, Skyfall conversion, measured Stage 1 training and holdout evaluation are complete. The actual loader and GPU-enabled preflight pass. The run preserved the ENU origin and pixel/normalization transforms, and the holdout stayed out of calibration and fitting. See [the measured result](../training/RESULT_2015.md). Next fuse/export preserving placement, then tile and validate independently.
+Use the existing 250 m block with a 20 m halo, three training acquisitions (April 19, April 26 and May 1, 2015), and the May 2 holdout. Crops, RGB preparation, RPC-derived cameras, CPU sparse reconstruction, deskewing, Skyfall conversion, measured Stage 1 training, holdout evaluation and fused export are complete. The actual loader and GPU-enabled preflight pass. The run preserved the ENU origin and pixel/normalization transforms, and the holdout stayed out of calibration and fitting. See [the measured result](../training/RESULT_2015.md). Next: crop to the block, tile and validate independently.
 
 ### Recent imagery qualification — deferred
 
@@ -126,7 +126,7 @@ Sequence: laptop + Kaggle until one block runs end to end. Then activate OVH (th
 - CesiumJS is WebGL2-only; no WebGPU renderer as of October 2026.
 - Cesium sorts splats with a WebAssembly radix sort on CPU web workers (`GaussianSplatSorter.js`), not a GPU compute sort. LOD bounds splat counts, which is acceptable for the prototype.
 - GPU sort alternatives if needed later: [gaussian-splatting-webgpu](https://github.com/MarcusAndreasSvensson/gaussian-splatting-webgpu), [wgpu_sort](https://docs.rs/wgpu_sort/), [WebSplatter](https://arxiv.org/html/2602.03207v1).
-- three.js fallback: [3D-Tiles-RendererJS-3DGS-Plugin](https://github.com/WilliamLiu-1997/3D-Tiles-RendererJS-3DGS-Plugin) for `Ref/3DTilesRendererJS`.
+- three.js fallback: set aside for now; Cesium-only until its frame rate is measured on tiled splats. Candidate if needed later: [3D-Tiles-RendererJS-3DGS-Plugin](https://github.com/WilliamLiu-1997/3D-Tiles-RendererJS-3DGS-Plugin) for `Ref/3DTilesRendererJS`.
 
 ## 8. Pipeline
 
@@ -153,7 +153,7 @@ Semantics as tiles: start with a 3D Tiles voxel tileset rendered by Cesium `Voxe
 | --- | --- | --- |
 | 0 | Pin CesiumJS, SPZ and extension versions; tiny test glb renders with correct placement, scale and orientation | days |
 | 1 | Historical benchmark: convert TerraScope's 12 registered scenes to 3D Tiles; view on the Cesium globe | 1–2 weeks |
-| 2 | Complete the approved 2015 one-block pipeline with its ENU anchor preserved, measured Stage 1 training, export and independent validation | 2–4 weeks; export and independent validation remain |
+| 2 | Complete the approved 2015 one-block pipeline with its ENU anchor preserved, measured Stage 1 training, export and independent validation | 2–4 weeks; independent validation remains |
 | 3 | All blocks of the 1 km² AOI; no seams or doubled opacity between tiles or LOD levels | 2–3 weeks |
 | 4 | Semantic voxel tiles + query API | 2–3 weeks |
 | 5 | Job runner (resume/retry), versioned releases, catalogue UI | 3+ weeks |
@@ -163,11 +163,11 @@ Estimates are planning guesses, not measurements. Stack and layout follow PLAN.m
 ## 10. Next tasks
 
 1. ~~Run measured one-block Skyfall-GS Stage 1 training~~ **Completed** on a copy of the verified prepared scene with `--eval`: 30,000 iterations, 102,543 splats, 214.9 MiB peak allocated tensor memory. Held-out May 2 PSNR 17.57 dB; training views 30.05–42.37 dB. See [the measured result](../training/RESULT_2015.md). The 6 GB GPU budget was not stressed.
-2. Fuse/export the result with the captured ENU-to-model and model-to-ECEF transforms, then verify placement and quality.
+2. ~~Fuse/export the result with the captured transforms~~ **Completed**: 102,543 splats, fused render matches the trained model (≥105.9 dB), transform round trip 1.4e-9 m. See [the fused export](../training/RESULT_2015.md#fused-export). Splats extend past the block; the tiler must crop or flag border floaters.
 3. Verify independent validation data for the pilot's capture epoch, coverage and vertical datum. Document any unchanged-area or time-gap limitation.
 4. View the historical tiles in CesiumJS before scale-up.
 
-Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation, RPC-derived initial cameras, CPU matching/bundle adjustment/sparse reconstruction, deskewing, the verified Skyfall handoff, measured Stage 1 training and holdout evaluation. The sparse model has 2,233 points with median residual 0.274 px and p95 1.341 px. Its explicit three-train/one-holdout split, masks and normalization pass the real loader; independent geographic accuracy remains unverified. Training quality is appearance-only and the raw PLY is not yet fused/exported. The prepared Skyfall JAX_068 diagnostic is separate from this raw-imagery block.
+Already completed: Phase 0 rendering checks, isolated CUDA setup and bounded training diagnostic, historical PAN/MSI crops, RGB preparation, RPC-derived initial cameras, CPU matching/bundle adjustment/sparse reconstruction, deskewing, the verified Skyfall handoff, measured Stage 1 training and holdout evaluation. The sparse model has 2,233 points with median residual 0.274 px and p95 1.341 px. Its explicit three-train/one-holdout split, masks and normalization pass the real loader; independent geographic accuracy remains unverified. Training quality is appearance-only; the fused export is complete. The prepared Skyfall JAX_068 diagnostic is separate from this raw-imagery block.
 
 ## Sources
 

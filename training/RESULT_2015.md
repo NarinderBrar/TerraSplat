@@ -77,7 +77,41 @@ nearly uniform green field.
 - The evaluator needed a local PLY loader because Skyfall's `load_ply` only
   restores `filter_3D`; its geometry attributes are expected to come from a
   checkpoint. The evaluator now reads the raw PLY attributes directly.
-- Raw PLY only. Fusion/export, tiling, Cesium delivery and independent
-  geographic validation remain future work; `georeference.json` accuracy is
-  unverified. The next milestone is fusion/export preserving placement, then
-  tiling and Cesium.
+- Tiling, Cesium delivery and independent geographic validation remain future
+  work; `georeference.json` accuracy is unverified.
+
+## Fused export
+
+`python -m pipeline.export --run artifacts/stage1/pilot-2015-04` verifies the
+training hashes and runs Skyfall's `create_fused_ply.py` from the checkpoint. It
+then validates the result and records the placement contract the tiler will
+use. Compact evidence: [export-2015-04.json](export-2015-04.json).
+
+- Fused PLY: 102,543 splats, the same as the trained model, SH degree 2.
+  `sha256 b2d5b9a5…dd7a`, 16.8 MB. The 3D filter is folded into opacity and
+  scale, as Skyfall's `save_fused_ply` does; no appearance colour mapping
+  applies.
+- All attributes are finite. Activated opacity is strictly inside (0, 1), with
+  a maximum of 0.99958, and all scales are positive.
+- Transform chain: model → ENU → ECEF → ENU → model round-trip error is
+  1.4e-9 m. `model_to_ecef` matches `enu_to_ecef · model_to_enu` to 1.0e-9 m.
+  The gate is 0.0335 m, which is 0.1 × the finest 0.335 m native GSD. This
+  proves only that the recorded transforms are consistent with each other; it
+  is not a placement accuracy measurement.
+- Render equivalence: the fused PLY and the raw final model, rendered from the
+  same cameras, differ by 105.9–114.0 dB PSNR across all four views, which is
+  numerical noise.
+- Extent: splat centres span 557 × 472 × 179 m in ENU. Only 38.5% lie within
+  the nominal 145 m half-extent (250 m block plus 20 m halo); the
+  opacity-weighted p95 radius is 224 m. Floaters at the image borders spread
+  beyond the block, so the tiler must crop or flag them.
+- The tileset root transform is `model_to_ecef` in column-major order, stored
+  in the manifest. Splats stay in Skyfall's Z-up model frame; the tiler owns
+  any glTF Y-up conversion and must apply it exactly once.
+- Tiler rules: `REPLACE` refinement only. Child geometric error is non-zero
+  and strictly below the parent's. Every tile and all its ancestors must
+  contain each splat's centre plus about 3σ of its extent. Placement uses
+  `root.transform`, not `CESIUM_RTC`.
+
+Next milestone: crop to the block, tile into `KHR_gaussian_splatting` + SPZ
+3D Tiles and check placement in CesiumJS.

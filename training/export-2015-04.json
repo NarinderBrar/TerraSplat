@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "run": "artifacts/stage1/pilot-2015-04",
+  "status": "exported",
+  "command": "python -m pipeline.export --run artifacts/stage1/pilot-2015-04",
+  "source": {
+    "final_ply": "c7ca16b8fbd8491dce59aa4dfc415fa23391476969a72c40f8a04882726b0f57",
+    "georeference": "aad5350a14525e79098d85ba3a5aa00ad8df0416b29e3d35d7035ab41445e0a4",
+    "checkpoint": "98f912d871a9df44202e2795f4b1a438b9bf8a5c1ec77cf7ae5368652e9e5eb1"
+  },
+  "training_report_sha256": "f53ebbb6a773025229c092d6e407a2ba032490862408c97820580a7423116a35",
+  "fused_ply": {
+    "sha256": "b2d5b9a58bb974b6d627636eb77b57179cab2fede2317939ac9ab771fd04dd7a",
+    "bytes": 16818058
+  },
+  "export_manifest_sha256": "57256537b1b8cfc665ced12cf683bc7636fb933b30e971f2132f7043657cf02b",
+  "splat_count": 102543,
+  "sh_degree": 2,
+  "fusion": {
+    "source": "Skyfall create_fused_ply.py with --load_from_checkpoints",
+    "filter_3D_folded_into_opacity_and_scale": true,
+    "appearance_colour_mapping": false,
+    "splats_removed": 0
+  },
+  "opacity_after_activation": {
+    "min": 1.6791467671246835e-06,
+    "max": 0.9995761593000725,
+    "strictly_inside_unit_interval": true
+  },
+  "scales_after_activation": {
+    "min": 0.0807590554762947,
+    "max": 5270.871813889963,
+    "all_positive": true
+  },
+  "enu_anchor": {
+    "latitude": 30.348819714393777,
+    "longitude": -81.66376056134547,
+    "ellipsoidal_height_m": -70
+  },
+  "enu_bbox_m": {
+    "min_m": [
+      -288.1548690368801,
+      -176.28737412903575,
+      -17.344135639075382
+    ],
+    "max_m": [
+      269.0263838355595,
+      295.3363682621236,
+      161.18547775910886
+    ],
+    "span_m": [
+      557.1812528724396,
+      471.62374239115934,
+      178.52961339818424
+    ],
+    "fraction_within_nominal_half_extent": 0.3853700398857065,
+    "radius_percentiles_m": {
+      "p50": 168.93987736988257,
+      "p95": 254.46264190187975,
+      "p99": 274.65602352249607,
+      "max": 322.403047481724
+    },
+    "opacity_weighted_radius": {
+      "p50_radius_m": 137.8774736092815,
+      "p90_radius_m": 207.7977606420551,
+      "p95_radius_m": 223.94364154394952,
+      "p99_radius_m": 254.697907663157
+    },
+    "nominal_block_half_extent_m": 145.0
+  },
+  "round_trip": {
+    "max_error_m": 1.4415509731047195e-09,
+    "max_model_to_ecef_composition_error_m": 1.0477378964424133e-09,
+    "gsd_m": 0.335,
+    "gate_m": 0.0335,
+    "passed": true
+  },
+  "render_equivalence": {
+    "views": [
+      {
+        "role": "train",
+        "catalog_id": "104001000AB24A00",
+        "psnr_db": 105.85523112212269
+      },
+      {
+        "role": "train",
+        "catalog_id": "104001000A1B5F00",
+        "psnr_db": 114.02065582514209
+      },
+      {
+        "role": "train",
+        "catalog_id": "104001000AB10600",
+        "psnr_db": 106.85208348054458
+      },
+      {
+        "role": "holdout",
+        "catalog_id": "104001000A22A000",
+        "psnr_db": 107.72834744707927
+      }
+    ],
+    "minimum_psnr_db": 105.85523112212269
+  },
+  "tileset_root_transform": {
+    "layout": "column-major",
+    "value": [
+      0.8423774412885926,
+      0.12343376972690566,
+      0.0,
+      0.0,
+      -0.062366530309285344,
+      0.42562224535650395,
+      0.7347052260980454,
+      0.0,
+      0.10651906592801011,
+      -0.7269425409546509,
+      0.4301672696116373,
+      0.0,
+      798691.8945693147,
+      -5450584.093953199,
+      3203798.953354592,
+      1.0
+    ]
+  },
+  "tiler_rules": [
+    "REPLACE refinement only; add no other refinement mode.",
+    "Child geometricError is non-zero and strictly below its parent's.",
+    "Each tile bounds contains every owned splat centre plus about 3 sigma extent, in the tile and every ancestor.",
+    "Place the tileset with root.transform, not CESIUM_RTC.",
+    "Use the same ENU anchor and model frame for visual and semantic tiles."
+  ],
+  "limitations": [
+    "The round trip proves only transform-chain consistency; independent placement and height accuracy remain unverified.",
+    "Splat centres extend beyond the 250 m block plus 20 m halo (border floaters); the tiler must crop or flag them.",
+    "No appearance model: colours follow the training views, not a normalized appearance."
+  ]
+}

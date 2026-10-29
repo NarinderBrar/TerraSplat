@@ -25,5 +25,5 @@ For the historical multi-view inputs and initial ENU cameras, see [SatelliteSfM 
 - [Research and compatibility notes](docs/RESEARCH.md): sources, local reference findings, and candidates to evaluate.
 - [Editable architecture diagram](docs/architecture.drawio): open in draw.io/diagrams.net. The desktop exporter was unavailable in the planning environment.
 
-Next milestone: fuse/export the trained 2015 model while preserving its placement transforms, then add tiling and a historical Cesium demonstration. Independent geographic validation is still required. Recent imagery selection is deferred.
+The trained 2015 model is fused and exported with its placement transforms verified for consistency (see [the result](training/RESULT_2015.md#fused-export)). Next milestone: tiling and a historical Cesium demonstration. Independent geographic validation is still required. Recent imagery selection is deferred.
 # TerraSplat
