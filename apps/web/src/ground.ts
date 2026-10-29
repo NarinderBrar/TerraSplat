@@ -22,16 +22,14 @@ function distance(lon: number, lat: number, p: GroundPatch) {
 }
 
 export function groundHeight(lon: number, lat: number, patches: GroundPatch[]) {
-  let weighted = 0, total = 0;
+  let nearest: GroundPatch | undefined, nearestDistance = OUTER;
   for (const p of patches) {
     const d = distance(lon, lat, p);
-    if (d >= OUTER) continue;
-    const t = d <= INNER ? 0 : (d - INNER) / (OUTER - INNER);
-    const w = 1 - t * t * (3 - 2 * t);
-    weighted += w * p.height; total += w;
+    if (d < nearestDistance) { nearest = p; nearestDistance = d; }
   }
-  // Inside overlapping patches use their weighted mean; in the blend zone ease towards 0.
-  return total ? weighted / Math.max(1, total) : 0;
+  if (!nearest) return 0;
+  const t = Math.max(0, (nearestDistance - INNER) / (OUTER - INNER));
+  return nearest.height * (1 - t * t * (3 - 2 * t));
 }
 
 /** Row-major heights, north row first, as Cesium's CustomHeightmapTerrainProvider expects. */

@@ -89,3 +89,9 @@ describe('display ground terrain', () => {
     expect([...heightmap(0, 0, 1, 1, 4, patches)].every(v => v === 0)).toBe(true);
   });
 });
+
+it('keeps neighbouring terrain patches at their own model ground', () => {
+  const patches = [{ lon: -81.66, lat: 30.35, height: -17 }, { lon: -81.65, lat: 30.35, height: -25 }];
+  expect(groundHeight(-81.66, 30.35, patches)).toBe(-17);
+  expect(groundHeight(-81.65, 30.35, patches)).toBe(-25);
+});

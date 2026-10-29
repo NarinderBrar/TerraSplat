@@ -1,10 +1,10 @@
 export interface Quality {
-  registered_lidar_mae_all_m: number;
-  registered_lidar_mae_ground_m: number;
-  registered_lidar_mae_buildings_m: number;
-  registered_lidar_mae_vegetation_m: number;
+  registered_lidar_mae_all_m: number | null;
+  registered_lidar_mae_ground_m: number | null;
+  registered_lidar_mae_buildings_m: number | null;
+  registered_lidar_mae_vegetation_m: number | null;
   holdout_psnr_db: number;
-  horizontal_offset_m: number;
+  horizontal_offset_m: number | null;
   splats: number;
   tiles: number;
 }
@@ -20,8 +20,8 @@ export interface DatasetDetail extends Dataset { releases: Release[] }
 export interface Footprint {
   type: 'Feature'; geometry: { type: 'Polygon'; coordinates: number[][][] };
   properties: { dataset_id: string; release_id: string; title: string;
-    capture_date_start: string; capture_date_end: string; headline_mae_m: number; tileset_url: string;
-    ground_height_m?: number | null };
+    capture_date_start: string; capture_date_end: string; headline_mae_m: number | null; tileset_url: string;
+    ground_height_m?: number | null; source_label?: string | null; accuracy_label?: string | null };
 }
 export interface Manifest {
   release_id: string; dataset_id: string; title: string; description: string;
@@ -49,7 +49,8 @@ function release(value: unknown) {
   const q = object(r.quality);
   for (const key of ['registered_lidar_mae_all_m', 'registered_lidar_mae_ground_m',
     'registered_lidar_mae_buildings_m', 'registered_lidar_mae_vegetation_m',
-    'holdout_psnr_db', 'horizontal_offset_m', 'splats', 'tiles']) field(q[key], 'number');
+    'horizontal_offset_m']) { if (q[key] !== null) field(q[key], 'number'); }
+  for (const key of ['holdout_psnr_db', 'splats', 'tiles']) field(q[key], 'number');
   return value as Release;
 }
 export function parseDatasets(value: unknown): Dataset[] {
@@ -77,7 +78,7 @@ export function parseFootprints(value: unknown): Footprint[] {
       }
     }
     for (const key of ['dataset_id', 'release_id', 'title', 'capture_date_start', 'capture_date_end', 'tileset_url']) field(p[key], 'string');
-    field(p.headline_mae_m, 'number');
+    if (p.headline_mae_m !== null) field(p.headline_mae_m, 'number');
     if (p.ground_height_m != null) field(p.ground_height_m, 'number');
   }
   return collection.features as Footprint[];

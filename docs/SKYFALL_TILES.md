@@ -61,5 +61,16 @@ pipeline block. Compact evidence: `training/skyfall-jax-068.json`.
 
 ## Status
 
-JAX_068 is published locally as `skyfall-jax-068-stage1-r1`. Remaining scene
-training, app layers and browser/validator evidence are in progress.
+JAX_068 is published locally as `skyfall-jax-068-stage1-r1`. The app uses per-dataset tilesets, rather than a regional index with opaque children,
+so layer and overlap controls can hide each dataset before content requests begin.
+The default overlap is Skyfall; other datasets stream independently. Cache totals
+are budgeted at 256 MiB plus 25% overflow across datasets, maximum screen-space
+error 12, request culling while moving enabled. Diagnostics show loaded tiles and
+memory bytes. Hover uses geometric hit tests without per-move pick rendering.
+Terrain uses the nearest visible dataset's rendered ground patch.
+
+Offline browser checks load zero GLBs at the globe, only the JAX_068 root at 8 km,
+and 13 of 17 tiles through a fixed close camera. Layer and overlap switching,
+pipeline release substitution, splat coverage and zero page/external-request errors
+pass. JAX, pipeline and globe screenshots were inspected. Remaining scenes and
+NYC validation are pending.

@@ -154,7 +154,7 @@ Semantics as tiles: start with a 3D Tiles voxel tileset rendered by Cesium `Voxe
 | Phase | Deliverable | Effort |
 | --- | --- | --- |
 | 0 | Pin CesiumJS, SPZ and extension versions; tiny test glb renders with correct placement, scale and orientation | days |
-| 1 | Historical benchmark: convert TerraScope's 12 registered scenes to 3D Tiles; view on the Cesium globe | 1–2 weeks |
+| 1 | In progress: TerraSplat Stage 1 training of 12 prepared Skyfall scenes; JAX_068 published, two-layer globe validated; [results](SKYFALL_TILES.md) | Serial GPU batch pending |
 | 2 | Complete the approved 2015 one-block pipeline with its ENU anchor preserved, measured Stage 1 training, export and independent validation | 2–4 weeks; independent validation remains |
 | 3 | All blocks of the 1 km² AOI; no seams or doubled opacity between tiles or LOD levels | 2–3 weeks |
 | 4 | Semantic voxel tiles + query API | 2–3 weeks |

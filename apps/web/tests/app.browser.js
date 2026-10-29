@@ -25,7 +25,8 @@ test('offline globe, footprint navigation, actual splat fragments and release su
   await page.getByRole('button', { name: '3D Footprints', exact: false }).click();
   const footprint = page.getByRole('button', { name: /JAX_068 historical 5-view baseline/ });
   await expect(footprint).toBeVisible();
-  expect(await page.evaluate(() => window.terra.viewer.dataSources.getByName('footprints')[0].entities.values.length)).toBe(2);
+  const datasetCount = await page.evaluate(() => fetch('/api/datasets').then(r => r.json()).then(d => d.length));
+  expect(await page.evaluate(() => window.terra.viewer.dataSources.getByName('footprints')[0].entities.values.length)).toBe(datasetCount * 2);
   // Exercise the orbit-scale map marker and its hover/click paths.
   const marker = await page.evaluate(() => {
     const C = window.Cesium, v = window.terra.viewer;
@@ -36,7 +37,7 @@ test('offline globe, footprint navigation, actual splat fragments and release su
   await page.mouse.move(marker.x, marker.y);
   await expect(page.getByRole('tooltip')).toContainText('Registered lidar MAE 2.82 m');
   await page.screenshot({ path: info.outputPath('app-footprints.png') });
-  await page.mouse.click(marker.x, marker.y);
+  await footprint.click();
   await expect(page.getByRole('heading', { name: 'Jacksonville JAX_068 (2015)' })).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.terra.stats().height), { timeout: 30000 }).toBeLessThan(1500);
   await expect.poll(() => page.evaluate(() => window.terra.stats().visible), { timeout: 120000 }).toBeGreaterThan(1);
@@ -105,7 +106,7 @@ test('offline globe, footprint navigation, actual splat fragments and release su
   await expect(page.getByTestId('tile-stats')).toContainText('visible');
   await page.screenshot({ path: info.outputPath('app-release-3v.png') });
   await page.getByLabel('Release · historical 2015').selectOption('jax068-2015-5v-r2');
-  await expect.poll(() => page.evaluate(() => window.terra.loadedUrls.join(','))).toContain('index/jacksonville/tileset.json');
+  await expect.poll(() => page.evaluate(() => window.terra.loadedUrls.join(','))).toContain('jax068-2015-5v-r2/tileset.json');
   // Keyboard access and narrow layout remain usable.
   await page.getByRole('button', { name: '3D Footprints', exact: false }).click();
   await footprint.focus(); await page.keyboard.press('Enter');

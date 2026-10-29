@@ -38,3 +38,7 @@ output { display: block; font-variant-numeric: tabular-nums; }
 [role=tooltip] { position: fixed; width: 280px; padding: 12px; background: #fff; box-shadow: 0 4px 20px #0004; border-radius: 8px; white-space: pre-line; pointer-events: none; font-size: 12px; }
 .cesium-viewer-bottom { max-width: calc(100% - 24px); }
 @media (max-width: 600px) { .brand { top: 12px; left: 12px; width: min(300px, calc(100% - 80px)); padding: 10px; } .panel { left: 12px; top: 90px; width: min(300px, calc(100% - 80px)); max-height: 65dvh; padding: 14px; } .map-controls { right: 12px; bottom: 70px; } .map-hint { display: none; } }
+
+.layers { border: 1px solid #365047; border-radius: 8px; margin: 14px 0; padding: 10px; }
+.layers label { display: block; margin: 6px 0; }
+.layers select { width: 100%; }

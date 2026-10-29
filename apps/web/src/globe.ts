@@ -1,8 +1,7 @@
 import type * as Cesium from 'cesium';
-import { apiUrl, getJson, type Dataset, type Footprint, type Release, type Manifest } from './api';
+import { apiUrl, type Dataset, type Footprint, type Release, type Manifest } from './api';
 import { footprintCentre, footprintTooltip } from './format';
 import { controlMapping } from './controls';
-import { regionalIndexUrl } from './regionalIndex';
 import { groundPatches, heightmap } from './ground';
 
 declare global { interface Window { Cesium: typeof Cesium; terra?: Globe } }
@@ -17,7 +16,8 @@ function insideRing(lon: number, lat: number, ring: number[][]) {
   }
   return inside;
 }
-export interface MapStats { loaded: number; visible: number; heading: number; height: number }
+export interface MapStats { loaded: number; visible: number; bytes: number; heading: number; height: number }
+export interface Layers { pipeline: boolean; skyfall: boolean; overlap: 'skyfall' | 'pipeline' }
 const tileOptions = {
   maximumScreenSpaceError: 12, cacheBytes: 128 * 1024 * 1024,
   maximumCacheOverflowBytes: 32 * 1024 * 1024,
@@ -28,7 +28,8 @@ export class Globe {
   private tileUrls = new WeakMap<Cesium.Cesium3DTileset, string>();
   private loadedTiles = new WeakMap<Cesium.Cesium3DTileset, Set<Cesium.Cesium3DTile>>();
   private indexes = new Map<string, Cesium.Cesium3DTileset>();
-  private overrides = new Map<string, Cesium.Cesium3DTileset[]>();
+  private layers: Layers = { pipeline: true, skyfall: true, overlap: 'skyfall' };
+  private cacheBudget = 128 * 1024 * 1024;
   private footprints = new C.CustomDataSource('footprints');
   private features = new Map<string, Footprint>();
   private handler: Cesium.ScreenSpaceEventHandler;
@@ -104,6 +105,7 @@ export class Globe {
       if (camera.positionCartographic.height > 20_000) return;
       const rect = camera.computeViewRectangle();
       const f = [...this.features.values()].find(feature => {
+        if (!this.datasetVisible(feature.properties.dataset_id)) return false;
         const [lon, lat] = footprintCentre(feature);
         return rect && C.Rectangle.contains(rect, C.Cartographic.fromDegrees(lon, lat));
       });
@@ -191,8 +193,10 @@ export class Globe {
     this.viewer.scene.requestRender();
   }
   showFootprints(show: boolean) { this.footprints.show = show; this.viewer.scene.requestRender(); }
-  private async load(url: string, resourceUrl = apiUrl(url)) {
-    const tileset = await C.Cesium3DTileset.fromUrl(resourceUrl, tileOptions);
+  private async load(url: string, show = true) {
+    const tileset = await C.Cesium3DTileset.fromUrl(apiUrl(url), { ...tileOptions, cacheBytes: this.cacheBudget,
+      maximumCacheOverflowBytes: this.cacheBudget / 4 });
+    tileset.show = show;
     if (this.disposed) { tileset.destroy(); throw new Error('Viewer closed'); }
     this.tileUrls.set(tileset, url);
     const loaded = new Set<Cesium.Cesium3DTile>();
@@ -207,41 +211,47 @@ export class Globe {
     this.viewer.scene.requestRender();
     return tileset;
   }
-  async loadIndexes(datasets: Dataset[], signal: AbortSignal) {
-    await Promise.all([...new Set(datasets.map(d => d.region))].map(async region => {
-      const link = await getJson(`/api/index/${encodeURIComponent(region)}`, signal) as { tileset_url: string };
-      if (typeof link.tileset_url !== 'string') throw new Error('Invalid regional index');
-      const json = await getJson(link.tileset_url, signal);
-      const sourceUrl = new URL(apiUrl(link.tileset_url), window.location.href).href;
-      this.indexes.set(region, await this.load(link.tileset_url, regionalIndexUrl(json, sourceUrl)));
-    }));
-    this.loadedUrls = [...this.indexes.keys()].map(region => `/releases/index/${region}/tileset.json`);
+  private datasetVisible(id: string) {
+    const skyfall = id.startsWith('skyfall-');
+    if (!(skyfall ? this.layers.skyfall : this.layers.pipeline)) return false;
+    const overlap = this.features.size && [...this.features.values()].some(f => f.properties.dataset_id === 'skyfall-jax-068');
+    if (!overlap || !this.layers.skyfall || !this.layers.pipeline) return true;
+    if (id === 'jax068-2015') return this.layers.overlap === 'pipeline';
+    if (id === 'skyfall-jax-068') return this.layers.overlap === 'skyfall';
+    return true;
   }
-  async switchRelease(dataset: Dataset, release: Release, datasets: Dataset[]) {
-    const generation = ++this.generation;
-    const index = this.indexes.get(dataset.region);
-    if (!index) throw new Error('Regional index is still loading');
-    if (release.release_id === dataset.active_release_id) {
-      for (const t of this.overrides.get(dataset.region) ?? []) this.viewer.scene.primitives.remove(t);
-      this.overrides.delete(dataset.region); index.show = true;
-    } else {
-      // Preserve other blocks in this region while substituting this dataset's release.
-      const releases = datasets.filter(d => d.region === dataset.region)
-        .map(d => d.dataset_id === dataset.dataset_id ? release : d.active_release).filter(r => r !== null);
-      const loaded: Cesium.Cesium3DTileset[] = [];
-      try {
-        for (const r of releases) loaded.push(await this.load(r.tileset_url));
-      } catch (error) { loaded.forEach(t => this.viewer.scene.primitives.remove(t)); throw error; }
-      if (generation !== this.generation || this.disposed) { loaded.forEach(t => { if (!t.isDestroyed()) this.viewer.scene.primitives.remove(t); }); return; }
-      for (const t of this.overrides.get(dataset.region) ?? []) this.viewer.scene.primitives.remove(t);
-      this.overrides.set(dataset.region, loaded); index.show = false;
-    }
-    this.loadedUrls = [...this.indexes].flatMap(([region, t]) => t.show ? [`/releases/index/${region}/tileset.json`] :
-      (this.overrides.get(region) ?? []).map(t => this.tileUrls.get(t)!));
+  setLayers(layers: Layers) {
+    this.layers = layers;
+    for (const [id, tileset] of this.indexes) tileset.show = this.datasetVisible(id);
+    this.loadedUrls = [...this.indexes].filter(([, t]) => t.show).map(([, t]) => this.tileUrls.get(t)!);
+    this.useGroundTerrain([...this.features.values()].filter(f => this.datasetVisible(f.properties.dataset_id)));
     this.viewer.scene.requestRender();
   }
+  async loadIndexes(datasets: Dataset[], signal?: AbortSignal) {
+    // Dataset tilesets allow overlap suppression without loading an opaque regional index.
+    // Only small JSON roots load here; Cesium requests content through its camera traversal.
+    this.cacheBudget = Math.floor(256 * 1024 * 1024 / Math.max(1, datasets.length));
+    await Promise.all(datasets.filter(d => d.active_release).map(async d => {
+      const t = await this.load(d.active_release!.tileset_url, this.datasetVisible(d.dataset_id));
+      if (signal?.aborted) { this.viewer.scene.primitives.remove(t); return; }
+      this.indexes.set(d.dataset_id, t);
+    }));
+    this.setLayers(this.layers);
+  }
+  async switchRelease(dataset: Dataset, release: Release, _datasets: Dataset[]) {
+    const generation = ++this.generation;
+    const loaded = await this.load(release.tileset_url, false);
+    if (generation !== this.generation || this.disposed) {
+      if (!loaded.isDestroyed()) this.viewer.scene.primitives.remove(loaded);
+      return;
+    }
+    const old = this.indexes.get(dataset.dataset_id);
+    if (old) this.viewer.scene.primitives.remove(old);
+    this.indexes.set(dataset.dataset_id, loaded);
+    this.setLayers(this.layers);
+  }
   flyTo(feature: Footprint): Promise<void> {
-    const positions = feature.geometry.coordinates[0].map(p => C.Cartesian3.fromDegrees(p[0], p[1], -17));
+    const positions = feature.geometry.coordinates[0].map(p => C.Cartesian3.fromDegrees(p[0], p[1], feature.properties.ground_height_m ?? 0));
     const sphere = C.BoundingSphere.fromPoints(positions);
     return new Promise(resolve => {
       this.viewer.camera.flyToBoundingSphere(sphere, {
@@ -271,7 +281,7 @@ export class Globe {
   }
   setDebug(value: boolean) {
     this.debug = value; this.viewer.scene.debugShowFramesPerSecond = value;
-    for (const t of [...this.indexes.values(), ...[...this.overrides.values()].flat()]) t.debugShowBoundingVolume = value;
+    for (const t of [...this.indexes.values()]) t.debugShowBoundingVolume = value;
     this.viewer.scene.requestRender();
   }
   private queueStats() {
@@ -286,8 +296,9 @@ export class Globe {
     }, wait);
   }
   stats(): MapStats {
-    const active = [...this.indexes.values(), ...[...this.overrides.values()].flat()].filter(t => t.show);
+    const active = [...this.indexes.values()].filter(t => t.show);
     return { loaded: active.reduce((n, t) => n + (this.loadedTiles.get(t)?.size ?? 0), 0), visible: this.visible.size,
+      bytes: active.reduce((n, t) => n + t.totalMemoryUsageInBytes, 0),
       heading: Math.round(C.Math.toDegrees(this.viewer.camera.heading)), height: Math.round(this.viewer.camera.positionCartographic.height) };
   }
   projectFootprint(manifest: Manifest) {
@@ -295,7 +306,7 @@ export class Globe {
       C.SceneTransforms.worldToWindowCoordinates(this.viewer.scene, C.Cartesian3.fromDegrees(lon, lat, -17)));
   }
   tilesReady() {
-    return [...this.indexes.values(), ...[...this.overrides.values()].flat()].filter(t => t.show).every(t => t.tilesLoaded);
+    return [...this.indexes.values()].filter(t => t.show).every(t => t.tilesLoaded);
   }
 
   destroy() {

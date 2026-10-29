@@ -6,7 +6,7 @@ export function ReleasePanel({ dataset, release, manifest, busy, onChange }: {
   const q = release?.quality;
   return <section aria-label="Release quality">
     <h2>{dataset.title}</h2>
-    <label htmlFor="release">Release · historical 2015</label>
+    <label htmlFor="release">Release · {dataset.dataset_id.startsWith('skyfall-') ? 'prepared Skyfall scene' : 'historical 2015'}</label>
     <select id="release" value={release?.release_id ?? ''} disabled={busy} onChange={e => {
       const chosen = dataset.releases.find(r => r.release_id === e.target.value); if (chosen) onChange(chosen);
     }}>
@@ -17,12 +17,12 @@ export function ReleasePanel({ dataset, release, manifest, busy, onChange }: {
       <p>{q?.splats.toLocaleString()} splats · {q?.tiles} tiles · {formatBytes(release.bytes)}</p>
     </>}
     {q && <dl>
-      <dt>Registered lidar MAE</dt><dd>{q.registered_lidar_mae_all_m.toFixed(2)} m</dd>
-      <dt>Ground</dt><dd>{q.registered_lidar_mae_ground_m.toFixed(2)} m</dd>
-      <dt>Buildings</dt><dd>{q.registered_lidar_mae_buildings_m.toFixed(2)} m</dd>
-      <dt>Vegetation</dt><dd>{q.registered_lidar_mae_vegetation_m.toFixed(2)} m</dd>
+      <dt>Registered lidar MAE</dt><dd>{q.registered_lidar_mae_all_m == null ? 'Unmeasured' : `${q.registered_lidar_mae_all_m.toFixed(2)} m`}</dd>
+      <dt>Ground</dt><dd>{q.registered_lidar_mae_ground_m == null ? 'Unmeasured' : `${q.registered_lidar_mae_ground_m.toFixed(2)} m`}</dd>
+      <dt>Buildings</dt><dd>{q.registered_lidar_mae_buildings_m == null ? 'Unmeasured' : `${q.registered_lidar_mae_buildings_m.toFixed(2)} m`}</dd>
+      <dt>Vegetation</dt><dd>{q.registered_lidar_mae_vegetation_m == null ? 'Unmeasured' : `${q.registered_lidar_mae_vegetation_m.toFixed(2)} m`}</dd>
       <dt>Holdout PSNR</dt><dd>{q.holdout_psnr_db.toFixed(2)} dB</dd>
-      <dt>Horizontal offset</dt><dd>{q.horizontal_offset_m.toFixed(2)} m</dd>
+      <dt>Horizontal offset</dt><dd>{q.horizontal_offset_m == null ? 'Unmeasured' : `${q.horizontal_offset_m.toFixed(2)} m`}</dd>
     </dl>}
     {manifest && <>
       <p>{manifest.description}</p>

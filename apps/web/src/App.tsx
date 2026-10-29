@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getDatasets, getDataset, getFootprints, getManifest, type Dataset, type DatasetDetail, type Footprint, type Manifest, type Release } from './api';
-import { footprintTooltip } from './format';
-import { Globe, type MapStats } from './globe';
+import { footprintTooltip, formatBytes } from './format';
+import { Globe, type MapStats, type Layers } from './globe';
 import { ReleasePanel } from './ReleasePanel';
 
 export function App() {
@@ -19,9 +19,10 @@ export function App() {
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [debug, setDebug] = useState(false);
+  const [layers, setLayers] = useState<Layers>({ pipeline: true, skyfall: true, overlap: 'skyfall' });
   const [error, setError] = useState('');
   const [tooltip, setTooltip] = useState({ text: '', x: 0, y: 0 });
-  const [stats, setStats] = useState<MapStats>({ loaded: 0, visible: 0, heading: 0, height: 22_000_000 });
+  const [stats, setStats] = useState<MapStats>({ loaded: 0, visible: 0, bytes: 0, heading: 0, height: 22_000_000 });
   const fail = (cause: unknown) => setError(cause instanceof Error ? cause.message :
     cause && typeof cause === 'object' && 'message' in cause ? String(cause.message) : String(cause));
 
@@ -29,7 +30,13 @@ export function App() {
     const abort = new AbortController();
     let map: Globe;
     async function select(f: Footprint, fly: boolean) {
-      if (fly) { map.flyTo(f); setPanel(true); }
+      if (fly) {
+        setLayers(previous => {
+          const next = { ...previous, overlap: f.properties.dataset_id === 'jax068-2015' ? 'pipeline' as const : 'skyfall' as const };
+          map.setLayers(next); return next;
+        });
+        map.flyTo(f); setPanel(true);
+      }
       if (selectedDataset.current === f.properties.dataset_id) return;
       selectedDataset.current = f.properties.dataset_id;
       const current = ++selection.current;
@@ -70,7 +77,17 @@ export function App() {
     } catch (cause) { fail(cause); }
     finally { if (selection.current === current) setBusy(false); }
   }
+  function changeLayers(next: Layers) {
+    setLayers(next); globe.current?.setLayers(next);
+    if (['jax068-2015', 'skyfall-jax-068'].includes(selectedDataset.current)) {
+      const id = next.pipeline && (!next.skyfall || next.overlap === 'pipeline') ? 'jax068-2015' : 'skyfall-jax-068';
+      const f = footprints.find(f => f.properties.dataset_id === id);
+      if (f) globe.current?.onSelectInView?.(f);
+    }
+  }
   function choose(f: Footprint) {
+    if (f.properties.dataset_id === 'jax068-2015') changeLayers({ ...layers, pipeline: true, overlap: 'pipeline' });
+    if (f.properties.dataset_id.startsWith('skyfall-')) changeLayers({ ...layers, skyfall: true, overlap: 'skyfall' });
     // The map and keyboard list share the same selection path.
     globe.current?.onSelectInView?.(f);
     globe.current?.flyTo(f); setPanel(true);
@@ -83,16 +100,24 @@ export function App() {
     <aside className={`panel ${panel ? '' : 'collapsed'}`} aria-label="Datasets and releases">
       <p className="eyebrow">EXPLORE THE ARCHIVE</p>
       <p>Find a footprint. Step into a place.</p>
+      <fieldset className="layers"><legend>Layers</legend>
+        <label><input type="checkbox" checked={layers.pipeline} onChange={e => changeLayers({ ...layers, pipeline: e.target.checked })} /> Pipeline 2015 (5 photos)</label>
+        <label><input type="checkbox" checked={layers.skyfall} onChange={e => changeLayers({ ...layers, skyfall: e.target.checked })} /> Skyfall scenes</label>
+        <label htmlFor="overlap">JAX_068 overlap</label>
+        <select id="overlap" value={layers.overlap} onChange={e => changeLayers({ ...layers, overlap: e.target.value as Layers['overlap'] })}>
+          <option value="skyfall">Skyfall Stage 1</option><option value="pipeline">Pipeline 2015</option>
+        </select>
+      </fieldset>
       <button className="footprints-toggle" aria-pressed={showFootprints} disabled={!ready} onClick={() => {
         const next = !showFootprints; setShowFootprints(next); globe.current?.showFootprints(next); setTooltip({ text: '', x: 0, y: 0 });
       }}>◇ &nbsp; 3D Footprints</button>
       {showFootprints && <ul className="footprint-list">{footprints.map(f => <li key={f.properties.release_id}>
-        <button title={footprintTooltip(f)} onClick={() => choose(f)}>{f.properties.title}<span>Historical 2015 · fly to block ↗</span></button>
+        <button title={footprintTooltip(f)} onClick={() => choose(f)}>{f.properties.title}<span>{f.properties.dataset_id.startsWith('skyfall-') ? 'TerraSplat Stage 1 · visual registration' : 'Pipeline 2015 · known anchor'} · fly to block ↗</span></button>
       </li>)}</ul>}
       {!dataset && <p className="hint">Start with the whole Earth. Enable footprints to discover available 3D blocks, or pan and zoom to explore.</p>}
       {dataset && <ReleasePanel dataset={dataset} release={release} manifest={manifest} busy={busy} onChange={r => { void switchRelease(r); }} />}
       <label className="debug-toggle"><input type="checkbox" checked={debug} onChange={e => { setDebug(e.target.checked); globe.current?.setDebug(e.target.checked); }} /> Tile diagnostics</label>
-      {debug && <output data-testid="tile-stats">Loaded {stats.loaded} · visible {stats.visible}</output>}
+      {debug && <output data-testid="tile-stats">Loaded {stats.loaded} · visible {stats.visible} · {formatBytes(stats.bytes)} in memory</output>}
       <p role="status">{busy ? 'Loading release…' : ready ? 'Ready · tiles stream as you explore' : 'Loading globe and catalogue…'}</p>
       {error && <p role="alert">{error}</p>}
     </aside>
