@@ -32,8 +32,8 @@ with identical render-equivalence and transform round-trip results.
 
 Recipe wins the fixed rule: registered all-labelled MAE improves by 1.458 m
 over five-view basic and every class improves. Basic regresses to 3.027 m.
-Recipe is published as `jax068-2015-19v-r1` **without activation**;
-`jax068-2015-5v-r2` stays active for review. Holdout appearance is worse
+Recipe is published as `jax068-2015-19v-r1`, activated on 2026-10-30 after a
+visual comparison; the 3-view and 5-view releases were then removed. Holdout appearance is worse
 (15.49 versus 17.73 dB); it was not used to choose settings.
 [Measurements and commands](../training/result-2015-19v.json).
 

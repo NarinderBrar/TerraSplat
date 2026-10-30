@@ -13,16 +13,14 @@ train/holdout capture times from the selections, source runs and JSON pointers i
 artifacts/releases/
   catalog.json
   index/jacksonville/tileset.json
-  jax068-2015-3v-r1/{release.json,tileset.json,tile-plan.json,tiles-report.json,tiles/,evidence/}
-  jax068-2015-5v-r1/{release.json,tileset.json,tile-plan.json,tiles-report.json,tiles/,evidence/}
+  index/new-york/tileset.json
+  <release_id>/{release.json,tileset.json,tile-plan.json,tiles-report.json,tiles/,evidence/}
 ```
 
-Published pilot releases (2026-10-29):
-
-| Release ID | Tiles | Delivery bytes, excluding manifest | Active |
-| --- | ---: | ---: | --- |
-| `jax068-2015-3v-r1` | 17 | 1,219,107 | No |
-| `jax068-2015-5v-r1` | 21 | 1,591,466 | Yes |
+The pipeline dataset `jax068-2015` keeps one release, `jax068-2015-19v-r1` (active, 21 tiles, registered lidar
+MAE 1.36 m). The earlier 3-view and 5-view releases (`jax068-2015-3v-r1/r2`, `-5v-r1/r2`) were removed from the
+catalogue and disk on 2026-10-30; their measurements remain in `training/` and their training runs are kept.
+Skyfall datasets are listed in [SKYFALL_TILES.md](SKYFALL_TILES.md).
 
 The publisher verifies plan, tileset and GLB hashes against `tiles-report.json`, checks tile references,
 copies delivery files and evidence into `.staging/<release_id>/`, validates and rehashes, then renames atomically.
@@ -34,7 +32,7 @@ may leave staging behind; inspect and remove that incomplete staging folder befo
 ENU anchor, owned crop GeoJSON polygon (longitude/latitude), six-value geographic bbox with ellipsoidal height,
 quality, evidence and limitations. Footprints transform the crop square at ENU up=0 through ECEF to WGS84;
 bbox heights cover the owned centre Z range, including tangent-plane curvature. They describe ownership,
-not kernel support. Full kernel bounds remain in the tileset. Both releases are historical, cover one block,
+not kernel support. Full kernel bounds remain in the tileset. Pipeline releases are historical, cover one block,
 have no ground control and use lidar of unknown acquisition date; they are not production accuracy claims.
 `bytes` counts delivery files and evidence excluding `release.json`; `quality.glb_bytes` counts GLBs alone.
 `quality.splats` counts owned crop splats rather than duplicate LOD splats.
@@ -43,11 +41,11 @@ The manifest hashes every other release file. The catalogue hashes the manifest 
 JSON Schemas live in `schemas/`; publication validates their used assertion subset with a fail-closed stdlib validator,
 and tests also validate documents and schemas with the full Draft 2020-12 `jsonschema` implementation.
 
-Activation and rollback only switch the catalogue pointer; both releases remain available:
+Activation and rollback only switch the catalogue pointer; every listed release remains available:
 
 ```bash
-.venv-sfm/bin/python -m pipeline.publish --releases artifacts/releases --activate-release jax068-2015-3v-r1
-.venv-sfm/bin/python -m pipeline.publish --releases artifacts/releases --activate-release jax068-2015-5v-r1
+.venv-sfm/bin/python -m pipeline.publish --releases artifacts/releases --activate-release skyfall-jax-068-stage1-r1
+.venv-sfm/bin/python -m pipeline.publish --releases artifacts/releases --activate-release skyfall-jax-068-final-r2
 ```
 
 Publish/activation uses a filesystem lock. Catalogue and index writes each use a temporary file and atomic replacement;

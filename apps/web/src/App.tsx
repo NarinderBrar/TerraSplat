@@ -101,7 +101,7 @@ export function App() {
       <p className="eyebrow">EXPLORE THE ARCHIVE</p>
       <p>Find a footprint. Step into a place.</p>
       <fieldset className="layers"><legend>Layers</legend>
-        <label><input type="checkbox" checked={layers.pipeline} onChange={e => changeLayers({ ...layers, pipeline: e.target.checked })} /> Pipeline 2015 (5 photos)</label>
+        <label><input type="checkbox" checked={layers.pipeline} onChange={e => changeLayers({ ...layers, pipeline: e.target.checked })} /> Pipeline 2015 (19 photos)</label>
         <label><input type="checkbox" checked={layers.skyfall} onChange={e => changeLayers({ ...layers, skyfall: e.target.checked })} /> Skyfall scenes</label>
         <label htmlFor="overlap">JAX_068 overlap</label>
         <select id="overlap" value={layers.overlap} onChange={e => changeLayers({ ...layers, overlap: e.target.value as Layers['overlap'] })}>

@@ -23,7 +23,7 @@ test('offline globe, footprint navigation, actual splat fragments and release su
   await expect.poll(() => page.evaluate(() => window.terra.viewer.scene.globe.tilesLoaded)).toBe(true);
   await page.screenshot({ path: info.outputPath('app-globe.png') });
   await page.getByRole('button', { name: '3D Footprints', exact: false }).click();
-  const footprint = page.getByRole('button', { name: /JAX_068 historical 5-view baseline/ });
+  const footprint = page.getByRole('button', { name: /JAX_068 historical 19-view recipe/ });
   await expect(footprint).toBeVisible();
   const datasetCount = await page.evaluate(() => fetch('/api/datasets').then(r => r.json()).then(d => d.length));
   expect(await page.evaluate(() => window.terra.viewer.dataSources.getByName('footprints')[0].entities.values.length)).toBe(datasetCount * 2);
@@ -35,7 +35,7 @@ test('offline globe, footprint navigation, actual splat fragments and release su
     return { x: p.x, y: p.y };
   });
   await page.mouse.move(marker.x, marker.y);
-  await expect(page.getByRole('tooltip')).toContainText('Registered lidar MAE 2.82 m');
+  await expect(page.getByRole('tooltip')).toContainText('Registered lidar MAE 1.36 m');
   await page.screenshot({ path: info.outputPath('app-footprints.png') });
   await footprint.click();
   await expect(page.getByRole('heading', { name: 'Jacksonville JAX_068 (2015)' })).toBeVisible();
@@ -54,7 +54,7 @@ test('offline globe, footprint navigation, actual splat fragments and release su
   // Compare the same frame with and without splats: base imagery is coloured too.
   const measure = () => page.evaluate(async () => {
     const map = window.terra, v = map.viewer;
-    const manifest = await fetch('/api/releases/jax068-2015-5v-r2').then(r => r.json());
+    const manifest = await fetch('/api/releases/jax068-2015-19v-r1').then(r => r.json());
     const corners = map.projectFootprint(manifest);
     const canvas = v.canvas, gl = canvas.getContext('webgl2');
     const read = () => {
@@ -95,18 +95,22 @@ test('offline globe, footprint navigation, actual splat fragments and release su
   await page.screenshot({ path: info.outputPath('app-splats-oblique.png') });
   await page.getByText('Limitations & evidence', { exact: true }).click();
   await expect(page.getByText(/No ground control; independent geographic accuracy/)).toBeVisible();
-  await expect(page.getByRole('link', { name: 'result-2015-8w.json' })).toHaveAttribute('href', /releases\/jax068-2015-5v-r2\/evidence/);
+  await expect(page.getByRole('link', { name: 'result-2015-19v.json' })).toHaveAttribute('href', /releases\/jax068-2015-19v-r1\/evidence/);
   await page.getByText('Limitations & evidence', { exact: true }).click();
-  await page.getByLabel('Release · historical 2015').selectOption('jax068-2015-3v-r2');
+  // The pipeline dataset has one release; Skyfall JAX_068 keeps two to exercise release substitution.
+  await page.getByRole('button', { name: '3D Footprints', exact: false }).click();
+  await page.getByRole('button', { name: /Skyfall JAX_068/ }).click();
+  await page.getByRole('button', { name: '3D Footprints', exact: false }).click();
+  await page.getByLabel('Release · prepared Skyfall scene').selectOption('skyfall-jax-068-stage1-r1');
   await expect(page.getByRole('status')).toContainText('Ready');
-  await expect.poll(() => page.evaluate(() => window.terra.loadedUrls.join(','))).toContain('jax068-2015-3v-r2/tileset.json');
-  await expect.poll(() => glbs.some(url => url.includes('jax068-2015-3v-r2'))).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.terra.loadedUrls.join(','))).toContain('skyfall-jax-068-stage1-r1/tileset.json');
+  await expect.poll(() => glbs.some(url => url.includes('skyfall-jax-068-stage1-r1')), { timeout: 120000 }).toBe(true);
   await expect.poll(() => page.evaluate(() => window.terra.stats().visible), { timeout: 120000 }).toBeGreaterThan(0);
   await page.getByLabel('Tile diagnostics').check();
   await expect(page.getByTestId('tile-stats')).toContainText('visible');
-  await page.screenshot({ path: info.outputPath('app-release-3v.png') });
-  await page.getByLabel('Release · historical 2015').selectOption('jax068-2015-5v-r2');
-  await expect.poll(() => page.evaluate(() => window.terra.loadedUrls.join(','))).toContain('jax068-2015-5v-r2/tileset.json');
+  await page.screenshot({ path: info.outputPath('app-release-stage1.png') });
+  await page.getByLabel('Release · prepared Skyfall scene').selectOption('skyfall-jax-068-final-r2');
+  await expect.poll(() => page.evaluate(() => window.terra.loadedUrls.join(','))).toContain('skyfall-jax-068-final-r2/tileset.json');
   // Keyboard access and narrow layout remain usable.
   await page.getByRole('button', { name: '3D Footprints', exact: false }).click();
   await footprint.focus(); await page.keyboard.press('Enter');

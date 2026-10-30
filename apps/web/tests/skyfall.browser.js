@@ -51,7 +51,7 @@ test('Skyfall visibility, coarse-to-fine streaming and overlap layers', async ({
   await page.getByRole('button', { name: /3D Footprints/ }).click();
   await page.screenshot({ path: info.outputPath('skyfall-jax.png') });
   await page.getByLabel('Skyfall scenes', { exact: true }).uncheck();
-  await expect.poll(() => glbs.some(u => u.includes('jax068-2015-5v-r2'))).toBe(true);
+  await expect.poll(() => glbs.some(u => u.includes('jax068-2015-19v-r1'))).toBe(true);
   await expect.poll(() => page.evaluate(() => window.terra.loadedUrls.some(u => u.includes('skyfall-')))).toBe(false);
   await page.getByLabel('Skyfall scenes', { exact: true }).check();
   await page.getByLabel('JAX_068 overlap').selectOption('pipeline');

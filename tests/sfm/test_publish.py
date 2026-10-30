@@ -17,8 +17,8 @@ def test_publish_immutable_and_hashes(tiled_release):
     verify_release(releases / m['release_id'], m)
     assert m['tile_count'] == 1
     assert m['historical'] is True
-    assert m['quality']['registered_lidar_mae_all_m'] == 3.317
-    assert m['quality']['holdout_psnr_db'] == pytest.approx(17.572909692)
+    assert m['quality']['registered_lidar_mae_all_m'] == pytest.approx(1.3587, abs=1e-4)
+    assert m['quality']['holdout_psnr_db'] == pytest.approx(15.4906, abs=1e-4)
     assert catalog(releases)['datasets'][0]['active_release_id'] is None
     before = sha256(releases / m['release_id'] / 'release.json')
     with pytest.raises(ValueError, match='Immutable'):

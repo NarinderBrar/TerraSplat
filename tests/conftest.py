@@ -32,7 +32,7 @@ def tiled_release(tmp_path):
     report = {'planSha256': sha256(source / 'tile-plan.json'), 'tilesetSha256': sha256(source / 'tileset.json'),
               'tiles': {'r': {'glbSha256': sha256(source / 'tiles/r.glb')}}}
     (source / 'tiles-report.json').write_text(json.dumps(report))
-    config = json.loads((ROOT / 'configs/releases/jax068-2015-3v.json').read_text())
+    config = json.loads((ROOT / 'configs/releases/jax068-2015-19v.json').read_text())
     config['tiles_dir'] = str(source)
     config.pop('ground_points', None)  # tests stay independent of local run outputs
     config['release_id'] = 'jax068-2015-3v-r1'
