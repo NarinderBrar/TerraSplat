@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "config": "configs/semantics-v3.json",
+  "config_sha256": "24d112ce1f6e71e7df239bbde14b1f13ec4dddbf3f61c8823206d5236b0225bf",
+  "export_manifest_sha256": "62d6dd166f042f92da84d5bc0d963c2c2f1593ce259e19af38e28c40d17714db",
+  "depth_points_sha256": "867630cbbb8ce26767afb5b108b5ba9be6b9f3220838a44393a0ed27822f9333",
+  "prototypes_sha256": "829cc8336986b8116473a6966623b4e1a0f7b21fe80636e7d6357583bce72bb7",
+  "views": [
+    {
+      "name": "104001000209A800",
+      "visible_cells": 152684,
+      "features_sha256": "3539658f7a031f0fcf73fe118febfe811e8dc427b4337c056a4be573b2200f4b"
+    },
+    {
+      "name": "1040010002A97700",
+      "visible_cells": 176511,
+      "features_sha256": "01dee7dd559886d3bd55f53b226045f7037bac5e24e357ab5d1acd637f46b0ea"
+    },
+    {
+      "name": "1040010003371100",
+      "visible_cells": 149874,
+      "features_sha256": "93cb4b5c4a238500961b5c49bdc4ba9385ddbb9a6a945d0325371beedf7591e2"
+    },
+    {
+      "name": "10400100031BC200",
+      "visible_cells": 168147,
+      "features_sha256": "0d09dff95c940b30036afb19543f71afab5d156ae40542e169729f5791f8655d"
+    },
+    {
+      "name": "1040010004550F00",
+      "visible_cells": 144699,
+      "features_sha256": "9263fb9c9d7396a827e328341afe0f13ac01491b24ffcfa47a372b24a5dda3fe"
+    },
+    {
+      "name": "1040010005A0D800",
+      "visible_cells": 158845,
+      "features_sha256": "3e76256b86275b967d4322c2856c354e6e9540cb9c3b4b908cdc6e85d21e2f4c"
+    },
+    {
+      "name": "10400100066B8E00",
+      "visible_cells": 157314,
+      "features_sha256": "3f26ed5d35089ae9f91ea56a0f5972e4ad07707f22b765ce8aaa06ca53b8445b"
+    },
+    {
+      "name": "1040010007020F00",
+      "visible_cells": 131678,
+      "features_sha256": "252d5adca980dda56e2b87785dc34ebcdf0ab5fc47abcbcc651da0398df9e2a3"
+    },
+    {
+      "name": "1040010006764E00",
+      "visible_cells": 114829,
+      "features_sha256": "504c6d9554ba0a5e4a106394daa71ee5c92575daa8feb3081e92c3dd95cc6e39"
+    },
+    {
+      "name": "1040010007980900",
+      "visible_cells": 162723,
+      "features_sha256": "c91c9286913afa3b45767d2a49eec2e0a91b4943f9ea56955639927adeee5208"
+    },
+    {
+      "name": "1040010008037800",
+      "visible_cells": 178934,
+      "features_sha256": "44d2cf84ffd98e870e9799836a9c67bcca2dfd090befbef22f9391b9a8cdd4da"
+    },
+    {
+      "name": "104001000AB24A00",
+      "visible_cells": 160766,
+      "features_sha256": "a9d48434fb1b4b7a81f9f019f16aa13595ee63643f20734aedd7d4408405f728"
+    },
+    {
+      "name": "104001000A1B5F00",
+      "visible_cells": 147303,
+      "features_sha256": "8477d2b3d03ebd6ee4098405ffa7514b59b17d7dd88f8d24425fd2cf5ca6deab"
+    },
+    {
+      "name": "104001000AB10600",
+      "visible_cells": 140502,
+      "features_sha256": "258877d1fcf18a3ce75d991bb8eaee5fc2d081d327daed1fc781170e9adcb925"
+    },
+    {
+      "name": "104001000C22D200",
+      "visible_cells": 167309,
+      "features_sha256": "a892cc496c10c09ed893dd4d365fb09243ee3ae35f8cbb873bff1636a21ad5df"
+    },
+    {
+      "name": "104001000C478800",
+      "visible_cells": 175695,
+      "features_sha256": "791e1686181f5941907b919ccabf4161fb260f3ae5b254b65ee145be762069ed"
+    },
+    {
+      "name": "104001000E362D00",
+      "visible_cells": 149397,
+      "features_sha256": "44db79c1c8ccae216533e3a9f00840e242c54967b3da7aced4a173b4ae73f911"
+    },
+    {
+      "name": "1040010013D78C00",
+      "visible_cells": 174029,
+      "features_sha256": "3a9e9d22359513facbf5fa8db4dbb76c5adfa1aa02df1322946e05058ea4e107"
+    },
+    {
+      "name": "1040010016BADB00",
+      "visible_cells": 122929,
+      "features_sha256": "94d0998c2d2a37052a9b876c10d3eb27ad0ef58b76cccc72fcafee8a44a2d287"
+    }
+  ],
+  "cells": {
+    "total": 262144,
+    "with_top_surface": 262070,
+    "with_evidence": 243691,
+    "by_class": {
+      "unknown": 168704,
+      "ground": 79252,
+      "road": 567,
+      "building": 1158,
+      "vegetation": 12462,
+      "water": 0,
+      "grass": 1
+    },
+    "clip_label": {
+      "building": 1791,
+      "tree": 12462,
+      "grass": 1,
+      "road": 0,
+      "pavement": 10,
+      "soil": 0,
+      "water": 0,
+      "car": 2893,
+      "shadow": 226534
+    }
+  },
+  "splats": {
+    "total": 119232,
+    "inside_grid": 69637,
+    "surface": 46705,
+    "walls": 143,
+    "by_class": {
+      "unknown": 104698,
+      "ground": 12406,
+      "road": 79,
+      "building": 440,
+      "vegetation": 1609,
+      "water": 0,
+      "grass": 0
+    }
+  },
+  "evaluation": {
+    "scored_cells": 247977,
+    "unknown_cells": 156775,
+    "overall_accuracy": 0.25112409618633985,
+    "unknown_fraction": 0.6322158909898902,
+    "ground": {
+      "truth_cells": 125144,
+      "predicted_cells": 77736,
+      "iou": 0.4271745629770321,
+      "precision": 0.7811695996706802,
+      "recall": 0.4852410023652752
+    },
+    "vegetation": {
+      "truth_cells": 9944,
+      "predicted_cells": 12310,
+      "iou": 0.06672418751797526,
+      "precision": 0.11307879772542648,
+      "recall": 0.13998390989541432
+    },
+    "building": {
+      "truth_cells": 112889,
+      "predicted_cells": 1156,
+      "iou": 0.0013697547612148671,
+      "precision": 0.13494809688581316,
+      "recall": 0.001381888403653146
+    },
+    "water": {
+      "truth_cells": 0,
+      "predicted_cells": 0,
+      "iou": null,
+      "precision": null,
+      "recall": null
+    },
+    "confusion": {
+      "rows_truth_cols_predicted": [
+        2,
+        5,
+        6,
+        9,
+        -1
+      ],
+      "counts": [
+        [
+          60725,
+          10873,
+          1000,
+          0,
+          52546
+        ],
+        [
+          656,
+          1392,
+          0,
+          0,
+          7896
+        ],
+        [
+          16355,
+          45,
+          156,
+          0,
+          96333
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "clip_only_diagnostic": {
+    "scored_cells": 247977,
+    "unknown_cells": 17658,
+    "overall_accuracy": 0.3990450727285192,
+    "unknown_fraction": 0.07120821689108264,
+    "ground": {
+      "truth_cells": 125144,
+      "predicted_cells": 216220,
+      "iou": 0.3992392320178387,
+      "precision": 0.45046711682545554,
+      "recall": 0.778303394489548
+    },
+    "vegetation": {
+      "truth_cells": 9944,
+      "predicted_cells": 12310,
+      "iou": 0.06672418751797526,
+      "precision": 0.11307879772542648,
+      "recall": 0.13998390989541432
+    },
+    "building": {
+      "truth_cells": 112889,
+      "predicted_cells": 1789,
+      "iou": 0.0014146494812951901,
+      "precision": 0.09055338177752935,
+      "recall": 0.0014350379576398055
+    },
+    "water": {
+      "truth_cells": 0,
+      "predicted_cells": 0,
+      "iou": null,
+      "precision": null,
+      "recall": null
+    },
+    "confusion": {
+      "rows_truth_cols_predicted": [
+        2,
+        5,
+        6,
+        9,
+        -1
+      ],
+      "counts": [
+        [
+          97400,
+          10873,
+          1627,
+          0,
+          15244
+        ],
+        [
+          8383,
+          1392,
+          0,
+          0,
+          169
+        ],
+        [
+          110437,
+          45,
+          162,
+          0,
+          2245
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "targets": {
+    "overall_accuracy_min": 0.8,
+    "building_iou_min": 0.6,
+    "vegetation_iou_min": 0.5
+  },
+  "checks": {
+    "overall_accuracy": false,
+    "building_iou": false,
+    "vegetation_iou": false
+  },
+  "passed": false,
+  "notes": [
+    "No registration shift: labels are evaluated where the model places them (about 1.4 m horizontal offset).",
+    "The CLIP-only variant ignores height and is a diagnostic; only the headline rules count."
+  ]
+}

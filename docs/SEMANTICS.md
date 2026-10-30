@@ -59,3 +59,34 @@ tile profile and published as a second, inactive release of the same dataset:
 the panel shows a colour legend. Coarse levels average the class colours of merged splats.
 
 ![Class colours on the 19-view block](semantics-v2-app.png)
+
+## v3: LangSplat SAM + CLIP features (failed)
+
+`pipeline/semantics_clip.py` (`configs/semantics-v3.json`, committed in `c3fc76f` before scoring) tests whether
+LangSplat's open-vocabulary image features can replace NDVI and OpenStreetMap. LangSplat's `preprocess.py` (repo on the
+data drive, `Tools-For-References-Map/LangSplat`; SAM ViT-B + OpenCLIP ViT-B-16 laion2b, the earlier pilot's quality
+settings) segments each of the 19 training views (10.5 min on the RTX 3060 laptop GPU, 3.4 GB peak). Nine prompt
+classes (`scripts/clip-prototypes.py`) score every segment; each truth-grid cell's top-surface point is projected
+through the bundle-adjusted training cameras with a z-buffer occlusion test, and per-view probabilities are fused by
+median. Trees and grass are decided by CLIP alone; height only separates raised from flat surfaces.
+
+The projection itself is verified: a grey orthophoto sampled through all 19 cameras agrees with each view (correlation
+0.75–0.96, falling to 0.54–0.72 when shifted 3 m).
+
+| | v3 (pre-registered) | CLIP only (diagnostic) | Target |
+| --- | ---: | ---: | ---: |
+| Overall accuracy | 0.251 | 0.399 | ≥ 0.80 |
+| Building IoU | 0.001 | 0.001 | ≥ 0.60 |
+| Vegetation (tree) IoU | 0.067 | 0.067 | ≥ 0.50 |
+
+**v3 fails all three targets.** The "shadow" class won 93 % of cells (226,534 of 243,691): general-purpose CLIP sees
+the masked segments of 0.3 m overhead crops as dark, shaded texture. The underlying signal is weak even without that
+sink: the building score separates DFC buildings from everything else with AUC 0.76, the tree score DFC trees with AUC
+0.75, and dropping the shadow class (a post-hoc diagnostic) gives 0.15 accuracy. For comparison, NDVI alone gives trees
+a median of 0.64 against 0.03 on buildings.
+
+![v3 CLIP-only: ours, DFC2019, disagreement](semantics-v3-jax068-clip-only.png)
+
+Conclusion: LangSplat's standard CLIP features (trained on ground-level photos) do not classify overhead satellite
+views of this block. Running LangSplat's 3D feature training on top would distil the same features, so it cannot
+fix this. v2 (NDVI + OSM + height) remains the class layer in the app.

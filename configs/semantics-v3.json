@@ -2,7 +2,7 @@
   "version": 1,
   "id": "semantics-v3",
   "declared_on": "2026-10-30",
-  "evaluated": false,
+  "evaluated": true,
   "release": "jax068-2015-19v-r1",
   "hypothesis": "v2 over-predicted trees because model height noise lifts lawns above 2 m. LangSplat's SAM + CLIP image features separate trees, grass and roofs by appearance, so v3 decides trees vs grass without height and uses height only to separate raised from flat surfaces. No OSM and no NDVI: the method needs only the release's RGB training views.",
   "independence": "Prompts, fusion and rules are fixed here before any v3 score is computed. They are not blind: v1/v2 error patterns on JAX_068 were already known. The v2 thresholds 2.5 m (building) and DFC mapping are reused unchanged.",
@@ -12,19 +12,60 @@
     "tool": "LangSplat preprocess.py (SAM ViT-B sam_vit_b_01ec64.pth + OpenCLIP ViT-B-16 laion2b_s34b_b88k), quality settings of the earlier LangSplat pilot",
     "command_settings": "--resolution 1024 --sam_type vit_b --points_per_side 32 --points_per_batch 4 --crop_n_layers 1 --clip_batch_size 4 --offload_sam --memory_safe --max_masks_per_level 512",
     "views": "the 19 training views of artifacts/imagery/pilot-19v/skyfall (transforms_train.json); the 2015-05-02 holdout is never used",
-    "level_weights": {"default": 0.45, "s": 0.30, "m": 0.20, "l": 0.05},
+    "level_weights": {
+      "default": 0.45,
+      "s": 0.3,
+      "m": 0.2,
+      "l": 0.05
+    },
     "level_weights_note": "Same weights as the earlier LangSplat pilot's pixel_scores; levels without a segment at a pixel are dropped and the rest renormalised"
   },
   "prompts": {
-    "building": ["a building roof seen from above", "the roof of a house", "a flat commercial rooftop"],
-    "tree": ["trees", "a tree canopy", "dense green trees"],
-    "grass": ["a grass lawn", "green grass", "a grassy field"],
-    "road": ["a road", "an asphalt road", "a street with lane markings"],
-    "pavement": ["a parking lot", "concrete pavement", "a paved sidewalk"],
-    "soil": ["bare soil", "sand and dirt", "a dirt field"],
-    "water": ["a body of water", "a river", "a pond"],
-    "car": ["a car", "parked cars", "a vehicle"],
-    "shadow": ["a dark shadow on the ground", "a shadow", "a dark shaded area"]
+    "building": [
+      "a building roof seen from above",
+      "the roof of a house",
+      "a flat commercial rooftop"
+    ],
+    "tree": [
+      "trees",
+      "a tree canopy",
+      "dense green trees"
+    ],
+    "grass": [
+      "a grass lawn",
+      "green grass",
+      "a grassy field"
+    ],
+    "road": [
+      "a road",
+      "an asphalt road",
+      "a street with lane markings"
+    ],
+    "pavement": [
+      "a parking lot",
+      "concrete pavement",
+      "a paved sidewalk"
+    ],
+    "soil": [
+      "bare soil",
+      "sand and dirt",
+      "a dirt field"
+    ],
+    "water": [
+      "a body of water",
+      "a river",
+      "a pond"
+    ],
+    "car": [
+      "a car",
+      "parked cars",
+      "a vehicle"
+    ],
+    "shadow": [
+      "a dark shadow on the ground",
+      "a shadow",
+      "a dark shaded area"
+    ]
   },
   "scoring": {
     "prototype": "mean of the L2-normalised CLIP text embeddings of a class's three prompts, renormalised",
@@ -35,7 +76,15 @@
     "min_views": 2
   },
   "classes": {
-    "codes": {"unknown": 0, "ground": 1, "road": 2, "building": 3, "vegetation": 4, "water": 5, "grass": 6},
+    "codes": {
+      "unknown": 0,
+      "ground": 1,
+      "road": 2,
+      "building": 3,
+      "vegetation": 4,
+      "water": 5,
+      "grass": 6
+    },
     "raised_hag_m": 2.5,
     "rules": [
       "tree -> vegetation (any height)",
@@ -51,11 +100,24 @@
   "splats": "as v1/v2 (pipeline.semantics.splat_classes); the wall rule uses cells classified building instead of OSM footprints",
   "evaluation": {
     "truth": "artifacts/reference/dfc2019-jax068/JAX_068_CLS.tif",
-    "mapping": {"building": 6, "vegetation": 5, "grass": 2, "water": 9, "road": 2, "ground": 2, "unknown": null},
+    "mapping": {
+      "building": 6,
+      "vegetation": 5,
+      "grass": 2,
+      "water": 9,
+      "road": 2,
+      "ground": 2,
+      "unknown": null
+    },
     "scored_cells": "truth not 65 and not 17; geometry as built (no registration shift)",
     "strict": "our unknown cells count as incorrect",
-    "targets": {"overall_accuracy_min": 0.8, "building_iou_min": 0.6, "vegetation_iou_min": 0.5},
+    "targets": {
+      "overall_accuracy_min": 0.8,
+      "building_iou_min": 0.6,
+      "vegetation_iou_min": 0.5
+    },
     "headline": "the height rules above; the CLIP-only variant is reported as a diagnostic and cannot pass"
   },
-  "rule": "Prompts, weights, fusion, rules and targets are fixed before any v3 comparison with DFC2019 and are not changed afterwards."
+  "rule": "Prompts, weights, fusion, rules and targets are fixed before any v3 comparison with DFC2019 and are not changed afterwards.",
+  "result": "training/semantics/v3-jax068-evaluation.json: FAILED all three targets (overall accuracy 0.251, building IoU 0.001, vegetation IoU 0.067). The 'shadow' class won 226,534 of 243,691 cells with evidence."
 }
