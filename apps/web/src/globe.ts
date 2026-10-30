@@ -32,6 +32,8 @@ function powerPreference(): WebGLPowerPreference {
 const SPLAT_RANGE_M = 50_000;
 const FULL_DETAIL_M = 1_000;
 const FULL_DETAIL_SSE = 0.05;
+// Over a grid of blocks, full detail is limited to the nearest few (a 2 x 2 neighbourhood); the rest stay points.
+const FULL_DETAIL_MAX_BLOCKS = 4;
 // Full detail needs the whole block resident (largest block: 38 MB of GLB, more once decoded).
 const FULL_DETAIL_CACHE_BYTES = 192 * 1024 * 1024;
 const tileOptions = {
@@ -40,6 +42,8 @@ const tileOptions = {
   maximumCacheOverflowBytes: 32 * 1024 * 1024,
   cullRequestsWhileMoving: true, foveatedScreenSpaceError: true, skipLevelOfDetail: false,
 };
+export const isSkyfall = (id: string) => id.startsWith('skyfall-');
+
 export class Globe {
   readonly viewer: Cesium.Viewer;
   readonly reveal: Reveal;
@@ -183,6 +187,7 @@ export class Globe {
     this.viewer.scene.requestRender();
   }
   setFootprints(features: Footprint[]) {
+    this.overlaps.clear();
     for (const f of features) {
       const id = f.properties.release_id; this.features.set(id, f);
       this.footprints.entities.add({ id: `${id}:outline`, polyline: {
@@ -234,23 +239,47 @@ export class Globe {
     this.viewer.scene.requestRender();
     return tileset;
   }
+  private overlaps = new Map<string, string[]>();
+  /** Datasets of the other kind (pipeline vs Skyfall) whose footprints overlap this one; cached per footprint set. */
+  overlapping(id: string) {
+    const cached = this.overlaps.get(id);
+    if (cached) return cached;
+    // features is keyed by release id; overlap is a property of the dataset.
+    const own = [...this.features.values()].find(f => f.properties.dataset_id === id);
+    if (!own) return [];
+    const box = (f: Footprint) => {
+      const ring = f.geometry.coordinates[0];
+      return [Math.min(...ring.map(p => p[0])), Math.min(...ring.map(p => p[1])),
+        Math.max(...ring.map(p => p[0])), Math.max(...ring.map(p => p[1]))];
+    };
+    // Adjacent blocks only touch; ignore overlaps under about 1 m (1e-5 degrees) from projection differences.
+    const [w, s, e, n] = box(own), skyfall = isSkyfall(id), eps = 1e-5;
+    const result = [...this.features.values()].filter(f => isSkyfall(f.properties.dataset_id) !== skyfall).filter(f => {
+      const [w2, s2, e2, n2] = box(f);
+      return w + eps < e2 && w2 + eps < e && s + eps < n2 && s2 + eps < n;
+    }).map(f => f.properties.dataset_id);
+    this.overlaps.set(id, result);
+    return result;
+  }
   private datasetVisible(id: string) {
-    const skyfall = id.startsWith('skyfall-');
+    const skyfall = isSkyfall(id);
     if (!(skyfall ? this.layers.skyfall : this.layers.pipeline)) return false;
-    const overlap = this.features.size && [...this.features.values()].some(f => f.properties.dataset_id === 'skyfall-jax-068');
-    if (!overlap || !this.layers.skyfall || !this.layers.pipeline) return true;
-    if (id === 'jax068-2015') return this.layers.overlap === 'pipeline';
-    if (id === 'skyfall-jax-068') return this.layers.overlap === 'skyfall';
-    return true;
+    // Where pipeline and Skyfall blocks overlap and both layers are on, the overlap choice picks one kind.
+    if (!this.layers.skyfall || !this.layers.pipeline || !this.overlapping(id).length) return true;
+    return this.layers.overlap === (skyfall ? 'skyfall' : 'pipeline');
   }
   /** Show blocks within SPLAT_RANGE_M and refine those within FULL_DETAIL_M completely (see the constants). */
   private applyRange() {
     const camera = this.viewer.camera.positionWC;
-    for (const [id, tileset] of this.indexes) {
+    const blocks = [...this.indexes].map(([id, tileset]) => {
       const sphere = tileset.boundingSphere;
       const distance = C.Cartesian3.distance(camera, sphere.center) - sphere.radius;
-      const show = this.datasetVisible(id) && distance < SPLAT_RANGE_M;
-      const full = distance < FULL_DETAIL_M;
+      return { id, tileset, distance, show: this.datasetVisible(id) && distance < SPLAT_RANGE_M };
+    });
+    const nearest = new Set(blocks.filter(b => b.show && b.distance < FULL_DETAIL_M)
+      .sort((a, b) => a.distance - b.distance).slice(0, FULL_DETAIL_MAX_BLOCKS).map(b => b.tileset));
+    for (const { tileset, show } of blocks) {
+      const full = nearest.has(tileset);
       const sse = full ? FULL_DETAIL_SSE : tileOptions.maximumScreenSpaceError;
       const cache = full ? Math.max(FULL_DETAIL_CACHE_BYTES, this.cacheBudget) : this.cacheBudget;
       if (tileset.show !== show || tileset.maximumScreenSpaceError !== sse || tileset.cacheBytes !== cache) {

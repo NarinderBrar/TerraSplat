@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getDatasets, getDataset, getFootprints, getManifest, type Dataset, type DatasetDetail, type Footprint, type Manifest, type Release } from './api';
 import { footprintTooltip, formatBytes } from './format';
-import { Globe, type MapStats, type Layers } from './globe';
+import { Globe, isSkyfall, type MapStats, type Layers } from './globe';
 import { ReleasePanel } from './ReleasePanel';
 
 export function App() {
@@ -33,7 +33,7 @@ export function App() {
     async function select(f: Footprint, fly: boolean) {
       if (fly) {
         setLayers(previous => {
-          const next = { ...previous, overlap: f.properties.dataset_id === 'jax068-2015' ? 'pipeline' as const : 'skyfall' as const };
+          const next = { ...previous, overlap: isSkyfall(f.properties.dataset_id) ? 'skyfall' as const : 'pipeline' as const };
           map.setLayers(next); return next;
         });
         map.flyTo(f); setPanel(true);
@@ -80,15 +80,17 @@ export function App() {
   }
   function changeLayers(next: Layers) {
     setLayers(next); globe.current?.setLayers(next);
-    if (['jax068-2015', 'skyfall-jax-068'].includes(selectedDataset.current)) {
-      const id = next.pipeline && (!next.skyfall || next.overlap === 'pipeline') ? 'jax068-2015' : 'skyfall-jax-068';
-      const f = footprints.find(f => f.properties.dataset_id === id);
+    // If the selected block is now hidden behind an overlapping block of the other kind, select that block instead.
+    const selected = selectedDataset.current, other = globe.current?.overlapping(selected) ?? [];
+    const showPipeline = next.pipeline && (!next.skyfall || next.overlap === 'pipeline');
+    if (other.length && isSkyfall(selected) === showPipeline) {
+      const f = footprints.find(f => f.properties.dataset_id === other[0]);
       if (f) globe.current?.onSelectInView?.(f);
     }
   }
   function choose(f: Footprint) {
-    if (f.properties.dataset_id === 'jax068-2015') changeLayers({ ...layers, pipeline: true, overlap: 'pipeline' });
-    if (f.properties.dataset_id.startsWith('skyfall-')) changeLayers({ ...layers, skyfall: true, overlap: 'skyfall' });
+    if (isSkyfall(f.properties.dataset_id)) changeLayers({ ...layers, skyfall: true, overlap: 'skyfall' });
+    else changeLayers({ ...layers, pipeline: true, overlap: 'pipeline' });
     // The map and keyboard list share the same selection path.
     globe.current?.onSelectInView?.(f);
     globe.current?.flyTo(f); setPanel(true);
