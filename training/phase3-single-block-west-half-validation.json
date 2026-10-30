@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "assumed_anchor": false,
+  "status": "measured",
+  "export_manifest_sha256": "62d6dd166f042f92da84d5bc0d963c2c2f1593ce259e19af38e28c40d17714db",
+  "fused_ply_sha256": "c6d406665f5dbf583c487444389d6b24a32a53bbda663737c4c2e9f3d13540de",
+  "reference": {
+    "aoi": "JAX_068",
+    "source": "DFC2019 Track3-Truth (HSIP airborne lidar, ANPS about 0.8 m), via the Sat-NeRF EarthVision2022 dataset.zip",
+    "files_sha256": {
+      "JAX_068_CLS.tif": "e877941431cfa3b0b70fa6f5c7ada257108a3c73b3b0d75cdf83edb890e73e62",
+      "JAX_068_DSM.tif": "ab128081136c07e34ee25df3dff5edf9db845b9cecdef8d991148ea9c0214529",
+      "JAX_068_DSM.txt": "b982868b9c13a776b1cd4c85af01246775808bd064545fde29c00d9f66c8f61b",
+      "readme.txt": "b50af409243c8c875a61196603b9f4e882fdcc7db0786932840658c8eb1cfb01"
+    },
+    "grid": {
+      "utm_epsg": 32617,
+      "west": 436078.995946,
+      "north": 3357751.999923,
+      "resolution_m": 0.5,
+      "size": 512
+    },
+    "heights": "WGS84 ellipsoidal (ground median about -17 m; orthometric would be about +12 m here)",
+    "acquisition_date": "unknown (HSIP U.S. Cities lidar; not stated in the DFC2019/US3D papers)"
+  },
+  "method": {
+    "placement": "fused export placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights",
+    "dsm": "max height per cell of back-projected rendered depth (see depth-report.json)",
+    "depth_points": 1344819,
+    "depth_points_sha256": "867630cbbb8ce26767afb5b108b5ba9be6b9f3220838a44393a0ed27822f9333",
+    "deviation": "Same rendered-depth principle as Skyfall, from one synthetic nadir camera instead of its camera path",
+    "registration": "Skyfall-GS/Sat-NeRF dsmr: recursive NCC shift, z offset, no z scaling",
+    "evaluated_extent": "Intersection of the 250 m ENU ownership cell with the truth grid (partial overlap allowed); CLS 65 (unlabelled) and water excluded from all_labelled"
+  },
+  "unregistered": {
+    "all_labelled": {
+      "pixels": 119121,
+      "completeness": 0.9997733910766442,
+      "bias_m": 1.8938514629094938,
+      "median_m": 1.3250866513699293,
+      "mae_m": 2.5114155382764456,
+      "rmse_m": 4.359517678574134,
+      "nmad_m": 0.8533366333119571
+    },
+    "ground": {
+      "pixels": 41535,
+      "completeness": 0.99983149583554,
+      "bias_m": 2.2942084847713673,
+      "median_m": 1.480477586388588,
+      "mae_m": 2.6360526137821942,
+      "rmse_m": 4.665716296304622,
+      "nmad_m": 1.1417670010289176
+    },
+    "building": {
+      "pixels": 71138,
+      "completeness": 0.9997189353270187,
+      "bias_m": 1.6749776211576937,
+      "median_m": 1.2560445629060268,
+      "mae_m": 2.480132076593795,
+      "rmse_m": 4.307629030409947,
+      "nmad_m": 0.6732357161946594
+    },
+    "vegetation": {
+      "pixels": 6448,
+      "completeness": 1.0,
+      "bias_m": 1.7296793865302529,
+      "median_m": 1.7416174500249326,
+      "mae_m": 2.053698721596718,
+      "rmse_m": 2.4830963172596507,
+      "nmad_m": 1.3881710827357134
+    }
+  },
+  "registration": {
+    "placement_measurement": true,
+    "search_range_per_level_px": 5,
+    "dx_px": -2.0,
+    "dy_px": -2.0,
+    "z_offset_m": -1.6849834493883318,
+    "splats_offset_from_lidar_m": {
+      "east": -1.0,
+      "north": 1.0,
+      "up": 1.6849834493883318,
+      "horizontal": 1.4142135623730951
+    }
+  },
+  "registered": {
+    "all_labelled": {
+      "pixels": 118172,
+      "completeness": 0.9918085070668412,
+      "bias_m": 0.10183873721037735,
+      "median_m": -0.3722262978553772,
+      "mae_m": 1.640446528047915,
+      "rmse_m": 3.2446080329471605,
+      "nmad_m": 0.8413403217315674
+    },
+    "ground": {
+      "pixels": 40891,
+      "completeness": 0.984329112705214,
+      "bias_m": 0.3429943514153642,
+      "median_m": -0.2443084716796875,
+      "mae_m": 1.6861405159732101,
+      "rmse_m": 3.3685358709954003,
+      "nmad_m": 1.092463388442993
+    },
+    "building": {
+      "pixels": 70981,
+      "completeness": 0.9975125776441159,
+      "bias_m": -0.055541952101677124,
+      "median_m": -0.43425941467285156,
+      "mae_m": 1.6293400042195345,
+      "rmse_m": 3.263594140088227,
+      "nmad_m": 0.6641835233688355
+    },
+    "vegetation": {
+      "pixels": 6300,
+      "completeness": 0.9770471464019851,
+      "bias_m": 0.30976643365526957,
+      "median_m": 0.2589454650878906,
+      "mae_m": 1.4689987990969704,
+      "rmse_m": 1.9534263064382713,
+      "nmad_m": 1.6442022914886474
+    }
+  },
+  "coverage": {
+    "extent_pixels": 127148,
+    "labelled_pixels": 119148,
+    "evaluated_pixels": 118172,
+    "block_area_covered_fraction": 0.508592,
+    "truth_grid_covered_fraction": 0.4850311279296875,
+    "labelled_coverage_fraction": 0.9918085070668412
+  },
+  "ownership": {
+    "grid": {
+      "version": 1,
+      "id": "jax068-split",
+      "anchor": {
+        "longitude": -81.66376054127814,
+        "latitude": 30.34881972282938,
+        "ellipsoidal_height_m": 0
+      },
+      "enu_to_ecef": [
+        [
+          0.9894342861531981,
+          -0.07325407891764545,
+          0.1251144808023389,
+          798680.0686670588
+        ],
+        [
+          0.1449820450418308,
+          0.49992464419148114,
+          -0.8538475020432569,
+          -5450615.925429766
+        ],
+        [
+          0.0,
+          0.8629653469589311,
+          0.5052631096251256,
+          3203802.61729543
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "cell_side_m": 250,
+      "cells": {
+        "west": {
+          "east_m": [
+            -250,
+            0
+          ],
+          "north_m": [
+            -125,
+            125
+          ],
+          "block": "configs/jax068-west-block.json",
+          "centre_longitude": -81.66506063308124,
+          "centre_latitude": 30.348819716365696
+        },
+        "east": {
+          "east_m": [
+            0,
+            250
+          ],
+          "north_m": [
+            -125,
+            125
+          ],
+          "block": "configs/jax068-east-block.json",
+          "centre_longitude": -81.66246044947502,
+          "centre_latitude": 30.34881971636569
+        }
+      },
+      "ownership": "Half-open shared ENU cells: west <= east < east_max, south <= north < north_max; boundary east=0 belongs to east. No tolerance expansion."
+    },
+    "cell": "west"
+  },
+  "outputs": {
+    "raster_sha256": {
+      "truth-dsm.tif": "566c9bf62cabd6f16d768e40733de1c617b534bb5271f9d2e26c70091d420e50",
+      "splat-dsm.tif": "face36dd15bdd4d2329b39e5b0e46ff8ac9f30734386c7096844276a9ff8e53e",
+      "splat-dsm-registered.tif": "030d16abcf0bf824b3b20bde461887123a2586195b4ec68670dd5864542690b1"
+    },
+    "comparison_png": "dsm-comparison.png (truth | splat DSM | unregistered error | registered error; error scale +/-5 m, red = splats too high)"
+  }
+}

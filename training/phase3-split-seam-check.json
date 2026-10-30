@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "status": "measured",
+  "grid_sha256": "e3961be968a914c28571cead280c7fa9c814822a12b7c0a6228cc95670c18914",
+  "decision_sha256": "9cc3cd9122fedf562ed133487d6b7c7e1ce9792190e3e95e02889b2995aeb4fe",
+  "provenance": {
+    "west": {
+      "export_sha256": "3275df32ee231d52941aec99ffa4e34bc84af27f1223e667094a68cf7548bdc7",
+      "depth_sha256": "1e2ac3d531d3dc91e7d32ac1b400ce4122df42c559e13a06b12a282ef2f12336",
+      "validation_sha256": "c63c355ebc9f356f23910e6a7a97a6ef6ea5b69c2e7efd3db95423cb5195bbd3",
+      "coverage": {
+        "extent_pixels": 127148,
+        "labelled_pixels": 119148,
+        "evaluated_pixels": 118143,
+        "block_area_covered_fraction": 0.508592,
+        "truth_grid_covered_fraction": 0.4850311279296875,
+        "labelled_coverage_fraction": 0.9915651122973109
+      }
+    },
+    "east": {
+      "export_sha256": "cc07f7b9574dafb6da3b7e663845d1fd3fa8d07837898d66f7153686dacf2e76",
+      "depth_sha256": "dc26aeca4f0898ed331fd07c466915c546690f8858287cbd7961a9dee30dd6fb",
+      "validation_sha256": "8ed1ec6e1c9fde5648c3b3fd76ef75615adf3033ffd4a8b2f06233cd32a2f757",
+      "coverage": {
+        "extent_pixels": 128768,
+        "labelled_pixels": 122773,
+        "evaluated_pixels": 122741,
+        "block_area_covered_fraction": 0.515072,
+        "truth_grid_covered_fraction": 0.4912109375,
+        "labelled_coverage_fraction": 0.9997393563731439
+      }
+    }
+  },
+  "ownership": {
+    "partition": {
+      "gap_width_m": 0,
+      "overlap_width_m": 0,
+      "north_ranges_match": true,
+      "boundary_east_m": 0,
+      "passed": true,
+      "boundary_owner": "east"
+    },
+    "counts": {
+      "west": {
+        "input_centres": 119700,
+        "owned_centres": 59218,
+        "owned_within_1m": 260,
+        "doubled_after_crop": 0,
+        "removed_within_1m": 355
+      },
+      "east": {
+        "input_centres": 123785,
+        "owned_centres": 63693,
+        "owned_within_1m": 285,
+        "doubled_after_crop": 0,
+        "removed_within_1m": 473
+      }
+    },
+    "doubled_centres": 0,
+    "scope": "Shared half-open area partition and full-resolution centre crop; no claim of dense surface coverage or disjoint Gaussian kernels."
+  },
+  "lidar_error_by_distance": {
+    "west": {
+      "seam": {
+        "pixels": 9210,
+        "completeness": 1.0,
+        "bias_m": -0.3427831021892908,
+        "median_m": -0.5230683088302612,
+        "mae_m": 0.9414110435725035,
+        "rmse_m": 1.3685996178197646,
+        "nmad_m": 0.5117375851392746
+      },
+      "interior": {
+        "pixels": 108933,
+        "completeness": 0.9908584838727282,
+        "bias_m": 0.098787644038601,
+        "median_m": -0.4401836395263672,
+        "mae_m": 1.7436783703125622,
+        "rmse_m": 3.490001517854083,
+        "nmad_m": 0.8990253295898437
+      }
+    },
+    "east": {
+      "seam": {
+        "pixels": 9461,
+        "completeness": 1.0,
+        "bias_m": -0.19734797264402934,
+        "median_m": -0.22394561767578125,
+        "mae_m": 1.0470607453667202,
+        "rmse_m": 1.7959776961297806,
+        "nmad_m": 0.7083380473136901
+      },
+      "interior": {
+        "pixels": 113280,
+        "completeness": 0.9997175939000282,
+        "bias_m": 0.03005929903711303,
+        "median_m": -0.11939668655395508,
+        "mae_m": 1.1040507336078726,
+        "rmse_m": 1.8242210481724772,
+        "nmad_m": 0.8121181809425354
+      }
+    }
+  },
+  "height_continuity": {
+    "ground": {
+      "unregistered": {
+        "west_pixels": 2963,
+        "east_pixels": 5034,
+        "step_m": -0.7448139190673828,
+        "lidar_step_m": -0.24211502075195312,
+        "residual_step_m": -0.3289785385131836
+      },
+      "registered": {
+        "west_pixels": 2963,
+        "east_pixels": 5034,
+        "step_m": -0.23981761932373047,
+        "lidar_step_m": -0.24211502075195312,
+        "residual_step_m": 0.08631420135498047
+      }
+    },
+    "all": {
+      "unregistered": {
+        "west_pixels": 9996,
+        "east_pixels": 9996,
+        "step_m": -2.5391950607299805,
+        "lidar_step_m": -2.1855907440185547,
+        "residual_step_m": -0.14314541220664978
+      },
+      "registered": {
+        "west_pixels": 9996,
+        "east_pixels": 9996,
+        "step_m": -2.1169028282165527,
+        "lidar_step_m": -2.1855907440185547,
+        "residual_step_m": 0.2911134958267212
+      }
+    }
+  },
+  "block_mae_m": {
+    "west": 1.6811365178179078,
+    "east": 1.099657887869696
+  },
+  "decision": {
+    "passed": false,
+    "checks": {
+      "ownership": true,
+      "west_mae": false,
+      "west_seam": true,
+      "east_mae": true,
+      "east_seam": true,
+      "height_ground": false,
+      "height_all": false
+    }
+  }
+}
