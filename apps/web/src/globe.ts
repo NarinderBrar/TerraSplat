@@ -19,7 +19,8 @@ function insideRing(lon: number, lat: number, ring: number[][]) {
 export interface MapStats { loaded: number; visible: number; bytes: number; heading: number; height: number }
 export interface Layers { pipeline: boolean; skyfall: boolean; overlap: 'skyfall' | 'pipeline' }
 const tileOptions = {
-  maximumScreenSpaceError: 12, cacheBytes: 128 * 1024 * 1024,
+  // 12 stopped at 2-4 m merged parents at 900 m (cars smeared); 8 reaches full-resolution leaves there.
+  maximumScreenSpaceError: 8, cacheBytes: 128 * 1024 * 1024,
   maximumCacheOverflowBytes: 32 * 1024 * 1024,
   cullRequestsWhileMoving: true, foveatedScreenSpaceError: true, skipLevelOfDetail: false,
 };

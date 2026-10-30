@@ -133,6 +133,26 @@ Stage 1 ones.
 | NYC_219 | 3,117,175 | 1,192,960 | 277 / 5 | 34,257,028 |
 | NYC_336 | 2,052,721 | 578,461 | 93 / 5 | 14,445,784 |
 
-Leaves stay within 268–278 KB. SPZ clamps 6 log-scale components in JAX_264 and none elsewhere. Lidar error, holdout
-PSNR and horizontal offset are not measured for these releases (`null`). They need the Skyfall renderer to
-produce depth from the finished models. Coarse parent levels look blobby at around 900 m; LOD tuning is pending.
+Leaves stay within 268–278 KB. SPZ clamps 6 log-scale components in JAX_264 and none elsewhere. Holdout PSNR is
+not available for the authors' models (`null`).
+
+JAX_068 has DFC2019 lidar truth, so `skyfall-jax-068-final-r2` (active) adds the same measurement as Stage 1, with
+the same tiles as r1. Depth is rendered with our Stage 1 run supplying only render settings (same frame, SH 1):
+
+    .venv-stage1/bin/python -m pipeline.render_depth --run artifacts/stage1/ref-jax068-recipe-01 \
+        --export artifacts/skyfall/JAX_068/final-placed --output artifacts/skyfall/JAX_068/final-depth
+    .venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/skyfall/JAX_068/final-placed \
+        --truth artifacts/reference/dfc2019-jax068 --output artifacts/skyfall/JAX_068/lidar-authors \
+        --points artifacts/skyfall/JAX_068/final-depth/depth-points.npz
+
+`pipeline.skyfall_final` publishes r2 whenever `lidar-authors/dsm-validation.json` exists.
+
+| JAX_068 registered lidar MAE | All | Ground | Buildings | Vegetation | RMSE | Horizontal offset |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Authors' finished model | 1.54 m | 1.59 m | 1.47 m | 1.79 m | 2.59 m | 2.24 m |
+| Our Stage 1 | 1.38 m | 1.25 m | 1.52 m | 1.55 m | 2.45 m | 1.80 m |
+
+The finished model looks far sharper but is not more accurate in height; its Stage 2 refines appearance.
+
+The viewer's `maximumScreenSpaceError` is 8. At 12, a 900 m nadir view stopped at 2–4 m merged parents and smeared
+cars and parking lots; at 8 it reaches full-resolution leaves (73 instead of 21 GLB requests for JAX_068).

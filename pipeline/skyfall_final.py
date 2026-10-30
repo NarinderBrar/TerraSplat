@@ -76,8 +76,11 @@ def run_scene(scene):
     placed = workspace / 'final-placed'
     if not (placed / 'export-manifest.json').exists():
         export(scene, MODELS / f'{name}_final.ply', placed)
-    release_id = scene['dataset_id'] + '-final-r1'
-    tiles = ROOT / 'artifacts/tiles' / release_id
+    lidar_path = workspace / 'lidar-authors/dsm-validation.json'
+    # r2 adds the registered lidar measurement (pipeline.dsm_validation); its tiles are r1's.
+    revision = 2 if lidar_path.exists() else 1
+    release_id = f"{scene['dataset_id']}-final-r{revision}"
+    tiles = ROOT / 'artifacts/tiles' / (scene['dataset_id'] + '-final-r1')
     if not (tiles / 'tile-plan.json').exists():
         profile = json.loads((ROOT / 'configs/tiles-skyfall.json').read_text())
         profile['block_half_extent_m'] = scene['core_half_extent_m']
@@ -95,13 +98,25 @@ def run_scene(scene):
                              'registered_lidar_rmse_m', 'horizontal_offset_m', 'completeness', 'holdout_psnr_db'])
     quality.update(splats=tile_plan['crop']['owned_splats'], tiles=len(tile_plan['tiles']),
                    glb_bytes=encoded['totals']['glbBytes'])
-    evidence = Path('training') / f"{scene['dataset_id']}-final.json"
+    lidar = json.loads(lidar_path.read_text()) if revision == 2 else None
+    if lidar:
+        registered = lidar['registered']
+        quality.update({f'registered_lidar_mae_{k}_m': registered[c]['mae_m'] for k, c in
+                        (('all', 'all_labelled'), ('ground', 'ground'), ('buildings', 'building'),
+                         ('vegetation', 'vegetation'))},
+                       registered_lidar_rmse_m=registered['all_labelled']['rmse_m'],
+                       completeness=registered['all_labelled']['completeness'],
+                       horizontal_offset_m=lidar['registration']['splats_offset_from_lidar_m']['horizontal'])
+    evidence = Path('training') / (f"{scene['dataset_id']}-final.json" if revision == 1 else f'{release_id}.json')
     write(ROOT / evidence, {'scene': name, 'label': LABEL, 'quality': quality,
                             'model': manifest['source'] | {'sha256': manifest['fused_ply']['sha256'],
                                                           'splats': manifest['splat_count']},
                             'holdout_used_for_training_or_selection': 'unknown; trained by the authors',
                             'placement': manifest['placement'], 'anchor': manifest['georeference']['anchor'],
-                            'crop': tile_plan['crop'], 'levels': tile_plan['levels'], 'encoding': encoded})
+                            'crop': tile_plan['crop'], 'levels': tile_plan['levels'], 'encoding': encoded}
+                           | ({'lidar': {'validation_sha256': digest(lidar_path), 'reference': lidar['reference'],
+                                         'method': lidar['method'], 'registration': lidar['registration'],
+                                         'registered': registered}} if lidar else {}))
     config = {'dataset_id': scene['dataset_id'], 'dataset_title': 'Skyfall ' + name, 'region': scene['region'],
               'release_id': release_id, 'title': f'Skyfall {name} · authors\' finished model', 'description': LABEL,
               'tiles_dir': str(tiles.relative_to(ROOT)), 'stage1_run_dir': os.path.relpath(MODELS / f'{name}_final.ply', ROOT),
