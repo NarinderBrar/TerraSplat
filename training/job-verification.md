@@ -194,3 +194,12 @@ remains unverified by this task. No imagery/lidar downloads, live release or
 catalogue changes, existing experiment writes, or `apps/web/` edits were made by
 this task. Completed job attempts are preserved. No commit, push, or Git index
 mutation command was run by this task.
+
+## Completion (2026-10-30, Claude Code)
+
+With the matching timeout raised to 3600 s (ac021d2), the west job reconstructed in 721 s (23,333 sparse points versus
+23,157 in stage A; COLMAP is not bit-reproducible across runs). The input check then failed on "Loader changed
+normalization": one outlier sparse point lies 2,483 units from the origin, and the loader's float32 storage rounds it
+by 1.2e-4, just above the absolute 1e-4 limit. The check now allows float32 rounding (1e-4 + 2.4e-7·|x|); a changed
+normalization would still fail by whole units. The stage-A west scene and the job scene both pass. The job then
+completed every CPU stage (stopping before the GPU stages as requested), and an identical rerun reused all 8 stages.

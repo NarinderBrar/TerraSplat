@@ -57,8 +57,11 @@ def main():
         )
         xyz = np.loadtxt(scene / "points3D.txt", usecols=(1, 2, 3), ndmin=2)
         assert len(loaded.point_cloud.points) == contract["point_count"]
+        # The loader stores points as float32, so far outliers round by about |x| * 6e-8. Allow that rounding (with a
+        # 4x margin) above the 1e-4 floor; a changed normalization would still be off by whole units.
+        cloud_excess = np.abs(loaded.point_cloud.points - xyz) - (1e-4 + 2.4e-7 * np.abs(xyz))
         cloud_error = float(np.max(np.abs(loaded.point_cloud.points - xyz)))
-        assert cloud_error < 1e-4, "Loader changed normalization"
+        assert float(np.max(cloud_excess)) < 0, "Loader changed normalization"
         residuals = {}
         for camera in loaded.train_cameras + loaded.test_cameras:
             expected = json.loads(
