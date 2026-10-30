@@ -6,20 +6,21 @@ example, implemented inside our existing Cesium renderer.
 
 ## Behaviour
 
-1. **Points only while revealing.** A tile that appears where nothing was shown before plays two stages and then
-   renders exactly as today:
-   - **Stage 1 (points):** its splats appear as small glowing points behind a sweep that spreads from the block
-     centre (250 m/s);
-   - **Stage 2 (splats):** the points grow into the tile's normal splats, while the glow and the point opacity boost
-     fade out.
-2. **The finest level (LOD0) is unchanged.** It is the final tile a user sees, at its current shape, colour and
-   opacity. Coarse tiles also end at their current look.
-3. **Refinement is instant.** When finer tiles replace an ancestor that is already on screen (zooming in), they swap
-   immediately as before. Replaying the point stage would briefly turn a finished model back into dust.
+Each time Cesium merges the selected tiles, every tile is classified against the previous merge:
 
-The first build kept coarse tiles as points permanently (the original request). Views mixing levels then looked like
-a patchwork of crisp splats beside sparse dust, and the app's coverage test failed. Points-while-revealing was chosen
-instead (2026-10-30).
+| Situation | Look |
+| --- | --- |
+| **Full**: appears where nothing related was shown (first view, panning to a new area) | glowing points sweep in from the block centre (250 m/s), then grow into its splats |
+| **Grow**: replaces a shown ancestor (zooming in) | starts as points and grows into its splats (about 1 s) |
+| **None**: replaces shown descendants (zooming out), or was already shown | unchanged |
+| **Placeholder** (independent of the above): drawn only because its children are still loading | points; fades back to its splats after 5 s if the children never arrive |
+
+Every tile ends exactly as it rendered before the effects existed; LOD0 is unchanged and is the final tile a user sees.
+
+History (2026-10-30): the first build kept coarse tiles as points permanently, which made mixed views a patchwork
+and was dropped. The second build animated only first appearances, so zooming back in showed blurry coarse tiles
+with no transition. The current rules treat a coarse tile by why it is on screen: dots only while it stands in for
+loading detail.
 
 Effects change size, opacity and colour only, not splat positions (see *Performance*). Spark's spiral, rain and
 unroll effects move splats and are out of scope.
@@ -43,8 +44,15 @@ Findings from the Cesium 1.146 source (`@cesium/engine/Source/Scene/GaussianSpla
 
 **Per-splat reveal data.** A second texture alongside Cesium's splat attribute texture, using the same row layout
 (`u_splatRowMask`, `u_splatRowShift`), with per splat:
-- `arrival` — the tile's first-visible time in seconds (shared app clock);
-- `animate` — 1 if no ancestor of the tile had appeared before (first appearance), 0 for refinement.
+- `arrival` — when the tile entered the merge (shared app clock);
+- `mode` — 0 none, 1 full, 2 grow;
+- `placeholderSince` — when it became a placeholder, or −1.
+
+Placeholder status is `children.length > 0 && _screenSpaceError > memoryAdjustedScreenSpaceError`. Zooming in keeps the
+same coarse tiles selected until their children load, so Cesium does not re-merge; the status is re-checked every
+frame and the texture re-uploaded only when a tile's status changes. Splat counts are captured at merge time because
+Cesium may unload a tile's content while its merge is still drawn. Every hook is guarded: an error switches the effects
+off (one console warning) instead of stopping Cesium's render loop.
 
 The order is recorded by wrapping `transformTile` (grouped per tileset and per merge), then expanded with each
 tile's `content.pointsLength`. It is truncated exactly like Cesium's own data when the splat budget trims
