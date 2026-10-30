@@ -72,6 +72,9 @@ Search constraints confirmed on 2026-10-29: free sources only; a future recent p
 
 This is the revised planning gate. Automated maximum-age enforcement is not implemented yet.
 
+For commercial purchases, [the imagery specification](IMAGERY_SPEC.md) sets per-image requirements and accuracy tiers
+from our measured sets; `pipeline.imagery_check` scores a vendor offer against it before purchase.
+
 ### Historical source and preparation
 
 Public bucket (no credentials, `--no-sign-request`):
