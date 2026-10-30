@@ -88,6 +88,11 @@ NYC validation are pending. The fixed batch configuration is
 under `artifacts/skyfall/`. Completed stages are reused; failures preserve their
 runs and are skipped while subsequent scenes continue. Disk free space is checked
 before each scene; GPU work stops below 5 GiB. Never remove pre-existing runs.
+Batch training is shelved in favour of the authors' final models. Known issue if it
+is resumed: `run_scene` prepares every scene with the JAX_068 DSM metadata, so the
+provisional assumed anchor and its recorded `aoi_metadata_sha256` are wrong for other
+scenes; final placement is unaffected because `place` re-anchors from the TerraScope
+registration.
 
 Stage 1 details remain softer than the authors' final multi-million-splat models.
 Visual registrations were measured on those final models; shared prepared frames

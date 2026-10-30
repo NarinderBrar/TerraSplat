@@ -37,7 +37,7 @@ def evidence(scene, run, placed, tiles, depth):
                             'registered_lidar_mae_buildings_m', 'registered_lidar_mae_vegetation_m',
                             'registered_lidar_rmse_m', 'horizontal_offset_m', 'completeness'])
     holdout = [r['psnr_db'] for r in evaluation['records']['final'] if r['role'] == 'holdout']
-    quality.update(holdout_psnr_db=float(np.mean(holdout)), splats=plan['crop']['owned_splats'],
+    quality.update(holdout_psnr_db=float(np.mean(holdout)) if holdout else None, splats=plan['crop']['owned_splats'],
                    tiles=len(plan['tiles']), glb_bytes=encoded['totals']['glbBytes'])
     compact = {'scene': scene['scene'], 'label': LABEL, 'quality': quality,
                'dataset_revision': '82bcd8ae044afcf3182d335a47d0694ba2b4daa2',

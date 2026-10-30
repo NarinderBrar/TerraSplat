@@ -33,7 +33,7 @@ class Quality(BaseModel):
     registered_lidar_mae_buildings_m: float | None
     registered_lidar_mae_vegetation_m: float | None
     registered_lidar_rmse_m: float | None
-    holdout_psnr_db: float
+    holdout_psnr_db: float | None
     horizontal_offset_m: float | None
     completeness: float | None
     splats: int

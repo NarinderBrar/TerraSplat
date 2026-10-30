@@ -3,7 +3,7 @@ export interface Quality {
   registered_lidar_mae_ground_m: number | null;
   registered_lidar_mae_buildings_m: number | null;
   registered_lidar_mae_vegetation_m: number | null;
-  holdout_psnr_db: number;
+  holdout_psnr_db: number | null;
   horizontal_offset_m: number | null;
   splats: number;
   tiles: number;
@@ -49,8 +49,8 @@ function release(value: unknown) {
   const q = object(r.quality);
   for (const key of ['registered_lidar_mae_all_m', 'registered_lidar_mae_ground_m',
     'registered_lidar_mae_buildings_m', 'registered_lidar_mae_vegetation_m',
-    'horizontal_offset_m']) { if (q[key] !== null) field(q[key], 'number'); }
-  for (const key of ['holdout_psnr_db', 'splats', 'tiles']) field(q[key], 'number');
+    'horizontal_offset_m', 'holdout_psnr_db']) { if (q[key] !== null) field(q[key], 'number'); }
+  for (const key of ['splats', 'tiles']) field(q[key], 'number');
   return value as Release;
 }
 export function parseDatasets(value: unknown): Dataset[] {

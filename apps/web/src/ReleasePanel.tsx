@@ -21,7 +21,7 @@ export function ReleasePanel({ dataset, release, manifest, busy, onChange }: {
       <dt>Ground</dt><dd>{q.registered_lidar_mae_ground_m == null ? 'Unmeasured' : `${q.registered_lidar_mae_ground_m.toFixed(2)} m`}</dd>
       <dt>Buildings</dt><dd>{q.registered_lidar_mae_buildings_m == null ? 'Unmeasured' : `${q.registered_lidar_mae_buildings_m.toFixed(2)} m`}</dd>
       <dt>Vegetation</dt><dd>{q.registered_lidar_mae_vegetation_m == null ? 'Unmeasured' : `${q.registered_lidar_mae_vegetation_m.toFixed(2)} m`}</dd>
-      <dt>Holdout PSNR</dt><dd>{q.holdout_psnr_db.toFixed(2)} dB</dd>
+      <dt>Holdout PSNR</dt><dd>{q.holdout_psnr_db == null ? 'Unavailable' : `${q.holdout_psnr_db.toFixed(2)} dB`}</dd>
       <dt>Horizontal offset</dt><dd>{q.horizontal_offset_m == null ? 'Unmeasured' : `${q.horizontal_offset_m.toFixed(2)} m`}</dd>
     </dl>}
     {manifest && <>
