@@ -78,3 +78,6 @@ The shared `tests/conftest.py` fixture is opt-in, imports publisher dependencies
 Skyfall Stage 1 releases use the authors' prepared data and TerraScope visual registrations;
 see [Skyfall tiles](SKYFALL_TILES.md). Missing independent lidar measurements are null, never zero.
 Pipeline release quality must remain measured.
+
+One-block orchestration, offline CPU preparation, resume, stage reuse and isolated
+job publication are documented in [JOBS.md](JOBS.md).

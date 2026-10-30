@@ -352,7 +352,14 @@ def publish(config_path, directory, make_active=False):
             for key in ('source_label', 'accuracy_label'):
                 if key in config:
                     manifest[key] = config[key]
-            if not config['dataset_id'].startswith('skyfall-') and any(v is None for v in quality.values()):
+            unavailable = {k for k, v in quality.items() if v is None}
+            optional_lidar = {'registered_lidar_mae_all_m', 'registered_lidar_mae_ground_m',
+                              'registered_lidar_mae_buildings_m', 'registered_lidar_mae_vegetation_m',
+                              'registered_lidar_rmse_m', 'horizontal_offset_m', 'completeness'}
+            missing_truth = (config.get('lidar_truth_unavailable') is True
+                             and unavailable <= optional_lidar
+                             and config.get('accuracy_label') == 'No independent lidar truth supplied')
+            if not config['dataset_id'].startswith('skyfall-') and unavailable and not missing_truth:
                 raise ValueError('Pipeline release quality must be measured')
             validate_document(manifest, 'release-manifest')
             atomic_json(staging / 'release.json', manifest)

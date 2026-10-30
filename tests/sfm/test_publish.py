@@ -185,3 +185,29 @@ def test_pipeline_quality_cannot_be_replaced_with_unmeasured_values(tiled_releas
     config.write_text(json.dumps(cfg))
     with pytest.raises(ValueError, match='must be measured'):
         publish(config, releases)
+
+
+def test_job_without_truth_labels_missing_lidar_and_requires_measured_holdout(tiled_release):
+    config_path, releases, _ = tiled_release
+    config = read(config_path)
+    lidar = {'registered_lidar_mae_all_m', 'registered_lidar_mae_ground_m',
+             'registered_lidar_mae_buildings_m', 'registered_lidar_mae_vegetation_m',
+             'registered_lidar_rmse_m', 'horizontal_offset_m', 'completeness'}
+    for key in lidar:
+        config['quality_sources'].pop(key)
+    config['quality_values'] = dict.fromkeys(lidar)
+    config_path.write_text(json.dumps(config))
+    with pytest.raises(ValueError, match='quality must be measured'):
+        publish(config_path, releases)
+    config.update(lidar_truth_unavailable=True, accuracy_label='No independent lidar truth supplied')
+    config_path.write_text(json.dumps(config))
+    manifest = publish(config_path, releases)
+    assert manifest['quality']['registered_lidar_mae_all_m'] is None
+    assert manifest['quality']['holdout_psnr_db'] > 0
+    assert manifest['accuracy_label'] == 'No independent lidar truth supplied'
+    config['release_id'] += '-missing-holdout'
+    config['quality_sources'].pop('holdout_psnr_db')
+    config['quality_values']['holdout_psnr_db'] = None
+    config_path.write_text(json.dumps(config))
+    with pytest.raises(ValueError, match='quality must be measured'):
+        publish(config_path, releases)

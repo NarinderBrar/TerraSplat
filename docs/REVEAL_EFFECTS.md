@@ -80,7 +80,8 @@ skipped when the user prefers reduced motion (`prefers-reduced-motion`) or the t
 ## Performance
 
 - Steady state: no visible change. One extra texture read and a few arithmetic operations per splat corner; extra
-  memory about 4–8 bytes per splat (≈ 4–8 MB at 1 M splats).
+  memory 16 bytes per splat (RGBA float, ≈ 16 MB at 1 M splats). A placeholder change re-uploads that texture,
+  which happens only when the camera crosses a detail level.
 - The point stage is cheaper than today: small points cover far fewer pixels than blurred coarse splats, and pixel
   blending was the measured bottleneck on integrated GPUs.
 - During a reveal the app renders continuously for about 1–2 s per tile wave. That is easy on the RTX 3060 and may
