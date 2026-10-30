@@ -372,3 +372,15 @@ seam-check extensions, neighbour imagery/SfM/preflight statistics, training
 profile or Stage B script. No model was graded against the rejected key.
 The next action requires resolving the documented reference-frame/height
 incompatibility; thresholds must not be loosened or a fitted DFC offset applied.
+
+## Decision (2026-10-30): paused
+
+The 3DEP key failed both pre-registered checks: absolute (`training/`-recorded qualification: −1.58 m median) and
+shape (`training/3dep-shape-check.json`: ground MAE 0.333 m > 0.3 m after removing one uniform −1.577 m offset; other
+rules passed). DFC2019 documents its heights as WGS84 Z, so the conversion was not changed. The true-neighbour
+experiment is paused without loosening either rule.
+
+Ready to resume: the `eastn` block is prepared through CPU preflight and `scripts/neighbour-stage-b.sh` refuses to
+start until a qualified answer key, `configs/neighbour-decision.json` and the neighbour seam checker exist. Resume with
+lidar closer to 2015, or with an answer-key test designed for multi-year lidar (e.g. robust agreement or masked
+change), declared before it is computed and applied to a new area or reference, not re-grading this one.
