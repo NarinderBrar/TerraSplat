@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "id": "3dep-shape-check",
+  "declared_on": "2026-10-30",
+  "computed": false,
+  "purpose": "Decide whether the stable-masked 3DEP 2018 key (artifacts/reference/3dep-jax068-east/stable) agrees with DFC2019 in shape. Model grading removes one constant vertical offset (dsmr registration), so a constant datum offset between keys does not change grades; shape differences would.",
+  "procedure": [
+    "Same pixels as the failed absolute qualification: labelled in both DFC2019 and the stable 3DEP key, inside the DFC2019 JAX_068 grid.",
+    "Offset = median(3DEP - DFC2019) over all compared pixels. Subtract it once from every 3DEP pixel. No horizontal shift, no scaling, no per-class or per-area offsets.",
+    "Report the offset, then the residual statistics below."
+  ],
+  "rules": {
+    "all_labelled_mae_max_m": 0.5,
+    "ground_mae_max_m": 0.3,
+    "quadrant_offset_spread_max_m": 0.2,
+    "min_pixels": 50000
+  },
+  "justification": {
+    "all_labelled_mae": "Same 0.5 m limit as the absolute qualification, now after removing the single constant offset that grading also removes.",
+    "ground_mae": "Open ground is the most stable surface between 2015 and 2018 and has no edge or vegetation effects; 0.3 m is the absolute qualification's median tolerance.",
+    "quadrant_offset_spread": "The median offset in each of the four quadrants of the compared area must lie within 0.2 m of the overall offset, so the difference is a uniform datum step rather than a tilt or local distortion.",
+    "min_pixels": "The failed qualification compared 164,737 pixels; require at least 50,000 so the check is not decided by a small area."
+  },
+  "outcome_if_passed": "The stable 3DEP key qualifies for shape and may grade the neighbour experiment with registered metrics only; absolute (unregistered) 3DEP heights remain unqualified unless the datum is documented.",
+  "outcome_if_failed": "3DEP does not qualify; the neighbour experiment needs another reference."
+}
