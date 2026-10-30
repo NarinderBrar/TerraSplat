@@ -73,3 +73,43 @@ def test_points_dsm_takes_the_cell_maximum():
     assert dsm[0, 0] == 4.0
     assert dsm[3, 3] == 2.0
     assert np.isnan(dsm).sum() == 14
+
+
+def test_half_overlap_registration_preserves_counts_and_coverage(tmp_path):
+    from pipeline.dsm_validation import coverage_stats
+    import rasterio
+
+    truth = scene()
+    predicted = np.full_like(truth, np.nan)
+    predicted[:, :64] = truth[:, :64] + 2
+    write_raster(tmp_path/'truth.tif', truth)
+    write_raster(tmp_path/'pred.tif', predicted)
+    dx, dy, offset = register(tmp_path/'truth.tif', tmp_path/'pred.tif', tmp_path/'reg.tif')
+    assert (dx,dy,offset) == pytest.approx((0,0,-2), abs=0.01)
+    with rasterio.open(tmp_path/'reg.tif') as source:
+        registered = source.read(1)
+    extent = np.zeros(truth.shape,bool)
+    extent[:,:64] = True
+    grid = {'dsm':truth,'classes':np.full(truth.shape,2),'resolution':0.5}
+    counts = coverage_stats(registered,grid,extent,side_m=64)
+    assert counts['evaluated_pixels'] == 8192
+    assert counts['truth_grid_covered_fraction'] == 0.5
+    assert counts['block_area_covered_fraction'] == 0.5
+    assert counts['labelled_coverage_fraction'] == 1
+    assert error_stats(registered,truth,extent)['mae_m'] < 1e-5
+
+
+def test_actual_split_truth_coverage_matches_half_blocks():
+    import json
+    from pathlib import Path
+    from pipeline.dsm_validation import evaluation_extent, read_truth
+
+    root = Path(__file__).resolve().parents[2]
+    directory = root/'artifacts/reference/dfc2019-jax068'
+    if not directory.exists():
+        pytest.skip('Local truth fixture absent')
+    grid = json.loads((root/'configs/jax068-grid.json').read_text())
+    truth = read_truth(directory,'JAX_068')
+    masks = [evaluation_extent(truth,{},grid=grid,cell=n) for n in ('west','east')]
+    assert not (masks[0] & masks[1]).any()
+    assert [int(m.sum()) for m in masks] == [127148,128768]

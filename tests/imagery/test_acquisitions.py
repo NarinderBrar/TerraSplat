@@ -153,3 +153,12 @@ def test_approved_selection_rejects_overlapping_roles():
             {"block": {}, "records": records()},
             approved(holdout_catalog_ids=["view-0"]),
         )
+
+
+def test_offline_metadata_cache_miss_never_opens_network(tmp_path, monkeypatch):
+    from pipeline.acquisitions import inspect_product
+    def forbidden(*args, **kwargs):
+        pytest.fail('Offline operation attempted network access')
+    monkeypatch.setattr('urllib.request.urlopen', forbidden)
+    with pytest.raises(ValueError, match='Offline metadata cache miss'):
+        inspect_product({'uri':'https://example.invalid/a.NTF'}, [], tmp_path, {}, offline=True)

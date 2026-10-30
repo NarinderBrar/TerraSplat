@@ -1,0 +1,11 @@
+{
+  "longitude": -81.66246044947502,
+  "latitude": 30.34881971636569,
+  "side_m": 250,
+  "halo_m": 20,
+  "ellipsoidal_height_range_m": [
+    -50,
+    300
+  ],
+  "selection_note": "Phase 3 east: centre derived at (125,0,0) in jax068-grid anchor ENU. Same crop and height bracket as pilot."
+}

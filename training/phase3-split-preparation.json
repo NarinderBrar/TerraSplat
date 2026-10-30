@@ -1,0 +1,1366 @@
+{
+  "scope": "Stage A only; no GPU jobs, training, imagery downloads or publishing executed.",
+  "training_executed": false,
+  "gpu_jobs_executed": false,
+  "new_imagery_downloads": 0,
+  "blocks": {
+    "west": {
+      "stages": {
+        "scan": {
+          "status": "scanned",
+          "report": "artifacts/imagery/west-19v/acquisitions.json",
+          "sha256": "618f86520fafa3dee30dbd1f85e77e3c8d54599a790c08e71f2ff08f17219515"
+        },
+        "select": {
+          "status": "candidate",
+          "report": "artifacts/imagery/west-19v/selection.json",
+          "sha256": "2da1cfab3a374b5d284cb3f744fb2b43b4211158e4e18eb7db7748f3a373e468"
+        },
+        "sources": {
+          "status": "downloaded",
+          "report": "artifacts/imagery/west-19v/sources.json",
+          "sha256": "e6a204ed5d4686760f513332da81188d0a216b38001844026c96fc83a0e363f7"
+        },
+        "block_inputs": {
+          "status": "prepared_for_review",
+          "report": "artifacts/imagery/west-19v/inputs/inputs-report.json",
+          "sha256": "3ba99d3c0b9ed82bf4f55534a048656395e6fe4136d2a60edf1ef791d3109be0"
+        },
+        "satellite_sfm": {
+          "status": "passed",
+          "report": "artifacts/imagery/west-19v/calibration/calibration-report.json",
+          "sha256": "2a5b743e0bb41590f4763693e0242175bb5ba54ca54dba57ee2ce80fd485d440"
+        },
+        "reconstruct": {
+          "status": "reconstructed",
+          "report": "artifacts/imagery/west-19v/sfm-serial/reconstruction-report.json",
+          "sha256": "23fef667d4a16ce221b69d823cb0a00b14927c663bc1d55950f87cff81ae8ba0"
+        },
+        "skyfall_inputs": {
+          "status": "prepared",
+          "report": "artifacts/imagery/west-19v/skyfall/conversion-report.json",
+          "sha256": "c87b456756e44537f42b7f9aa0c59a60284503a0513e6249ba4a87f83596e8d0"
+        },
+        "check-skyfall-inputs": {
+          "status": "passed",
+          "report": "artifacts/imagery/west-19v/skyfall/loader-report.json",
+          "sha256": "f14b8d13da8ae23b70db2e6bc60d7d29d67d8789f98590966345a7c69a7e4e47"
+        },
+        "phase2_cpu_preflight": {
+          "status": "passed",
+          "report": "artifacts/imagery/west-19v/skyfall/preflight-report.json",
+          "sha256": "7d9c80ab60be904eee7e21b997b98f0f3b12ef356cd83c150068abb6718554d9"
+        }
+      },
+      "train_acquisitions": 19,
+      "holdout_acquisitions": 1,
+      "reused_products": 40,
+      "sparse_points": 23157,
+      "reprojection_error_pixels": {
+        "observations": 79385,
+        "median": 0.42185547857657857,
+        "p95": 1.5029068733988702,
+        "max": 2.763969953471279
+      },
+      "reconstruction_error": null,
+      "initial_concurrent_attempt": {
+        "status": "failed",
+        "selection_sha256": "708733fa5e93abf299c03c1d268eb63dbd96d405e3105b588f029b2dcf26d52f",
+        "source_commit": "908c61937f6a16d6e1d50e98898db997e5e257bd",
+        "colmap_commit": "79a6d150714d0eb350a1b10e17bedf91877568a1",
+        "views": [
+          {
+            "catalog_id": "104001000209A800",
+            "role": "train",
+            "source_rgb_sha256": "693b9fca39d24b0cbbbbdaf0dfb32941dbb676edbae124cc7dfe04446657c0ff",
+            "png_sha256": "52dd05e4e197c4e250e10c5122345c63870d09ff3e801ddabb5e0abe76f1dd8f",
+            "camera_sha256": "b968dadac5f91ca223071cf20ce18b7e8dcc9707c80041e0f42dad46b883be12",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -31056.79462308456
+          },
+          {
+            "catalog_id": "1040010002A97700",
+            "role": "train",
+            "source_rgb_sha256": "fe10195f7817272c5736d87aa72c97b7a820305a33582af1b9236c2a1af3ba09",
+            "png_sha256": "63c69a046966c49546cb7eae446521e64709603ecb1d50d110a3a7e1983739dd",
+            "camera_sha256": "e16d22a3aeba9341164de8ea5893c4f8af8d40d0f762979ce990502bebe47b3a",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -17492.252150015604
+          },
+          {
+            "catalog_id": "1040010003371100",
+            "role": "train",
+            "source_rgb_sha256": "d8a6219b013064a3e70def4aa64092088db8b5c1f00e75ff72ca9936dc0c0010",
+            "png_sha256": "bc862b9c299ed8441d2456fab792dc94e43e4b07f3e3df1961eb61f95e018d66",
+            "camera_sha256": "56c56089f090b5e4136270354aeecb511b2b658668057bfbb1ce0904a810da9a",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -58504.05220253091
+          },
+          {
+            "catalog_id": "10400100031BC200",
+            "role": "train",
+            "source_rgb_sha256": "42606e81eb0df02f44e8a1db81eff99df2b485ee54a4dbab92fefa64b8411de2",
+            "png_sha256": "4b9bc45fc7840f8a3b12311c744ef533fd1bee88ac94d1507e65123bbf52e93d",
+            "camera_sha256": "a0add8360217b0a24aae4d7f5a5f34a7dc89e18dbcf0e0721ae998ddff5ddfb5",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 62505.88437628005
+          },
+          {
+            "catalog_id": "1040010004550F00",
+            "role": "train",
+            "source_rgb_sha256": "506730b20f31e03f7c74af22861bb54731c94e68b920397be5f13520b2ddb50c",
+            "png_sha256": "b5b797f4a44ef4ee5a82848087caf15529aa3803be3a8c97f8442f8c1fa2aad2",
+            "camera_sha256": "837587843014672dbe58429fb5de47886fb1aa485b482ff0f440a76a1f8a5151",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 168534.43566068923
+          },
+          {
+            "catalog_id": "1040010005A0D800",
+            "role": "train",
+            "source_rgb_sha256": "e7cbcd1630f4f5b0bc0f774b804e29e52755032d51ef3800307d193269b38d34",
+            "png_sha256": "60b253fbf90dd645e2712afd633aa2cd6998182f953d3eacc8ee16b877f8509e",
+            "camera_sha256": "cd8af75a1e8077d3b8abca8d235c9e266d36573303b238a6e688283742df3480",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 40521.06742144237
+          },
+          {
+            "catalog_id": "10400100066B8E00",
+            "role": "train",
+            "source_rgb_sha256": "3fd217763a58bd2b390af7b953dfdfda1f98ce8d3ad4e4dab6b83274213f0b09",
+            "png_sha256": "0295ed816d16e244154a5f051f91361f6f6880d536e8f3c55bf1f133b318d99e",
+            "camera_sha256": "9fa09de2253402d2a99a134569a0ad1e042e81ad0727e7ee14addac1082b3753",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -15046.218047010978
+          },
+          {
+            "catalog_id": "1040010007020F00",
+            "role": "train",
+            "source_rgb_sha256": "ec169be5648a055cb58fcbaeba2aedb3c616829c4034b1efbe2c386b92b26392",
+            "png_sha256": "e22e2570f76428a4312635c58822614f507a187478454673a1034dc9affcd322",
+            "camera_sha256": "dc8faa4c1b5796d7e5493fdfd6ca2ac684ab6b44b33ca72843529f4198c1da9a",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 181408.40232657123
+          },
+          {
+            "catalog_id": "1040010006764E00",
+            "role": "train",
+            "source_rgb_sha256": "6bfefa158390ee1d95817a884621133292608ab1e479236e1d770964b5bd9206",
+            "png_sha256": "a03f0f5784692669f080c3b7f287d6ed9c4f647a268f49fbcf9092087f71c04c",
+            "camera_sha256": "6e3e411e8108e168f1c8e87733ccea4879a0f48efa1a281a67592de31c36c359",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 138702.67099737775
+          },
+          {
+            "catalog_id": "1040010007980900",
+            "role": "train",
+            "source_rgb_sha256": "7fbbb15b3a5030952d0d178d6414646045a7fe42bc717887dbc9f3ad2c93c9fb",
+            "png_sha256": "9b26a056a9ad8e41ffe97bafe81da473ac7e59f6ec7342a7b0b2ccb5a7fa2519",
+            "camera_sha256": "e7d30034343b5b817e28d6ab689f84929f659ff2b56e1c45632c20209b21d6f0",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 1946.8345158655068
+          },
+          {
+            "catalog_id": "1040010008037800",
+            "role": "train",
+            "source_rgb_sha256": "376b4e1bce82cbe04cdaa0a83614fe5224b57459e9516c8fb5359e49b27347de",
+            "png_sha256": "48e96413000c045ad0e3450d98c5c7e591cf34386ccdc0b21a167437996a43f9",
+            "camera_sha256": "5ccfb4aa9411b20396a2420eaa18787bdaaf447bb3eeba99ba90e35def7519d5",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -14514.969391742292
+          },
+          {
+            "catalog_id": "104001000AB24A00",
+            "role": "train",
+            "source_rgb_sha256": "546f2ecbb2bd6ded548ae2ce7f90bc90fd9c44f9a3623a7c3dbc4516dff5489c",
+            "png_sha256": "7796a37d9ccd10b54f936172077882562b705fe453a5d117b3bcfc1097e7a691",
+            "camera_sha256": "28899453b8ac9a0dbd3ca1ee7c94b930e42708486b540c795829cc4a3453c551",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -1882.755003355286
+          },
+          {
+            "catalog_id": "104001000A1B5F00",
+            "role": "train",
+            "source_rgb_sha256": "06dcccd99412ca7b3b34b041cc2d302089843bb9b6d11bb2ebcaaf1bc0ff051f",
+            "png_sha256": "83055beb4efcc8d5458312f9e4d51d69105855709fe67207634b82e21fa63edb",
+            "camera_sha256": "5db45eb9c34441f403aaa2b959b4e8f4cc0ff7a46401404d542302ac84a04024",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 12201.16232280688
+          },
+          {
+            "catalog_id": "104001000AB10600",
+            "role": "train",
+            "source_rgb_sha256": "fef10e176a2d5c729290039d3dae8d3c2eb898b3a1effa5dd307b9da29d983d6",
+            "png_sha256": "4ec1fb043fdf699e5af2a05d33d279f93c0dc218017b7f4c53488bc54f2abc6a",
+            "camera_sha256": "51719fad78a2bfbd159ced85b736ff9c9a116a20fc82d41338a2181cc2c47c9e",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 689880.4995009071
+          },
+          {
+            "catalog_id": "104001000C22D200",
+            "role": "train",
+            "source_rgb_sha256": "bd170153ef867cfab9625a8ecb652edc99e8d649ea38220f48fbd5b635864dac",
+            "png_sha256": "6dd7070f824f7cb2de15b757c1319eee6f3e7cb5fecb41a2861545eeb0d4cf25",
+            "camera_sha256": "182cc44afccfa71e02f1f547df8e8bb8a1258e0ccbfab595526b8a32f23b5b04",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -3001.496524470084
+          },
+          {
+            "catalog_id": "104001000C478800",
+            "role": "train",
+            "source_rgb_sha256": "dc644f029465a4c9bd1ca5d2856ed941f99d29f9a274da473174e8f0bc8e2809",
+            "png_sha256": "60f84339d0d672679036478aac1b0e23002726c5eea24a12d8c587170897afc6",
+            "camera_sha256": "35c5bb306d21bbbf233b3d1fc32056f106a3e005123c93c4ca8fae906d44a0ef",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 141050.09010813612
+          },
+          {
+            "catalog_id": "104001000E362D00",
+            "role": "train",
+            "source_rgb_sha256": "21e910ad844d1b291f0f88f6bfae98969f311209a7bde098bbe4e83da921c9f3",
+            "png_sha256": "aad515802343b34282b1d0f07982a392226ab9e92904ee27ef0219b6d3b92f9a",
+            "camera_sha256": "f425ab4bf04dad7e2f8dc8fc2432321e9363ea4dc5da45af7a4ee2c82f249e2c",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 296376.11325427634
+          },
+          {
+            "catalog_id": "1040010013D78C00",
+            "role": "train",
+            "source_rgb_sha256": "2002e856b24a22132282d1d97b029644ae93da5e04cd82f331152330cb4cb242",
+            "png_sha256": "385f6ac759f7f9b64a71ef8704af20e3209ea50b1da4c9e10e3e06cf30b8bd4f",
+            "camera_sha256": "d7a7c014dfbef5a0b325e6dbb353b42722c2c7cb7a2071d64603f5a843942d7b",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 24625.666484427045
+          },
+          {
+            "catalog_id": "1040010016BADB00",
+            "role": "train",
+            "source_rgb_sha256": "510e9e5c5ec3083d2895baf6388be824b708b76d615bcbad58f476bb568a443a",
+            "png_sha256": "903433461bebefe44134c1a3dae5843f5e1b9facaf2d95c5286da0fc12ca5359",
+            "camera_sha256": "217276b3040351de42de70568ebbde117849b513071813ae0ae38f98c028363e",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 19560.17656939914
+          },
+          {
+            "catalog_id": "104001000A22A000",
+            "role": "holdout",
+            "source_rgb_sha256": "7d219d40584a8c7a03e6ee95408d6f62359b26842e03696381541af901ac2f4f",
+            "png_sha256": "adf3893143407da9e3cae1b0cc0bd3df961e19f1410cd9b78f41f075be529d1f",
+            "camera_sha256": "8c431c521745318185774ff105d68750925294338ace9a29bc2bd4c987c3f63d",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 52992.84396459062
+          }
+        ],
+        "commands": [
+          {
+            "name": "features",
+            "argv": [
+              "/home/narinder/Documents/OrbitWorks/TerraSplat/.toolchains/sfm-cpu/bin/colmap",
+              "feature_extractor",
+              "--database_path",
+              "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/west-19v/sfm/database.db",
+              "--image_path",
+              "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/west-19v/sfm/images",
+              "--ImageReader.camera_model",
+              "PERSPECTIVE",
+              "--SiftExtraction.use_gpu",
+              "0",
+              "--SiftExtraction.num_threads",
+              "1",
+              "--SiftExtraction.max_image_size",
+              "10000",
+              "--SiftExtraction.domain_size_pooling",
+              "1",
+              "--SiftExtraction.max_num_features",
+              "8192"
+            ],
+            "log": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/west-19v/sfm/logs/features.log",
+            "returncode": 0,
+            "elapsed_seconds": 86.05231322799955
+          },
+          {
+            "name": "matching",
+            "argv": [
+              "/home/narinder/Documents/OrbitWorks/TerraSplat/.toolchains/sfm-cpu/bin/colmap",
+              "exhaustive_matcher",
+              "--database_path",
+              "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/west-19v/sfm/database.db",
+              "--SiftMatching.use_gpu",
+              "0",
+              "--SiftMatching.num_threads",
+              "3",
+              "--SiftMatching.guided_matching",
+              "1",
+              "--SiftMatching.max_error",
+              "3",
+              "--SiftMatching.max_num_matches",
+              "16384"
+            ],
+            "log": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/west-19v/sfm/logs/matching.log",
+            "elapsed_seconds": 900.0808905320009
+          }
+        ],
+        "independent_accuracy_validated": false,
+        "executable_sha256": "739c9d88ba623852e7b01543cc0030b4c6c4c5bf66670940772ceefc3b945d36",
+        "runtime": {
+          "colmap_commit": "79a6d150714d0eb350a1b10e17bedf91877568a1",
+          "ceres_commit": "f68321e7de8929fbcdb95dd42877531e64f72f66",
+          "executable_sha256": "739c9d88ba623852e7b01543cc0030b4c6c4c5bf66670940772ceefc3b945d36",
+          "cuda": false,
+          "opengl": false,
+          "openmp": false,
+          "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+          "cmake": "cmake version 4.3.2"
+        },
+        "runner_sha256": "9003ef7972dabad937c898070442261afaa9c24e4dcf7ae71535bb2ae87b3bb8",
+        "enu_observer_latlonalt": [
+          30.34881970793088,
+          -81.66506065314857,
+          -70
+        ],
+        "features": {
+          "104001000209A800.png": 8226,
+          "1040010002A97700.png": 10763,
+          "10400100031BC200.png": 9955,
+          "1040010003371100.png": 9708,
+          "1040010004550F00.png": 9982,
+          "1040010005A0D800.png": 10758,
+          "10400100066B8E00.png": 10202,
+          "1040010006764E00.png": 8640,
+          "1040010007020F00.png": 8362,
+          "1040010007980900.png": 10820,
+          "1040010008037800.png": 9428,
+          "104001000A1B5F00.png": 8765,
+          "104001000AB10600.png": 8936,
+          "104001000AB24A00.png": 10681,
+          "104001000C22D200.png": 10190,
+          "104001000C478800.png": 11731,
+          "104001000E362D00.png": 8415,
+          "1040010013D78C00.png": 8631,
+          "1040010016BADB00.png": 8871
+        },
+        "error": "Command '['/home/narinder/Documents/OrbitWorks/TerraSplat/.toolchains/sfm-cpu/bin/colmap', 'exhaustive_matcher', '--database_path', '/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/west-19v/sfm/database.db', '--SiftMatching.use_gpu', '0', '--SiftMatching.num_threads', '3', '--SiftMatching.guided_matching', '1', '--SiftMatching.max_error', '3', '--SiftMatching.max_num_matches', '16384']' timed out after 899.9999873599991 seconds"
+      }
+    },
+    "east": {
+      "stages": {
+        "scan": {
+          "status": "scanned",
+          "report": "artifacts/imagery/east-19v/acquisitions.json",
+          "sha256": "a2eb25c4586351a6327fe70c2dc28387f77cf9df8558a7d0550ff2431c0081ef"
+        },
+        "select": {
+          "status": "candidate",
+          "report": "artifacts/imagery/east-19v/selection.json",
+          "sha256": "c6e5d25df9625d98c0501ac9a391769683b04ad07391ef3b6efd212e1d8c6197"
+        },
+        "sources": {
+          "status": "downloaded",
+          "report": "artifacts/imagery/east-19v/sources.json",
+          "sha256": "e6a204ed5d4686760f513332da81188d0a216b38001844026c96fc83a0e363f7"
+        },
+        "block_inputs": {
+          "status": "prepared_for_review",
+          "report": "artifacts/imagery/east-19v/inputs/inputs-report.json",
+          "sha256": "fcf3119830f2f8d40713dc084d53259d58a4b7ffcc99fbbde86feac1d2cd60c9"
+        },
+        "satellite_sfm": {
+          "status": "passed",
+          "report": "artifacts/imagery/east-19v/calibration/calibration-report.json",
+          "sha256": "23a04572bbd87edb370c34e53db336514061e61c3cfcd148c068747a451a68a7"
+        },
+        "reconstruct": {
+          "status": "reconstructed",
+          "report": "artifacts/imagery/east-19v/sfm-serial/reconstruction-report.json",
+          "sha256": "587c2524f823613d7e26d62b0a96e99d8eeeb0c68079562538a0ef8a2d86658d"
+        },
+        "skyfall_inputs": {
+          "status": "prepared",
+          "report": "artifacts/imagery/east-19v/skyfall/conversion-report.json",
+          "sha256": "b016553a5ddc191dd7fcb934ad1c24a8492fdad44ae9eb3ed5e221d194c4f3d5"
+        },
+        "check-skyfall-inputs": {
+          "status": "passed",
+          "report": "artifacts/imagery/east-19v/skyfall/loader-report.json",
+          "sha256": "c954a53b2946d1976a1f9437618e3b1bdb610d96d258f537297fe4c4a8ee74ab"
+        },
+        "phase2_cpu_preflight": {
+          "status": "passed",
+          "report": "artifacts/imagery/east-19v/skyfall/preflight-report.json",
+          "sha256": "774c85c0715fb44ff6956c30775f14e3c8d21cedb59a3a99bbda327df99baf4b"
+        }
+      },
+      "train_acquisitions": 19,
+      "holdout_acquisitions": 1,
+      "reused_products": 40,
+      "sparse_points": 24009,
+      "reprojection_error_pixels": {
+        "observations": 90306,
+        "median": 0.4046562300312548,
+        "p95": 1.4713336112603563,
+        "max": 2.4632479105840295
+      },
+      "reconstruction_error": null,
+      "initial_concurrent_attempt": {
+        "status": "failed",
+        "selection_sha256": "14c349a1acd6db5dd088313d65250b1b44b9c2fe783df0f7cf8b4a7e71e9d65d",
+        "source_commit": "908c61937f6a16d6e1d50e98898db997e5e257bd",
+        "colmap_commit": "79a6d150714d0eb350a1b10e17bedf91877568a1",
+        "views": [
+          {
+            "catalog_id": "104001000209A800",
+            "role": "train",
+            "source_rgb_sha256": "f2052e9e341e1004af65d9c34e14556bb119146ca0f15ae009f255a6a054433c",
+            "png_sha256": "4dec0bf8b1cc0dc56446070c39458c8be4e7679b1d7ec1ff9d0496b49a0c57f5",
+            "camera_sha256": "b49da2102c84d66dd62e4d306a30bfab1189c7aacdfd0769506b49cc2ed15577",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -30645.563894895353
+          },
+          {
+            "catalog_id": "1040010002A97700",
+            "role": "train",
+            "source_rgb_sha256": "1701795d1e3ca7c91e5fab073c11561554d0ea7252c9cbfba2e584bd24510817",
+            "png_sha256": "fbc4a66547df4896177d4d6cfe36776a76e84cca52c2a9ef24b70efc468c4b92",
+            "camera_sha256": "43e187fc18b03f0932c2d6cf987c7a3015c204b3897ee4e513b79abf08ff41eb",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -17369.740629178785
+          },
+          {
+            "catalog_id": "1040010003371100",
+            "role": "train",
+            "source_rgb_sha256": "8a3121fe5e4bac24b0bf3d0f5b222f6a442611c2e8cf185741bff70729106ebd",
+            "png_sha256": "683caf301cdaf2eadb24575b2e67bee729defa05f4f55a4ad8c986f3739e8628",
+            "camera_sha256": "8f05edf20c9de29fa9df3fcb4a6ca740d7caf21dfce0a6868113bf0d300f5dd1",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -59476.60588744993
+          },
+          {
+            "catalog_id": "10400100031BC200",
+            "role": "train",
+            "source_rgb_sha256": "74d03cad6b1cfd7211990b3bc979ac571c6c23212e6f8446273dbfbb3b51d777",
+            "png_sha256": "e4b58fd2b9f64cf75a14e32a443ae6178ae09be3254e1bfd17369ebcef078d90",
+            "camera_sha256": "7a323922f32bae1c2031654851a90fd46e661bd2c999a834261c7bfe8650694c",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 62720.65135462387
+          },
+          {
+            "catalog_id": "1040010004550F00",
+            "role": "train",
+            "source_rgb_sha256": "71cce193d33ab7859333d85515d5d6217d2f5719e3f4da1ec7665bae017d0161",
+            "png_sha256": "2645ba183f1698d1dfcf311c5cb910546d8eee4f59c71294e72a331da46d2e11",
+            "camera_sha256": "1910e30a42835f439f7cce1a743258fa138fb852cb1bafa36a36f18d9d2ce633",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 168228.16207173018
+          },
+          {
+            "catalog_id": "1040010005A0D800",
+            "role": "train",
+            "source_rgb_sha256": "05775c6e391594aa651495d603cdaa0bfc3928e534e77e1a2cd486593d492a1d",
+            "png_sha256": "2c72d0d5edabccdcb5c1217f2a6bbfda04c2d18854a5b1786a9ca52355540bde",
+            "camera_sha256": "10a49e6e8bfa87bfac74ed7b416f9c960a5d1b06f970c23a6539544d77ec8cba",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 40735.41941737373
+          },
+          {
+            "catalog_id": "10400100066B8E00",
+            "role": "train",
+            "source_rgb_sha256": "b499f6580ef33c13744afdf64252411517436776ee3d7fa517d1a37ab1029948",
+            "png_sha256": "834a86319dfcbf8cf332ec81db913ed4796867b4d9cc5d0302a706b7c6083f3c",
+            "camera_sha256": "71353329a974ab8899513f3c17b08363cd472d2607fd715201e4e331d1c3d982",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -15485.434248271384
+          },
+          {
+            "catalog_id": "1040010007020F00",
+            "role": "train",
+            "source_rgb_sha256": "3d21a84c087ab35993b4954b1c64d14a3310672f27a9426e512f21e6efcc73a3",
+            "png_sha256": "4fe1470ad01c0322332b577822f6a0d33a66893684a79abf2ae861f92e591d54",
+            "camera_sha256": "7af907d52cc610699108b5098c2d49c31e132a54c0276be5ee7af2b24bde3d12",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 181134.325664645
+          },
+          {
+            "catalog_id": "1040010006764E00",
+            "role": "train",
+            "source_rgb_sha256": "9735e7bda25939172daf001f8435407ddb6b5b197bdede57011bd1a08a614f2d",
+            "png_sha256": "3e7cb386dc81468e1026f5edab766aa1806288a2c254ef736f67406278ea49a1",
+            "camera_sha256": "bff26390145ac48ba7ead0b994880153828aa38fd13f3d271921d009e25e3cc3",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 137942.13230999
+          },
+          {
+            "catalog_id": "1040010007980900",
+            "role": "train",
+            "source_rgb_sha256": "2c6655703cf26f725c97b7c288932a5b055bd9d34f2637d858dcf01423931153",
+            "png_sha256": "c958117e327a810fca313218ea233720e96ea3cdc7742db7637a50ff83dbf06b",
+            "camera_sha256": "33621dd9eb094d8ed2f4603d08f8c643eb1c52ce0db0b038fd84c1f381563d18",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 1822.6183267626134
+          },
+          {
+            "catalog_id": "1040010008037800",
+            "role": "train",
+            "source_rgb_sha256": "3677860e769cd16e660732786bbf6b51f82a78dd8868346f4613c6271601715c",
+            "png_sha256": "dba0d31f75a90264370fed84b297e3ebf5b28f786f78cec684a6a6775124afc7",
+            "camera_sha256": "7d3d21db9897cb531f8a17747a9e5c14344f4587b5044c8ca569f6f0ea4a52d8",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -13798.195692417614
+          },
+          {
+            "catalog_id": "104001000AB24A00",
+            "role": "train",
+            "source_rgb_sha256": "bc64003d8fdcaa24a162872dcc6042e56261108b26cc986f186266cda2df1bd7",
+            "png_sha256": "cb673b5270a512289f3026518f69dbea467651c2b74f915b219587e1da2d3e40",
+            "camera_sha256": "13f6525c2349d0280b497bc701e7dbabfebfeba8d57fc7a7960280bed9483990",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -1679.6997843681831
+          },
+          {
+            "catalog_id": "104001000A1B5F00",
+            "role": "train",
+            "source_rgb_sha256": "f11c9adc731e089781fbd971c69c0f023e8d52ae7bd8dbbaa60d274781925b49",
+            "png_sha256": "787085d4378b154d28afecc9889f7d6ac41ea622bf889f7903930c1411095402",
+            "camera_sha256": "76b10a33eeb95e625cfb7913825f84d834bc22aeba9e29af995ce29d796e9713",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 12251.042952935331
+          },
+          {
+            "catalog_id": "104001000AB10600",
+            "role": "train",
+            "source_rgb_sha256": "8900aa5822f77ce1bdc317ce325054771b839067f45c2afbfea226a03a89c032",
+            "png_sha256": "eb34338ca3ccadbdf952e3840bbba59d94b637d26ac3b520b829a9179c43e6ab",
+            "camera_sha256": "78ae487b333ef3b7fb52b5ae1d92a44912937871bbf72c06d11f46ce24d4198d",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 688377.7566591246
+          },
+          {
+            "catalog_id": "104001000C22D200",
+            "role": "train",
+            "source_rgb_sha256": "03513640e4ea9d9b6e7fa6e70ddf0236254ef3f11885f629e2f80a28a9770b43",
+            "png_sha256": "2a5b76ac91889083ff88432d3a3dedcaa36c909639946c807d207d5820272866",
+            "camera_sha256": "ad95abcdf8f1345448ac205415e5fc8d8dc4d2d76ab5fccc78ada6ca6e5b53c6",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": -3210.851932716859
+          },
+          {
+            "catalog_id": "104001000C478800",
+            "role": "train",
+            "source_rgb_sha256": "449c5fb97fd894b87c88df23ecf9bc017f83b9a906ffc65c42d746705d737e5c",
+            "png_sha256": "474fce160a5ee40813eca71defb34eaf2b956833d270ab4583399f13d3a0c9e3",
+            "camera_sha256": "3ed50f759c07fa721f7a38fc597bcedab1fe508292ae3305d978b360e8b0897f",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 140651.1092849356
+          },
+          {
+            "catalog_id": "104001000E362D00",
+            "role": "train",
+            "source_rgb_sha256": "4c4c9835ff04e4086d20e908396d0487ba7cb1da959f188677a4be3b18309cf9",
+            "png_sha256": "04507bdf75b8574208552fbc4b068e758f98812cf1733ffd52569a83a068c0c6",
+            "camera_sha256": "d123bfde2bd0836d6748b2c228ceca7554acef0e1b5d24e7f102b1ed976e462c",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 296342.4830768331
+          },
+          {
+            "catalog_id": "1040010013D78C00",
+            "role": "train",
+            "source_rgb_sha256": "db7077db2692e029da3a947e3475f39510771a7f01f3b95353446ce0747697de",
+            "png_sha256": "c067af5a887a51172d4a3c09d254516872629ec2058bd49af0bb7fcc11d5bd98",
+            "camera_sha256": "14310276f0ca4518c7803929c17ee870c14c74e9c0be20afa399b55fa68164cd",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 24924.988525620192
+          },
+          {
+            "catalog_id": "1040010016BADB00",
+            "role": "train",
+            "source_rgb_sha256": "b111a1769cf09c90f0e467e51ae43327842a49e192e6eb77b14f16983b31de5f",
+            "png_sha256": "60889ca213868914300bbf016819ccc5683215570939bcd9dbe26654b3fc1810",
+            "camera_sha256": "56af4bd59106408eff0aaa932f2880681ee27831cb9520082b28dc5c7649b4b4",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 17306.857121530713
+          },
+          {
+            "catalog_id": "104001000A22A000",
+            "role": "holdout",
+            "source_rgb_sha256": "ae3b0bb86213e5e1ab52ec2b553924def126782455bdfbec55753af71eef69f3",
+            "png_sha256": "c816db51c7ff3c9dc62b08584eda8a6989d5d29f3a7abb7860ef5cea553d3689",
+            "camera_sha256": "12d3d462944e976f9c1579f219e0a96348096effd23b0851d3abc182928649ef",
+            "pixel_transform": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "skew_pixels": 52678.460821879446
+          }
+        ],
+        "commands": [
+          {
+            "name": "features",
+            "argv": [
+              "/home/narinder/Documents/OrbitWorks/TerraSplat/.toolchains/sfm-cpu/bin/colmap",
+              "feature_extractor",
+              "--database_path",
+              "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/east-19v/sfm/database.db",
+              "--image_path",
+              "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/east-19v/sfm/images",
+              "--ImageReader.camera_model",
+              "PERSPECTIVE",
+              "--SiftExtraction.use_gpu",
+              "0",
+              "--SiftExtraction.num_threads",
+              "1",
+              "--SiftExtraction.max_image_size",
+              "10000",
+              "--SiftExtraction.domain_size_pooling",
+              "1",
+              "--SiftExtraction.max_num_features",
+              "8192"
+            ],
+            "log": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/east-19v/sfm/logs/features.log",
+            "returncode": 0,
+            "elapsed_seconds": 87.00173470899972
+          },
+          {
+            "name": "matching",
+            "argv": [
+              "/home/narinder/Documents/OrbitWorks/TerraSplat/.toolchains/sfm-cpu/bin/colmap",
+              "exhaustive_matcher",
+              "--database_path",
+              "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/east-19v/sfm/database.db",
+              "--SiftMatching.use_gpu",
+              "0",
+              "--SiftMatching.num_threads",
+              "3",
+              "--SiftMatching.guided_matching",
+              "1",
+              "--SiftMatching.max_error",
+              "3",
+              "--SiftMatching.max_num_matches",
+              "16384"
+            ],
+            "log": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/east-19v/sfm/logs/matching.log",
+            "elapsed_seconds": 900.1136950300006
+          }
+        ],
+        "independent_accuracy_validated": false,
+        "executable_sha256": "739c9d88ba623852e7b01543cc0030b4c6c4c5bf66670940772ceefc3b945d36",
+        "runtime": {
+          "colmap_commit": "79a6d150714d0eb350a1b10e17bedf91877568a1",
+          "ceres_commit": "f68321e7de8929fbcdb95dd42877531e64f72f66",
+          "executable_sha256": "739c9d88ba623852e7b01543cc0030b4c6c4c5bf66670940772ceefc3b945d36",
+          "cuda": false,
+          "opengl": false,
+          "openmp": false,
+          "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+          "cmake": "cmake version 4.3.2"
+        },
+        "runner_sha256": "9003ef7972dabad937c898070442261afaa9c24e4dcf7ae71535bb2ae87b3bb8",
+        "enu_observer_latlonalt": [
+          30.3488197079293,
+          -81.6624604695424,
+          -70
+        ],
+        "features": {
+          "104001000209A800.png": 10250,
+          "1040010002A97700.png": 9713,
+          "10400100031BC200.png": 9965,
+          "1040010003371100.png": 9561,
+          "1040010004550F00.png": 9282,
+          "1040010005A0D800.png": 9298,
+          "10400100066B8E00.png": 11172,
+          "1040010006764E00.png": 8988,
+          "1040010007020F00.png": 9079,
+          "1040010007980900.png": 10287,
+          "1040010008037800.png": 8348,
+          "104001000A1B5F00.png": 9018,
+          "104001000AB10600.png": 8947,
+          "104001000AB24A00.png": 8540,
+          "104001000C22D200.png": 11101,
+          "104001000C478800.png": 11733,
+          "104001000E362D00.png": 9168,
+          "1040010013D78C00.png": 10652,
+          "1040010016BADB00.png": 9336
+        },
+        "error": "Command '['/home/narinder/Documents/OrbitWorks/TerraSplat/.toolchains/sfm-cpu/bin/colmap', 'exhaustive_matcher', '--database_path', '/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/imagery/east-19v/sfm/database.db', '--SiftMatching.use_gpu', '0', '--SiftMatching.num_threads', '3', '--SiftMatching.guided_matching', '1', '--SiftMatching.max_error', '3', '--SiftMatching.max_num_matches', '16384']' timed out after 899.9999880239993 seconds"
+      }
+    }
+  },
+  "deferred": "Full CUDA environment probe and every Stage B command require separate user approval.",
+  "stage_b_script": "scripts/phase3-split-stage-b.sh",
+  "pre_registered_decision_sha256": "9cc3cd9122fedf562ed133487d6b7c7e1ce9792190e3e95e02889b2995aeb4fe",
+  "grid_sha256": "e3961be968a914c28571cead280c7fa9c814822a12b7c0a6228cc95670c18914",
+  "free_space_gib": {
+    ".": 77.37667465209961,
+    "artifacts": 60.95895004272461
+  },
+  "tests": {
+    "command": "export PYTHONPATH=; export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1; .venv-imagery/bin/python -m pytest tests/sfm/test_seam_check.py tests/sfm/test_tiling.py tests/sfm/test_publish.py tests/imagery/test_dsm_validation.py tests/imagery/test_sources.py tests/imagery/test_acquisitions.py -q",
+    "passed": 64
+  },
+  "stage_b_shell_syntax": "bash -n scripts/phase3-split-stage-b.sh passed",
+  "files_added_or_changed": [
+    "configs/jax068-east-19v.json",
+    "configs/jax068-east-block.json",
+    "configs/jax068-grid.json",
+    "configs/jax068-west-19v.json",
+    "configs/jax068-west-block.json",
+    "configs/phase3-split-decision.json",
+    "configs/releases/jax068-2015-east-19v.json",
+    "configs/releases/jax068-2015-west-19v.json",
+    "configs/train-2015-east-19v-recipe.json",
+    "configs/train-2015-west-19v-recipe.json",
+    "docs/phase3/SPLIT_PREPARATION.md",
+    "pipeline/acquisitions.py",
+    "pipeline/dsm_validation.py",
+    "pipeline/ownership.py",
+    "pipeline/phase2.py",
+    "pipeline/publish.py",
+    "pipeline/seam_check.py",
+    "pipeline/sources.py",
+    "pipeline/tiling.py",
+    "scripts/phase3-split-evidence.py",
+    "scripts/phase3-split-stage-b.sh",
+    "tasks.md",
+    "tests/imagery/test_acquisitions.py",
+    "tests/imagery/test_dsm_validation.py",
+    "tests/imagery/test_sources.py",
+    "tests/sfm/test_seam_check.py",
+    "training/phase3-split-coverage.json",
+    "training/phase3-split-grid.json",
+    "training/phase3-split-preparation.json"
+  ]
+}

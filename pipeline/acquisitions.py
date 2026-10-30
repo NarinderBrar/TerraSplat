@@ -111,7 +111,7 @@ def parse_sidecars(archive):
     return record
 
 
-def inspect_product(product, all_products, cache, block):
+def inspect_product(product, all_products, cache, block, offline=False):
     from rasterio.rpc import RPC
 
     uri = product["uri"].rsplit(".", 1)[0] + ".tar"
@@ -119,6 +119,8 @@ def inspect_product(product, all_products, cache, block):
     if archive.exists():
         data = archive.read_bytes()
     else:
+        if offline:
+            raise ValueError(f"Offline metadata cache miss: {archive}")
         with urllib.request.urlopen(uri, timeout=30) as response:
             data = response.read(MAX_ARCHIVE_BYTES + 1)
         if len(data) > MAX_ARCHIVE_BYTES:
@@ -161,14 +163,14 @@ def inspect_product(product, all_products, cache, block):
     return record
 
 
-def scan(catalogue, cache, block):
+def scan(catalogue, cache, block, offline=False):
     cache = Path(cache)
     cache.mkdir(parents=True, exist_ok=True)
     products = catalogue["objects"]
 
     def inspect(product):
         try:
-            return inspect_product(product, products, cache, block)
+            return inspect_product(product, products, cache, block, offline=offline)
         except (OSError, ValueError, KeyError, tarfile.TarError) as error:
             return {"pan": product, "error": str(error)}
 
@@ -340,6 +342,7 @@ def main():
     scanning.add_argument("catalogue", type=Path)
     scanning.add_argument("--block", type=Path, required=True)
     scanning.add_argument("--cache", type=Path, default=Path(".cache/core3d-metadata"))
+    scanning.add_argument("--offline", action="store_true", help="Require cached metadata; never access the network")
     choosing = commands.add_parser("select")
     choosing.add_argument("scan", type=Path)
     choosing.add_argument("--max-span-days", type=float, default=7)
@@ -354,6 +357,7 @@ def main():
             json.loads(args.catalogue.read_text()),
             args.cache,
             json.loads(args.block.read_text()),
+            offline=args.offline,
         )
     elif args.approved:
         report = select_approved(

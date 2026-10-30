@@ -15,7 +15,7 @@ def file_hash(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def fetch(product, destination, timeout_seconds=300):
+def fetch(product, destination, timeout_seconds=300, offline=False):
     destination = Path(destination)
     path = destination / Path(product["key"]).name
     evidence = path.with_suffix(".json")
@@ -32,6 +32,8 @@ def fetch(product, destination, timeout_seconds=300):
             "path": str(path),
             "reused": True,
         }
+    if offline:
+        raise ValueError(f"Offline source cache miss: {path}")
     if evidence.exists():
         raise ValueError(f"Source evidence exists without its image: {evidence}")
     partial = path.with_suffix(".partial.NTF")
@@ -71,7 +73,7 @@ def fetch(product, destination, timeout_seconds=300):
     return {**record, "path": str(path), "reused": False}
 
 
-def fetch_selection(selection, destination, max_total_bytes=8 * 1024**3):
+def fetch_selection(selection, destination, max_total_bytes=8 * 1024**3, offline=False):
     if selection.get("status") != "candidate":
         raise ValueError("A candidate acquisition selection is required")
     products = []
@@ -101,7 +103,7 @@ def fetch_selection(selection, destination, max_total_bytes=8 * 1024**3):
     if shutil.disk_usage(destination).free < remaining + 5 * 1024**3:
         raise ValueError("Insufficient disk space plus 5 GiB reserve")
     with ThreadPoolExecutor(max_workers=2) as pool:
-        records = list(pool.map(lambda p: fetch(p, destination), products))
+        records = list(pool.map(lambda p: fetch(p, destination, offline=offline), products))
     return {
         "status": "downloaded",
         "products": records,
@@ -118,11 +120,13 @@ def main():
     )
     parser.add_argument("--max-total-gib", type=float, default=8)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--offline", action="store_true", help="Verify existing products only; never download")
     args = parser.parse_args()
     report = fetch_selection(
         json.loads(args.selection.read_text()),
         args.destination,
         max_total_bytes=int(args.max_total_gib * 1024**3),
+        offline=args.offline,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n")

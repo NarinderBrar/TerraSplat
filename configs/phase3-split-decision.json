@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "phase3-split-pre-training",
+  "declared_on": "2026-10-30",
+  "training_executed": false,
+  "baseline": {
+    "source": "training/result-2015-19v.json#/runs/recipe/lidar_check/rendered_depth/registered/all_labelled/mae_m",
+    "registered_all_labelled_mae_m": 1.359,
+    "scope": "Single central block; split blocks contain different surfaces. This is a conservative regression screen, not a paired statistical equivalence test."
+  },
+  "rules": {
+    "block_mae_max_m": 1.659,
+    "seam_mae_max_excess_over_interior_m": 0.5,
+    "height_step_ground_max_abs_m": 0.5,
+    "height_step_all_max_abs_m": 1.0,
+    "ownership_doubled_centres_max": 0,
+    "ownership_gap_width_max_m": 0,
+    "ownership_overlap_width_max_m": 0
+  },
+  "justification": {
+    "block_mae": "1.359 + 0.300 m. Reuse the existing fixed rule's 0.3 m maximum class regression budget (docs/TRAINING_FINDINGS.md), applied here to each block's all-labelled MAE. Existing recipe measurements are 1.359 m (pipeline 19v) and about 1.38 m (authors 17v); these are different datasets, not replicate runs. No same-input run-to-run variance estimate exists; 0.3 m is a policy tolerance, not a confidence interval.",
+    "seam_mae": "Allow at most 0.5 m additive degradation versus that block's >10 m interior. This budget is of the order of the prior 0.50 m gain from 3-view to 5-view (3.32 to 2.82 m) and is below the 1.458 m gain from 5-view basic to 19-view recipe. It must not erase the demonstrated gain. dsmr's finest NCC step is one 0.5 m truth pixel (integer compute_ncc); this is a horizontal sampling scale, not a proof of 0.5 m vertical uncertainty. No replicate seam measurements exist.",
+    "height_step": "Ground: 0.5 m, comparable to the previously measured 0.2-0.6 m vertical placement uncertainty of the original pilot (tasks.md). All pixels: 1.0 m, allowing some building/vegetation composition difference while staying below the 1.359 m baseline shape MAE. Measure raw ellipsoidal DSM strip medians, without independently registering away vertical offsets. Also report lidar's own strip step and registered/residual strip steps for interpretation. Natural terrain or class composition can fail this conservative rule; do not retune thresholds after training.",
+    "ownership": "Exact half-open cells in one shared ENU frame admit neither overlap nor gap. Millimetre tangent-plane mismatch is avoided rather than tolerated. Counts refer to centres, not Gaussian kernel support or opacity overlap. Mixed-LOD visual continuity remains a separate future check."
+  },
+  "measurement": {
+    "grid": "configs/jax068-grid.json",
+    "truth": "artifacts/reference/dfc2019-jax068",
+    "seam_band_m": 10,
+    "height_strips_m": 10,
+    "ownership_count_band_m": 1,
+    "all_labelled": "Finite lidar, CLS != 65 and CLS != 9; same exclusion as dsm_validation.",
+    "height_all": "All finite lidar and predicted pixels, including water and unlabelled pixels; ground uses CLS=2.",
+    "registration": "Each block uses unchanged dsmr horizontal shift plus vertical offset; seam-band and interior MAE use registered DSM. Height continuity uses unregistered ellipsoidal heights.",
+    "empty_samples": "Fail/inconclusive, never zero error. Report counts and completeness for every subset.",
+    "holdout": "May 2 is excluded from SfM, training, pseudo views and every choice. Evaluate only after training; PSNR is descriptive and does not choose thresholds or settings.",
+    "approval": "Stage B GPU training requires separate user approval (~84.2 minutes from 2 x 42.1-minute 19v recipe measurement). No GPU jobs in Stage A."
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "dataset_id": "jax068-2015-east",
+  "dataset_title": "Jacksonville JAX_068 east (2015)",
+  "region": "jacksonville",
+  "release_id": "jax068-2015-east-19v-r1",
+  "title": "JAX_068 east historical 19-view recipe",
+  "description": "Phase 3 east shared-grid 250 m cell. Historical 2014-2015 imagery; May 2 whole-acquisition holdout. Separate ENU placement, shared half-open ownership.",
+  "tiles_dir": "artifacts/tiles/east-2015-19v-recipe-01-r1",
+  "stage1_run_dir": "artifacts/stage1/east-2015-19v-recipe-01",
+  "evidence": [
+    "training/phase3-east-result.json",
+    "artifacts/validation/east-2015-19v-recipe-01-lidar/dsm-validation.json",
+    "artifacts/stage1/east-2015-19v-recipe-01/evaluation/evaluation-report.json",
+    "artifacts/validation/phase3-split-seam-check.json",
+    "configs/phase3-split-decision.json",
+    "configs/jax068-grid.json"
+  ],
+  "capture_dates": {
+    "train": [
+      "2014-10-05T16:01:38.873575Z",
+      "2014-10-05T16:01:49.835975Z",
+      "2014-10-11T15:57:20.047375Z",
+      "2014-10-18T16:07:22.892175Z",
+      "2014-10-30T15:57:32.330775Z",
+      "2014-12-14T16:04:02.890375Z",
+      "2014-12-27T16:11:09.278775Z",
+      "2015-01-21T16:12:53.655775Z",
+      "2015-01-21T16:13:08.106775Z",
+      "2015-01-27T16:08:45.999175Z",
+      "2015-02-15T16:12:08.581175Z",
+      "2015-04-19T16:14:39.732975Z",
+      "2015-04-26T16:24:35.184775Z",
+      "2015-05-01T16:03:57.708375Z",
+      "2015-05-21T16:18:49.488775Z",
+      "2015-06-15T16:12:48.813775Z",
+      "2015-07-05T16:29:54.345175Z",
+      "2015-11-01T16:19:54.224175Z",
+      "2015-12-21T16:11:08.347975Z"
+    ],
+    "holdout": [
+      "2015-05-02T16:19:43.108175Z"
+    ]
+  },
+  "quality_sources": {
+    "registered_lidar_mae_all_m": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/registered_lidar_mae_all_m"
+    },
+    "registered_lidar_mae_ground_m": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/registered_lidar_mae_ground_m"
+    },
+    "registered_lidar_mae_buildings_m": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/registered_lidar_mae_buildings_m"
+    },
+    "registered_lidar_mae_vegetation_m": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/registered_lidar_mae_vegetation_m"
+    },
+    "registered_lidar_rmse_m": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/registered_lidar_rmse_m"
+    },
+    "horizontal_offset_m": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/horizontal_offset_m"
+    },
+    "completeness": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/completeness"
+    },
+    "holdout_psnr_db": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/holdout_psnr_db"
+    },
+    "splats": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/splats"
+    },
+    "tiles": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/tiles"
+    },
+    "glb_bytes": {
+      "file": "training/phase3-east-result.json",
+      "pointer": "/quality/glb_bytes"
+    }
+  },
+  "ground_points": "artifacts/validation/east-2015-19v-recipe-01-depth/depth-points.npz"
+}

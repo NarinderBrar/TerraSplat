@@ -54,3 +54,11 @@ def test_duplicate_products_cannot_be_counted_as_distinct_views(tmp_path):
     }
     with pytest.raises(ValueError, match="duplicate"):
         fetch_selection(selection, tmp_path / "raw")
+
+
+def test_offline_source_cache_miss_never_opens_network(tmp_path, monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail('Offline operation attempted network access')
+    monkeypatch.setattr('urllib.request.urlopen', forbidden)
+    with pytest.raises(ValueError, match='Offline source cache miss'):
+        fetch({'key':'missing.NTF'}, tmp_path, offline=True)

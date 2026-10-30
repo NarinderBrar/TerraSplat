@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "id": "jax068-split",
+  "anchor": {
+    "longitude": -81.66376054127814,
+    "latitude": 30.34881972282938,
+    "ellipsoidal_height_m": 0
+  },
+  "enu_to_ecef": [
+    [
+      0.9894342861531981,
+      -0.07325407891764545,
+      0.1251144808023389,
+      798680.0686670588
+    ],
+    [
+      0.1449820450418308,
+      0.49992464419148114,
+      -0.8538475020432569,
+      -5450615.925429766
+    ],
+    [
+      0.0,
+      0.8629653469589311,
+      0.5052631096251256,
+      3203802.61729543
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "cell_side_m": 250,
+  "cells": {
+    "west": {
+      "east_m": [
+        -250,
+        0
+      ],
+      "north_m": [
+        -125,
+        125
+      ],
+      "block": "configs/jax068-west-block.json",
+      "centre_longitude": -81.66506063308124,
+      "centre_latitude": 30.348819716365696
+    },
+    "east": {
+      "east_m": [
+        0,
+        250
+      ],
+      "north_m": [
+        -125,
+        125
+      ],
+      "block": "configs/jax068-east-block.json",
+      "centre_longitude": -81.66246044947502,
+      "centre_latitude": 30.34881971636569
+    }
+  },
+  "ownership": "Half-open shared ENU cells: west <= east < east_max, south <= north < north_max; boundary east=0 belongs to east. No tolerance expansion."
+}

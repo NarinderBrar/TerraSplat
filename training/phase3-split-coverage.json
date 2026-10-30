@@ -1,0 +1,21 @@
+{
+  "scope": "Pre-training geometric truth coverage; evaluated_pixels below use truth as a synthetic perfect prediction, not trained DSM results. Actual evaluated count/coverage will be recorded by dsm_validation after training.",
+  "blocks": {
+    "west": {
+      "extent_pixels": 127148,
+      "labelled_pixels": 119148,
+      "evaluated_pixels": 119148,
+      "block_area_covered_fraction": 0.508592,
+      "truth_grid_covered_fraction": 0.4850311279296875,
+      "labelled_coverage_fraction": 1.0
+    },
+    "east": {
+      "extent_pixels": 128768,
+      "labelled_pixels": 122773,
+      "evaluated_pixels": 122773,
+      "block_area_covered_fraction": 0.515072,
+      "truth_grid_covered_fraction": 0.4912109375,
+      "labelled_coverage_fraction": 1.0
+    }
+  }
+}

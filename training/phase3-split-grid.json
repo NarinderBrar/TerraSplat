@@ -1,0 +1,71 @@
+{
+  "grid_anchor": {
+    "longitude": -81.66376054127814,
+    "latitude": 30.34881972282938,
+    "ellipsoidal_height_m": 0
+  },
+  "block_centres": {
+    "west": {
+      "east_m": [
+        -250,
+        0
+      ],
+      "north_m": [
+        -125,
+        125
+      ],
+      "block": "configs/jax068-west-block.json",
+      "centre_longitude": -81.66506063308124,
+      "centre_latitude": 30.348819716365696
+    },
+    "east": {
+      "east_m": [
+        0,
+        250
+      ],
+      "north_m": [
+        -125,
+        125
+      ],
+      "block": "configs/jax068-east-block.json",
+      "centre_longitude": -81.66246044947502,
+      "centre_latitude": 30.34881971636569
+    }
+  },
+  "samples": 1001,
+  "boundary_mismatch_at_ellipsoid_m": {
+    "max_3d": 0.0028662331296015345,
+    "max_east": 0.0028662331296014035,
+    "max_north": 1.3351382222026587e-09,
+    "max_up": 1.862645149230957e-09
+  },
+  "decision": "Even millimetre tangent-plane differences violate exact zero gap/double ownership. Tiler and seam checker use half-open shared-grid ownership, with each scene retaining its own ENU anchor. Height-dependent tilt is removed from ownership by transforming full XYZ to the shared frame.",
+  "actual_calibration_anchors": {
+    "west": {
+      "latitude": 30.34881970793088,
+      "longitude": -81.66506065314857,
+      "ellipsoidal_height_m": -70
+    },
+    "east": {
+      "latitude": 30.3488197079293,
+      "longitude": -81.6624604695424,
+      "ellipsoidal_height_m": -70
+    }
+  },
+  "boundary_mismatch_across_height_bracket_m": {
+    "max_3d": 0.014615118109599817,
+    "max_east": 0.014615118108554015,
+    "max_north": 1.761727617122233e-07,
+    "max_up": 1.862645149230957e-09
+  },
+  "height_samples_ellipsoidal_m": [
+    -50,
+    0,
+    300
+  ],
+  "seam_inside_truth": {
+    "samples": 3003,
+    "minimum_distance_to_truth_raster_edge_m": 1.9038638272322714,
+    "all_samples_inside": true
+  }
+}

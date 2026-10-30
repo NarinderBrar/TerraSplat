@@ -185,9 +185,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("manifest", type=Path)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--skip-environment", action="store_true", help="CPU input/placement audit only; defer CUDA environment probe")
     args = parser.parse_args()
     try:
-        report = preflight(args.manifest)
+        report = preflight(args.manifest, check_environment=not args.skip_environment)
     except (OSError, ValueError, KeyError, TypeError) as error:
         parser.exit(2, f"Invalid manifest: {error}\n")
     args.output.parent.mkdir(parents=True, exist_ok=True)

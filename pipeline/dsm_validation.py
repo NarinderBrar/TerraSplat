@@ -133,6 +133,39 @@ def by_class(predicted, truth, classes, extent):
     return result
 
 
+def truth_enu(truth, enu_to_ecef, utm_epsg=32617):
+    """Truth pixel centres in an ENU frame, using their ellipsoidal surface heights."""
+    from pyproj import Transformer
+
+    rows, columns = np.indices(truth['dsm'].shape)
+    east = truth['west'] + (columns.ravel() + 0.5) * truth['resolution']
+    north = truth['north'] - (rows.ravel() + 0.5) * truth['resolution']
+    lon, lat = Transformer.from_crs(utm_epsg, 4326, always_xy=True).transform(east, north)
+    heights = np.nan_to_num(truth['dsm'].ravel(), nan=0)
+    xyz = np.stack(Transformer.from_crs(4979, 4978, always_xy=True).transform(lon, lat, heights), 1)
+    frame = np.asarray(enu_to_ecef)
+    return (xyz - frame[:3, 3]) @ frame[:3, :3]
+
+
+def evaluation_extent(truth, georeference, utm_epsg=32617, grid=None, cell=None):
+    from pipeline.ownership import cell_mask
+
+    frame = grid['enu_to_ecef'] if grid is not None else georeference['enu_to_ecef']
+    points = truth_enu(truth, frame, utm_epsg)
+    rectangle = grid['cells'][cell] if grid is not None else {'east_m': [-125,125], 'north_m': [-125,125]}
+    return cell_mask(points, rectangle).reshape(truth['dsm'].shape)
+
+
+def coverage_stats(predicted, truth, extent, side_m=250):
+    labelled = extent & np.isfinite(truth['dsm']) & (truth['classes'] != 65) & (truth['classes'] != CLASSES['water'])
+    evaluated = labelled & np.isfinite(predicted)
+    return {'extent_pixels': int(extent.sum()), 'labelled_pixels': int(labelled.sum()),
+            'evaluated_pixels': int(evaluated.sum()),
+            'block_area_covered_fraction': float(extent.sum() * truth['resolution']**2 / side_m**2),
+            'truth_grid_covered_fraction': float(extent.mean()),
+            'labelled_coverage_fraction': float(evaluated.sum() / max(int(labelled.sum()), 1))}
+
+
 def write_raster(path, array):
     import rasterio
 
@@ -198,7 +231,8 @@ def preview(path, truth, predicted, registered):
 
 
 def validate(
-    export_dir, truth_dir, output, aoi="JAX_068", utm_epsg=32617, min_opacity=0.5, max_radius_m=3.0, depth_points=None
+    export_dir, truth_dir, output, aoi="JAX_068", utm_epsg=32617, min_opacity=0.5, max_radius_m=3.0, depth_points=None,
+    grid=None, cell=None
 ):
     from pipeline.phase2 import digest
 
@@ -223,7 +257,7 @@ def validate(
         }
     else:
         predicted, source = footprint_dsm(fused, georeference, truth, utm_epsg, min_opacity, max_radius_m)
-    return finish(export_dir, output, manifest, georeference, truth, truth_dir, aoi, utm_epsg, predicted, source)
+    return finish(export_dir, output, manifest, georeference, truth, truth_dir, aoi, utm_epsg, predicted, source, grid, cell)
 
 
 def footprint_dsm(fused, georeference, truth, utm_epsg, min_opacity, max_radius_m):
@@ -251,20 +285,13 @@ def footprint_dsm(fused, georeference, truth, utm_epsg, min_opacity, max_radius_
     }
 
 
-def finish(export_dir, output, manifest, georeference, truth, truth_dir, aoi, utm_epsg, predicted, source):
+def finish(export_dir, output, manifest, georeference, truth, truth_dir, aoi, utm_epsg, predicted, source, grid=None, cell=None):
     from pipeline.phase2 import digest
 
-    half = 125.0
-    block_utm = enu_to_utm(np.array([[-half, -half, 0], [half, half, 0]]), georeference, utm_epsg)
     size, resolution = truth["dsm"].shape[0], truth["resolution"]
-    east = truth["west"] + (np.arange(size) + 0.5) * resolution
-    north = truth["north"] - (np.arange(size) + 0.5) * resolution
-    extent = (
-        (east[None, :] >= block_utm[0, 0])
-        & (east[None, :] <= block_utm[1, 0])
-        & (north[:, None] >= block_utm[0, 1])
-        & (north[:, None] <= block_utm[1, 1])
-    )
+    extent = evaluation_extent(truth, georeference, utm_epsg, grid, cell)
+    if not extent.any():
+        raise ValueError('Block does not overlap the truth grid')
 
     if output.exists():
         raise ValueError("Use a new validation directory; remove the previous one first")
@@ -316,7 +343,7 @@ def finish(export_dir, output, manifest, georeference, truth, truth_dir, aoi, ut
             **source,
             "registration": "Skyfall-GS/Sat-NeRF dsmr: recursive NCC shift, z offset, no z scaling",
             "evaluated_extent": (
-                "250 m block (ENU square) inside the truth grid; CLS 65 (unlabelled) and water "
+                "Intersection of the 250 m ENU ownership cell with the truth grid (partial overlap allowed); CLS 65 (unlabelled) and water "
                 "excluded from all_labelled"
             ),
         },
@@ -330,7 +357,10 @@ def finish(export_dir, output, manifest, georeference, truth, truth_dir, aoi, ut
             "splats_offset_from_lidar_m": offset_from_truth(dx, dy, offset, resolution),
         },
         "registered": by_class(registered, truth["dsm"], classes, extent),
+        "coverage": coverage_stats(registered, truth, extent),
+        "ownership": {'grid': grid, 'cell': cell},
         "outputs": {
+            "raster_sha256": {p.name: digest(p) for p in (truth_path, predicted_path, registered_path)},
             "comparison_png": (
                 "dsm-comparison.png (truth | splat DSM | unregistered error | registered error; error "
                 "scale +/-5 m, red = splats too high)"
@@ -348,8 +378,13 @@ def main():
     parser.add_argument("--output", required=True)
     parser.add_argument("--aoi", default="JAX_068")
     parser.add_argument("--points", help="depth-points.npz from pipeline.render_depth (default: splat footprints)")
+    parser.add_argument('--grid')
+    parser.add_argument('--cell', choices=('west', 'east'))
     args = parser.parse_args()
-    report = validate(args.export, args.truth, args.output, args.aoi, depth_points=args.points)
+    if bool(args.grid) != bool(args.cell):
+        parser.error('--grid and --cell must be provided together')
+    report = validate(args.export, args.truth, args.output, args.aoi, depth_points=args.points,
+                      grid=json.loads(Path(args.grid).read_text()) if args.grid else None, cell=args.cell)
     print(json.dumps({k: report[k] for k in ("unregistered", "registration", "registered")}, indent=2))
 
 

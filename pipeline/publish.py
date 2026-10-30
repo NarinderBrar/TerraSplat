@@ -142,9 +142,10 @@ def footprint(plan):
     transform = np.array(plan['root_transform']).reshape(4, 4, order='F')
     half = plan['crop']['half_extent_m']
     square = [(-half, -half), (half, -half), (half, half), (-half, half), (-half, -half)]
-    ring = [list(ecef_to_geodetic(*(transform @ [e, n, 0, 1])[:3])[:2]) for e, n in square]
+    polygon = plan['crop'].get('polygon_enu_m', [[e,n,0] for e,n in square])
+    ring = [list(ecef_to_geodetic(*(transform @ [*p, 1])[:3])[:2]) for p in polygon]
     heights = [ecef_to_geodetic(*(transform @ [e, n, z, 1])[:3])[2]
-               for e, n in square[:4] for z in plan['crop']['owned_z_range_m']]
+               for e, n, _ in polygon[:4] for z in plan['crop']['owned_z_range_m']]
     # The minimum curvature contribution can occur in the interior at the anchor.
     heights += [ecef_to_geodetic(*(transform @ [0, 0, z, 1])[:3])[2]
                 for z in plan['crop']['owned_z_range_m']]
@@ -161,7 +162,13 @@ def ground_height(points_path, plan, cell_m=1.0, bin_m=0.5, surface_name='render
     """
     enu = np.load(points_path)['enu']
     half = plan['crop']['half_extent_m']
-    enu = enu[(np.abs(enu[:, 0]) <= half) & (np.abs(enu[:, 1]) <= half)]
+    if 'ownership_grid' in plan['crop']:
+        from pipeline.ownership import owned_mask
+        keep = owned_mask(enu, {'enu_to_ecef': np.array(plan['root_transform']).reshape(4,4,order='F')},
+                          plan['crop']['ownership_grid'], plan['crop']['ownership_cell'])
+    else:
+        keep = (np.abs(enu[:, 0]) <= half) & (np.abs(enu[:, 1]) <= half)
+    enu = enu[keep]
     if len(enu) == 0:
         raise ValueError('No ground points inside the owned crop')
     cells = np.floor((enu[:, :2] + half) / cell_m).astype(np.int64)

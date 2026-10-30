@@ -345,7 +345,7 @@ def camera_centres(scene):
     return np.array([np.asarray(f["transform_matrix"], dtype=np.float64)[:3, 3] for f in frames])
 
 
-def plan(export_dir, output, profile):
+def plan(export_dir, output, profile, grid=None, cell=None):
     profile = validate_profile(profile)
     export_dir, output = Path(export_dir).resolve(), Path(output).resolve()
     manifest_path = export_dir / "export-manifest.json"
@@ -370,9 +370,22 @@ def plan(export_dir, output, profile):
 
     half = profile["block_half_extent_m"]
     owned = (np.abs(splats["centres"][:, 0]) <= half) & (np.abs(splats["centres"][:, 1]) <= half)
+    ownership = {}
+    if grid is not None:
+        from pipeline.ownership import owned_mask, cell_corners, partition_check
+        if not partition_check(grid)['passed']:
+            raise ValueError('Ownership grid has a gap or overlap')
+        owned = owned_mask(splats['centres'], georeference, grid, cell)
+        ownership = {'frame': 'half-open cell in the shared grid ENU frame',
+                     'ownership_grid': grid, 'ownership_cell': cell,
+                     'polygon_enu_m': cell_corners(grid, cell, georeference['enu_to_ecef']).tolist()}
     cropped = take(splats, owned)
+    if not owned.any():
+        raise ValueError('No splats inside the owned crop')
     leaf_error = float(manifest["round_trip"]["gsd_m"])
-    root = build_tree(cropped, profile, leaf_error, ((-half, -half), 2 * half))
+    low = np.minimum(cropped['centres'][:, :2].min(0), [-half, -half])
+    high = np.maximum(cropped['centres'][:, :2].max(0), [half, half])
+    root = build_tree(cropped, profile, leaf_error, (low, float((high-low).max())))
     assign_bounds(root, profile["extent_sigma"])
     validate_tree(root, int(owned.sum()), profile["extent_sigma"])
 
@@ -416,6 +429,7 @@ def plan(export_dir, output, profile):
         },
         "crop": {
             "frame": "metric ENU square centred on the anchor",
+            **ownership,
             "half_extent_m": half,
             "input_splats": len(owned),
             "owned_splats": int(owned.sum()),
@@ -444,8 +458,13 @@ def main():
     parser.add_argument("--export", required=True, help="Export directory with export-manifest.json")
     parser.add_argument("--output", required=True)
     parser.add_argument("--profile", default=str(ROOT / "configs/tiles-2015-pilot.json"))
+    parser.add_argument("--grid", help="Shared ENU ownership grid")
+    parser.add_argument("--cell", choices=("west", "east"))
     args = parser.parse_args()
-    result = plan(args.export, args.output, json.loads(Path(args.profile).read_text()))
+    if bool(args.grid) != bool(args.cell):
+        parser.error('--grid and --cell must be provided together')
+    result = plan(args.export, args.output, json.loads(Path(args.profile).read_text()),
+                  json.loads(Path(args.grid).read_text()) if args.grid else None, args.cell)
     print(json.dumps({k: result[k] for k in ("status", "crop", "levels")}, indent=2))
     for tile in result["tiles"]:
         print(tile["id"], tile["splats"], round(tile["geometric_error"], 3))
