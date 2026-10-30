@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "config": "configs/semantics-v2.json",
+  "config_sha256": "92e94f8d48d1685a61722d1838fffdc78730ae4a87cffb89e265032025b73b89",
+  "export_manifest_sha256": "62d6dd166f042f92da84d5bc0d963c2c2f1593ce259e19af38e28c40d17714db",
+  "depth_points_sha256": "867630cbbb8ce26767afb5b108b5ba9be6b9f3220838a44393a0ed27822f9333",
+  "osm_sha256": "d92ca1841d62792336843ed122dd2cfaa1bd304254bc3b082ace52697ada9f76",
+  "calibration": {
+    "1040010007980900": {
+      "archive": ".cache/core3d-metadata/563a3786761f5af51f32c94bb3929f8dec6d59e8ca07405f1c11f4e19d913f77.tar",
+      "sha256": "5d057e0874495e54cac331330f48457bbce96a645102820ead1dff6caf86fd68",
+      "member": "500648062010_01/DVD_VOL_1/500648062010_01/500648062010_01_P001_MUL/15JAN27160845-M1BS-500648062010_01_P001.IMD",
+      "sun_elevation_deg": 36.8,
+      "first_line_time": "2015-01-27T16:08:45.999250Z",
+      "red": {
+        "absCalFactor": 0.0102,
+        "effectiveBandwidth": 0.0585
+      },
+      "nir1": {
+        "absCalFactor": 0.0117971,
+        "effectiveBandwidth": 0.1004
+      }
+    },
+    "104001000C22D200": {
+      "archive": ".cache/core3d-metadata/76471e6fdbf5a49de331f1bd20ebeb6be77f16fb28f6d3b8f8fa1ad5b8e65425.tar",
+      "sha256": "9fbda110771513218ea243140385a1193a76e81f55774c64f7db72a22e872c28",
+      "member": "500648061010_01/DVD_VOL_1/500648061010_01/500648061010_01_P001_MUL/15MAY21161849-M1BS-500648061010_01_P001.IMD",
+      "sun_elevation_deg": 72.4,
+      "first_line_time": "2015-05-21T16:18:49.488850Z",
+      "red": {
+        "absCalFactor": 0.0143856,
+        "effectiveBandwidth": 0.0585
+      },
+      "nir1": {
+        "absCalFactor": 0.0166926,
+        "effectiveBandwidth": 0.1004
+      }
+    },
+    "10400100031BC200": {
+      "archive": ".cache/core3d-metadata/728ed7ee03f5fdfd0b7a5f4973b061a5b766caf81c578bc96a4806afc7dfa8c0.tar",
+      "sha256": "54aeac12ef07b387441142ba5258ba6d7588c240c124d059737aa284e0b599e2",
+      "member": "500648062090_01/DVD_VOL_1/500648062090_01/500648062090_01_P001_MUL/14OCT18160722-M1BS-500648062090_01_P001.IMD",
+      "sun_elevation_deg": 47.2,
+      "first_line_time": "2014-10-18T16:07:22.892250Z",
+      "red": {
+        "absCalFactor": 0.0102,
+        "effectiveBandwidth": 0.0585
+      },
+      "nir1": {
+        "absCalFactor": 0.0117971,
+        "effectiveBandwidth": 0.1004
+      }
+    }
+  },
+  "cells": {
+    "total": 262144,
+    "with_top_surface": 262070,
+    "by_class": {
+      "unknown": 25043,
+      "ground": 45559,
+      "road": 22481,
+      "building": 121272,
+      "vegetation": 30932,
+      "water": 0,
+      "grass": 16857
+    },
+    "building_unmapped": 21660
+  },
+  "splats": {
+    "total": 119232,
+    "inside_grid": 69637,
+    "surface": 46705,
+    "walls": 9305,
+    "occluded_unknown": 13627,
+    "by_class": {
+      "unknown": 67039,
+      "ground": 7228,
+      "road": 3794,
+      "building": 35674,
+      "vegetation": 3519,
+      "water": 0,
+      "grass": 1978
+    }
+  },
+  "evaluation": {
+    "scored_cells": 247977,
+    "unknown_cells": 24393,
+    "overall_accuracy": 0.6829947938720123,
+    "unknown_fraction": 0.09836799380587716,
+    "ground": {
+      "truth_cells": 125144,
+      "predicted_cells": 82876,
+      "iou": 0.48359995150235713,
+      "precision": 0.8181741396785559,
+      "recall": 0.5418318097551621
+    },
+    "vegetation": {
+      "truth_cells": 9944,
+      "predicted_cells": 28089,
+      "iou": 0.29153083401249663,
+      "precision": 0.30563565808679555,
+      "recall": 0.8633346741753821
+    },
+    "building": {
+      "truth_cells": 112889,
+      "predicted_cells": 112619,
+      "iou": 0.7015233941735266,
+      "precision": 0.8255711736030332,
+      "recall": 0.8235966303182772
+    },
+    "water": {
+      "truth_cells": 0,
+      "predicted_cells": 0,
+      "iou": null,
+      "precision": null,
+      "recall": null
+    },
+    "confusion": {
+      "rows_truth_cols_predicted": [
+        2,
+        5,
+        6,
+        9,
+        -1
+      ],
+      "counts": [
+        [
+          67807,
+          17535,
+          19242,
+          0,
+          20560
+        ],
+        [
+          465,
+          8585,
+          402,
+          0,
+          492
+        ],
+        [
+          14604,
+          1969,
+          92975,
+          0,
+          3341
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "targets": {
+    "overall_accuracy_min": 0.8,
+    "building_iou_min": 0.6,
+    "vegetation_iou_min": 0.5
+  },
+  "checks": {
+    "overall_accuracy": false,
+    "building_iou": true,
+    "vegetation_iou": false
+  },
+  "passed": false,
+  "notes": [
+    "OSM is a 2026 snapshot; the imagery is 2014-2015; DFC2019 label date is unpublished.",
+    "No registration shift: labels are evaluated where the model places them (about 1.4 m horizontal offset)."
+  ]
+}
