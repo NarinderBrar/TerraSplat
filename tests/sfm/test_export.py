@@ -149,3 +149,77 @@ def test_verify_run_checks_final_model_and_georeference_hashes(tmp_path):
     georef.write_text("{}")
     with pytest.raises(ValueError, match="georeference changed"):
         verify_run(tmp_path)
+
+
+def test_floater_removal_keeps_boundary_and_vertical_gate():
+    from pipeline.export import floater_removal
+
+    geo = {"model_to_enu": np.eye(4)}
+    data = attributes([[0, 0, 0], [350, 0, 251]])
+    keep, report = floater_removal(data, geo)
+    assert keep.tolist() == [True, True]
+    assert report["removed_count"] == 0
+    assert report["removed_opacity_mass_fraction"] == 0
+    assert report["removed_radius_range_m"] is None
+    assert report["passed"]
+    assert not enu_bbox_splat_centres(data, geo)["plausible"]
+
+
+def test_floater_removal_uses_enu_radius_and_opacity_mass():
+    from pipeline.export import floater_removal
+
+    transform = np.eye(4)
+    transform[0, 3] = 10
+    data = attributes([[0, 0, 0], [341, 0, 0], [0, 351, 0]])
+    data["opacity"] = np.array([0., -8., -9.])
+    keep, report = floater_removal(data, {"model_to_enu": transform})
+    assert keep.tolist() == [True, False, False]
+    mass = 1 / (1 + np.exp(-data["opacity"]))
+    assert report["removed_count"] == 2
+    assert report["removed_opacity_mass_fraction"] == pytest.approx(mass[1:].sum() / mass.sum())
+    assert report["removed_radius_range_m"] == pytest.approx([351, np.hypot(10, 351)])
+    assert report["passed"]
+
+
+def test_export_rejects_more_than_one_percent_removed_mass_before_fusion(tmp_path, monkeypatch):
+    import pipeline.export as exporter
+
+    data = attributes([[0, 0, 0], [351, 0, 0]])
+    training = {"profile": {}, "train_catalog_ids": [], "holdout_catalog_ids": []}
+    monkeypatch.setattr(exporter, "verify_run", lambda run: (
+        tmp_path, training, tmp_path, tmp_path / "raw.ply", {"model_to_enu": np.eye(4)},
+    ))
+    monkeypatch.setattr(exporter, "read_attributes", lambda path: data)
+    with pytest.raises(ValueError, match="opacity-mass fraction exceeds 1%"):
+        exporter.export(tmp_path, gsd=0.3)
+    report = json.loads((tmp_path / "export/export-manifest.json").read_text())
+    assert report["status"] == "failed"
+    assert report["floater_removal"]["removed_opacity_mass_fraction"] == 0.5
+    assert not report["floater_removal"]["passed"]
+    assert not list((tmp_path / "export").glob("*.ply"))
+
+
+def test_floater_removal_allows_exactly_one_percent_mass():
+    from pipeline.export import floater_removal
+
+    data = attributes([[0, 0, 0]] * 99 + [[351, 0, 0]])
+    _, report = floater_removal(data, {"model_to_enu": np.eye(4)})
+    assert report["removed_opacity_mass_fraction"] == 0.01
+    assert report["passed"]
+
+
+def test_mask_gaussians_preserves_order_and_camera_appearance():
+    from types import SimpleNamespace
+    from pipeline.export import mask_gaussians
+
+    torch = pytest.importorskip("torch")
+    per_splat = ("_xyz", "_features_dc", "_features_rest", "_opacity", "_scaling", "_rotation", "_embeddings")
+    model = SimpleNamespace(**{name: torch.nn.Parameter(torch.arange(6.).reshape(3, 2)) for name in per_splat})
+    model.filter_3D = torch.arange(3.).reshape(3, 1)
+    camera_embeddings = torch.arange(8.).reshape(4, 2)
+    model.appearance_embeddings = camera_embeddings
+    mask_gaussians(model, np.array([True, False, True]))
+    for name in per_splat:
+        assert torch.equal(getattr(model, name), torch.tensor([[0., 1.], [4., 5.]]))
+    assert torch.equal(model.filter_3D, torch.tensor([[0.], [2.]]))
+    assert model.appearance_embeddings is camera_embeddings

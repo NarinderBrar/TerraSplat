@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "training_complete_export_blocked",
+  "status": "evaluated_recipe_passes",
   "experiment": "Basic Stage 1 and authors' recipe on all usable 2014-2015 pipeline acquisitions; profiles fixed before evaluation, no holdout or lidar tuning.",
   "assumed_anchor": false,
   "approved_selection": "configs/jax068-pilot-19v.json",
@@ -173,18 +173,26 @@
   },
   "decision": {
     "rule": "The run with lower registered all-labelled MAE wins only with >=0.2 m improvement over the five-view basic baseline and no ground/building/vegetation MAE regression >0.3 m.",
-    "status": "not_evaluable",
+    "status": "passes",
     "viewer_release": "jax068-2015-5v-r2",
-    "passes": false,
-    "reason": "Both exports fail the existing 350 m horizontal radial ENU centre envelope. Rendered-depth and lidar checks were not run, so neither MAE improvement nor class-regression gate can be established. Retain the five-view release; no 19-view tiling, publication or activation.",
-    "registered_mae_improvement_m": null,
-    "class_mae_change_m": null,
-    "viewer_run": "pilot-2015-8w-01"
+    "passes": true,
+    "reason": "Recipe has the lower registered all-labelled MAE (1.358702 m), improves over five-view basic by 1.458298 m (>=0.2 m), and improves every class (no regression >0.3 m). Publish for review without activation.",
+    "registered_mae_improvement_m": 1.4582982934898803,
+    "class_mae_change_m": {
+      "ground": -1.3722816845860113,
+      "building": -1.5676700678841362,
+      "vegetation": -1.2511373957785663
+    },
+    "viewer_run": "pilot-2015-8w-01",
+    "winner": "recipe",
+    "selected_run": "artifacts/stage1/pilot-2015-19v-recipe-01",
+    "selected_release": "jax068-2015-19v-r1",
+    "activated": false
   },
   "runs": {
     "basic": {
       "run": "artifacts/stage1/pilot-2015-19v-01",
-      "status": "export_blocked",
+      "status": "evaluated",
       "training": {
         "profile": "configs/train-2015-pilot-19v.json",
         "profile_sha256": "dabfefb11109789537b642b84aa44cf959c2ba37cb92edda5e731f0d218d6ba9",
@@ -282,6 +290,378 @@
         }
       },
       "export": {
+        "status": "exported",
+        "directory": "artifacts/stage1/pilot-2015-19v-01/export-r3",
+        "manifest_sha256": "e910c95a51b8283ae261c8134667d95d2abd7ed056853bb36d2c31a4b45ead1d",
+        "fused_ply_sha256": "ddbd409d26618ec40d05c02013b6e04745315ec7d03c16cbeae1c95d5bff195d",
+        "splat_count": 114462,
+        "floater_removal": {
+          "envelope_m": 350.0,
+          "input_count": 114500,
+          "removed_count": 38,
+          "retained_count": 114462,
+          "removed_opacity_mass_fraction": 9.93824710669963e-08,
+          "removed_radius_range_m": [
+            350.28331635774816,
+            396.34844557718833
+          ],
+          "max_removed_opacity_mass_fraction": 0.01,
+          "passed": true,
+          "note": "Fixed before inspecting 19-view removal statistics: allow at most 1% of total activated raw opacity mass to be removed, bounding removal to a small share of model opacity. Mass is sum(sigmoid(raw opacity)), not splat count or volume. Remove only ENU horizontal centre radius >350 m before fusion; existing extent, vertical and transform gates remain unchanged."
+        },
+        "round_trip_max_error_m": 1.4357489641873657e-09,
+        "extent": {
+          "frame": "metric ENU at the recorded anchor",
+          "min_m": [
+            -342.2217696083289,
+            -285.0032765593215,
+            -14.230450176599824
+          ],
+          "max_m": [
+            273.65292206683876,
+            339.52839025139093,
+            129.51597115745363
+          ],
+          "span_m": [
+            615.8746916751677,
+            624.5316668107124,
+            143.74642133405345
+          ],
+          "centre_m": [
+            -34.284423770745065,
+            27.262556846034727,
+            57.64276049042691
+          ],
+          "nominal_block_half_extent_m": 145.0,
+          "fraction_within_nominal_half_extent": 0.49131589523160524,
+          "radius_percentiles_m": {
+            "p50": 146.34112508091374,
+            "p95": 252.1215829728573,
+            "p99": 292.10153075927633,
+            "max": 349.5710234192159
+          },
+          "opacity_weighted_radius": {
+            "p50_radius_m": 133.66199067061902,
+            "p90_radius_m": 194.151614007482,
+            "p95_radius_m": 209.4289521245714,
+            "p99_radius_m": 237.96601413108476
+          },
+          "envelope_m": 350.0,
+          "vertical_envelope_m": 250.0,
+          "plausible": true,
+          "note": "Coarse sanity envelope only. Border floaters extend the full bbox beyond the nominal 250 m block plus 20 m halo; this is not an accuracy measurement."
+        },
+        "failures": [],
+        "render_equivalence": {
+          "resolution_factor": 2,
+          "method": "Render the raw final model and the fused PLY with the same Skyfall renderer and cameras, with identical ENU floater subsets (including per-splat appearance embeddings); PSNR is between the two renders over valid mask pixels at the evaluation resolution.",
+          "views": [
+            {
+              "role": "train",
+              "catalog_id": "104001000209A800",
+              "valid_pixels": 321045,
+              "mse": 2.1964437209741806e-12,
+              "mae": 8.054266496269692e-08,
+              "psnr_db": 116.58279920094309
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010002A97700",
+              "valid_pixels": 304582,
+              "mse": 4.718279109476391e-12,
+              "mae": 5.485387922247505e-08,
+              "psnr_db": 113.26216372030304
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010003371100",
+              "valid_pixels": 341142,
+              "mse": 2.7233078708652376e-11,
+              "mae": 1.05497790733057e-07,
+              "psnr_db": 105.64903258748232
+            },
+            {
+              "role": "train",
+              "catalog_id": "10400100031BC200",
+              "valid_pixels": 263766,
+              "mse": 9.563297618863648e-12,
+              "mae": 1.1170410293787447e-07,
+              "psnr_db": 110.19392328358579
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010004550F00",
+              "valid_pixels": 318069,
+              "mse": 3.36341315309084e-11,
+              "mae": 9.484153152939489e-08,
+              "psnr_db": 104.73219781782387
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010005A0D800",
+              "valid_pixels": 323712,
+              "mse": 1.5509042231138105e-12,
+              "mae": 8.475415663874654e-08,
+              "psnr_db": 118.09415021436885
+            },
+            {
+              "role": "train",
+              "catalog_id": "10400100066B8E00",
+              "valid_pixels": 307339,
+              "mse": 9.871735137227674e-12,
+              "mae": 1.017507622414265e-07,
+              "psnr_db": 110.0560650545666
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010007020F00",
+              "valid_pixels": 334506,
+              "mse": 7.99257382039626e-11,
+              "mae": 1.4945460029223356e-07,
+              "psnr_db": 100.97313343840423
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010006764E00",
+              "valid_pixels": 329085,
+              "mse": 5.782233979665403e-12,
+              "mae": 1.5033106463754324e-07,
+              "psnr_db": 112.3790433846585
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010007980900",
+              "valid_pixels": 267786,
+              "mse": 1.0503546741295432e-12,
+              "mae": 5.9171364690595436e-08,
+              "psnr_db": 119.7866402758894
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010008037800",
+              "valid_pixels": 285951,
+              "mse": 1.330479455093362e-11,
+              "mae": 7.319357970143867e-08,
+              "psnr_db": 108.75991827319638
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000AB24A00",
+              "valid_pixels": 295065,
+              "mse": 1.912700296320686e-10,
+              "mae": 7.642603241304937e-07,
+              "psnr_db": 97.1835307485041
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000A1B5F00",
+              "valid_pixels": 306906,
+              "mse": 7.831432916416275e-11,
+              "mae": 2.6718598058425816e-07,
+              "psnr_db": 101.06158767858103
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000AB10600",
+              "valid_pixels": 281707,
+              "mse": 1.4193276211908203e-10,
+              "mae": 3.516976243774981e-07,
+              "psnr_db": 98.47917345449885
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000C22D200",
+              "valid_pixels": 266501,
+              "mse": 5.3615295692773846e-14,
+              "mae": 5.335903126627013e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000C478800",
+              "valid_pixels": 298107,
+              "mse": 8.132808688761465e-12,
+              "mae": 8.081156880169042e-08,
+              "psnr_db": 110.89759443658593
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000E362D00",
+              "valid_pixels": 300834,
+              "mse": 1.7493557658837694e-11,
+              "mae": 9.062809390607363e-08,
+              "psnr_db": 107.57121859218825
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010013D78C00",
+              "valid_pixels": 306567,
+              "mse": 7.595681780631327e-12,
+              "mae": 8.912669499969292e-08,
+              "psnr_db": 111.19433238222904
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010016BADB00",
+              "valid_pixels": 321180,
+              "mse": 5.038085621622258e-11,
+              "mae": 2.0457293726559448e-07,
+              "psnr_db": 102.97734455995885
+            },
+            {
+              "role": "holdout",
+              "catalog_id": "104001000A22A000",
+              "valid_pixels": 339489,
+              "mse": 2.530913541490337e-12,
+              "mae": 1.2034231424128925e-07,
+              "psnr_db": 115.96722690517367
+            }
+          ],
+          "minimum_psnr_db": 97.1835307485041
+        }
+      },
+      "lidar_check": {
+        "status": "measured",
+        "depth_directory": "artifacts/validation/pilot-2015-19v-01-depth-r3",
+        "depth_report_sha256": "82e614bd44c79314d4bcb268dc3b6925bf8d2ab53e438a37aa296b9581ae460b",
+        "validation_report": "artifacts/validation/pilot-2015-19v-01-depth-r3/lidar/dsm-validation.json",
+        "validation_report_sha256": "17d53e8a39ce4058475328b999aa84593bb34a38b0bfb7c1b21b25945619d2b1",
+        "rendered_depth": {
+          "schema_version": 1,
+          "assumed_anchor": false,
+          "status": "measured",
+          "export_manifest_sha256": "e910c95a51b8283ae261c8134667d95d2abd7ed056853bb36d2c31a4b45ead1d",
+          "fused_ply_sha256": "ddbd409d26618ec40d05c02013b6e04745315ec7d03c16cbeae1c95d5bff195d",
+          "reference": {
+            "aoi": "JAX_068",
+            "source": "DFC2019 Track3-Truth (HSIP airborne lidar, ANPS about 0.8 m), via the Sat-NeRF EarthVision2022 dataset.zip",
+            "files_sha256": {
+              "JAX_068_CLS.tif": "e877941431cfa3b0b70fa6f5c7ada257108a3c73b3b0d75cdf83edb890e73e62",
+              "JAX_068_DSM.tif": "ab128081136c07e34ee25df3dff5edf9db845b9cecdef8d991148ea9c0214529",
+              "JAX_068_DSM.txt": "b982868b9c13a776b1cd4c85af01246775808bd064545fde29c00d9f66c8f61b",
+              "readme.txt": "b50af409243c8c875a61196603b9f4e882fdcc7db0786932840658c8eb1cfb01"
+            },
+            "grid": {
+              "utm_epsg": 32617,
+              "west": 436078.995946,
+              "north": 3357751.999923,
+              "resolution_m": 0.5,
+              "size": 512
+            },
+            "heights": "WGS84 ellipsoidal (ground median about -17 m; orthometric would be about +12 m here)",
+            "acquisition_date": "unknown (HSIP U.S. Cities lidar; not stated in the DFC2019/US3D papers)"
+          },
+          "method": {
+            "placement": "fused export placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights",
+            "dsm": "max height per cell of back-projected rendered depth (see depth-report.json)",
+            "depth_points": 1344897,
+            "depth_points_sha256": "6ad2858857431b1766822a946683f337b2f01adb6a29e04e06d420f0258f7b02",
+            "deviation": "Same rendered-depth principle as Skyfall, from one synthetic nadir camera instead of its camera path",
+            "registration": "Skyfall-GS/Sat-NeRF dsmr: recursive NCC shift, z offset, no z scaling",
+            "evaluated_extent": "250 m block (ENU square) inside the truth grid; CLS 65 (unlabelled) and water excluded from all_labelled"
+          },
+          "unregistered": {
+            "all_labelled": {
+              "pixels": 236100,
+              "completeness": 0.9994623815228573,
+              "bias_m": 3.3611397924439723,
+              "median_m": 2.855565761681646,
+              "mae_m": 4.301846009332778,
+              "rmse_m": 6.075548558970916,
+              "nmad_m": 2.453981107196957
+            },
+            "ground": {
+              "pixels": 117700,
+              "completeness": 0.9999065507896459,
+              "bias_m": 3.9743113056123778,
+              "median_m": 3.4036895665340126,
+              "mae_m": 4.747583945665006,
+              "rmse_m": 6.508836375099424,
+              "nmad_m": 2.8997839865114536
+            },
+            "building": {
+              "pixels": 108982,
+              "completeness": 0.998936735778841,
+              "bias_m": 2.659514488689283,
+              "median_m": 2.3305216995067894,
+              "mae_m": 3.836432823206925,
+              "rmse_m": 5.6751312660674,
+              "nmad_m": 1.9032444286711514
+            },
+            "vegetation": {
+              "pixels": 9418,
+              "completeness": 1.0,
+              "bias_m": 3.8171009045561197,
+              "median_m": 3.694157978054136,
+              "mae_m": 4.1169134062391715,
+              "rmse_m": 4.818220528712952,
+              "nmad_m": 2.5477236965976653
+            }
+          },
+          "registration": {
+            "placement_measurement": true,
+            "search_range_per_level_px": 5,
+            "dx_px": -2.0,
+            "dy_px": -4.0,
+            "z_offset_m": -3.3441685357423108,
+            "splats_offset_from_lidar_m": {
+              "east": -1.0,
+              "north": 2.0,
+              "up": 3.3441685357423108,
+              "horizontal": 2.23606797749979
+            }
+          },
+          "registered": {
+            "all_labelled": {
+              "pixels": 236093,
+              "completeness": 0.9994327490083691,
+              "bias_m": -0.07419416362112072,
+              "median_m": -0.4995870590209961,
+              "mae_m": 3.026770878595297,
+              "rmse_m": 4.8477338378962775,
+              "nmad_m": 2.5072900789260864
+            },
+            "ground": {
+              "pixels": 117693,
+              "completeness": 0.9998470831103295,
+              "bias_m": 0.5083169346572234,
+              "median_m": 0.04685783386230469,
+              "mae_m": 3.179011458238169,
+              "rmse_m": 5.048861419100579,
+              "nmad_m": 2.871590175247192
+            },
+            "building": {
+              "pixels": 108982,
+              "completeness": 0.998936735778841,
+              "bias_m": -0.7791644317985809,
+              "median_m": -1.0697054862976074,
+              "mae_m": 2.9108881905046697,
+              "rmse_m": 4.744982707513611,
+              "nmad_m": 1.9667380914688108
+            },
+            "vegetation": {
+              "pixels": 9418,
+              "completeness": 1.0,
+              "bias_m": 0.8040805313080378,
+              "median_m": 0.8594436645507812,
+              "mae_m": 2.4652372805473277,
+              "rmse_m": 3.1673443525126888,
+              "nmad_m": 2.829785582256317
+            }
+          },
+          "outputs": {
+            "comparison_png": "dsm-comparison.png (truth | splat DSM | unregistered error | registered error; error scale +/-5 m, red = splats too high)"
+          }
+        }
+      },
+      "visual_review": {
+        "evaluation": "Full comparison.png reviewed: building and road structure recognizable, cross-date colour mismatch and border smearing.",
+        "artifacts": [
+          "artifacts/stage1/pilot-2015-19v-01/evaluation/comparison.png"
+        ],
+        "dsm": "artifacts/validation/pilot-2015-19v-01-depth-r3/lidar/dsm-comparison.png (generated; no choices based on holdout)"
+      },
+      "previous_export_attempt": {
         "status": "failed",
         "manifest_sha256": "0fec0b9831b913e55a30e6506dc3ecc9a01586f370e9086716345bda2be5807d",
         "fused_ply_sha256": "6d5475273a1b2abf312a3c5bbfdecf33f0ada3c6b75d6591e8a7aa2be9f93425",
@@ -341,21 +721,26 @@
         },
         "render_equivalence_status": "not_reached: extent gate failed"
       },
-      "lidar_check": {
-        "status": "not_run",
-        "reason": "Export fails the existing 350 m horizontal radial ENU centre envelope; depth and lidar stages stopped, no gate relaxation."
+      "registered_mae_m": {
+        "all_labelled": 3.026770878595297,
+        "ground": 3.179011458238169,
+        "building": 2.9108881905046697,
+        "vegetation": 2.4652372805473277
       },
-      "visual_review": {
-        "evaluation": "Full comparison.png reviewed: building and road structure recognizable, cross-date colour mismatch and border smearing.",
-        "artifacts": [
-          "artifacts/stage1/pilot-2015-19v-01/evaluation/comparison.png"
-        ],
-        "dsm": "Not generated: export extent gate failed."
+      "holdout_psnr_db": 16.64337022551261,
+      "decision": {
+        "registered_mae_improvement_m": -0.20977087859529675,
+        "class_mae_change_m": {
+          "ground": 0.4110114582381694,
+          "building": 0.03888819050466985,
+          "vegetation": -0.3117627194526724
+        },
+        "passes": false
       }
     },
     "recipe": {
       "run": "artifacts/stage1/pilot-2015-19v-recipe-01",
-      "status": "export_blocked",
+      "status": "evaluated",
       "training": {
         "profile": "configs/train-2015-pilot-19v-recipe.json",
         "profile_sha256": "a1dcc782906906bf8b4c9313fada508a018c8d1518b6b0ff6c82f87d388984c8",
@@ -453,6 +838,378 @@
         }
       },
       "export": {
+        "status": "exported",
+        "directory": "artifacts/stage1/pilot-2015-19v-recipe-01/export-r2",
+        "manifest_sha256": "62d6dd166f042f92da84d5bc0d963c2c2f1593ce259e19af38e28c40d17714db",
+        "fused_ply_sha256": "c6d406665f5dbf583c487444389d6b24a32a53bbda663737c4c2e9f3d13540de",
+        "splat_count": 119232,
+        "floater_removal": {
+          "envelope_m": 350.0,
+          "input_count": 119248,
+          "removed_count": 16,
+          "retained_count": 119232,
+          "removed_opacity_mass_fraction": 2.5247162967741865e-08,
+          "removed_radius_range_m": [
+            351.81753482245847,
+            375.8782250265891
+          ],
+          "max_removed_opacity_mass_fraction": 0.01,
+          "passed": true,
+          "note": "Fixed before inspecting 19-view removal statistics: allow at most 1% of total activated raw opacity mass to be removed, bounding removal to a small share of model opacity. Mass is sum(sigmoid(raw opacity)), not splat count or volume. Remove only ENU horizontal centre radius >350 m before fusion; existing extent, vertical and transform gates remain unchanged."
+        },
+        "round_trip_max_error_m": 1.439044564245638e-09,
+        "extent": {
+          "frame": "metric ENU at the recorded anchor",
+          "min_m": [
+            -325.4740777826534,
+            -263.85739618056533,
+            -9.26031046814962
+          ],
+          "max_m": [
+            239.0647737224861,
+            298.6407807932244,
+            114.24249345904579
+          ],
+          "span_m": [
+            564.5388515051395,
+            562.4981769737897,
+            123.5028039271954
+          ],
+          "centre_m": [
+            -43.20465203008365,
+            17.39169230632953,
+            52.49109149544809
+          ],
+          "nominal_block_half_extent_m": 145.0,
+          "fraction_within_nominal_half_extent": 0.5932551663982824,
+          "radius_percentiles_m": {
+            "p50": 133.44627075964326,
+            "p95": 221.40467867572667,
+            "p99": 271.0521663575835,
+            "max": 348.5382854420357
+          },
+          "opacity_weighted_radius": {
+            "p50_radius_m": 131.2588123372421,
+            "p90_radius_m": 191.46307059788177,
+            "p95_radius_m": 207.04384074523037,
+            "p99_radius_m": 229.17505202337986
+          },
+          "envelope_m": 350.0,
+          "vertical_envelope_m": 250.0,
+          "plausible": true,
+          "note": "Coarse sanity envelope only. Border floaters extend the full bbox beyond the nominal 250 m block plus 20 m halo; this is not an accuracy measurement."
+        },
+        "failures": [],
+        "render_equivalence": {
+          "resolution_factor": 2,
+          "method": "Render the raw final model and the fused PLY with the same Skyfall renderer and cameras, with identical ENU floater subsets (including per-splat appearance embeddings); PSNR is between the two renders over valid mask pixels at the evaluation resolution.",
+          "views": [
+            {
+              "role": "train",
+              "catalog_id": "104001000209A800",
+              "valid_pixels": 321045,
+              "mse": 4.215581789437566e-15,
+              "mae": 2.0909836740899005e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010002A97700",
+              "valid_pixels": 304582,
+              "mse": 1.6122677190527588e-14,
+              "mae": 1.6068694528852477e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010003371100",
+              "valid_pixels": 341142,
+              "mse": 7.289780387758098e-14,
+              "mae": 2.0729863651344984e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "10400100031BC200",
+              "valid_pixels": 263766,
+              "mse": 1.915573788257748e-14,
+              "mae": 1.3956469902484115e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010004550F00",
+              "valid_pixels": 318069,
+              "mse": 5.1975211067568105e-15,
+              "mae": 2.1962605024118462e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010005A0D800",
+              "valid_pixels": 323712,
+              "mse": 1.8584641612864612e-15,
+              "mae": 1.8533657128962995e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "10400100066B8E00",
+              "valid_pixels": 307339,
+              "mse": 1.3338048160064367e-15,
+              "mae": 1.5301950925850145e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010007020F00",
+              "valid_pixels": 334506,
+              "mse": 1.1974854524160072e-14,
+              "mae": 2.169573037874111e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010006764E00",
+              "valid_pixels": 329085,
+              "mse": 1.0327241237196872e-15,
+              "mae": 1.482948282824164e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010007980900",
+              "valid_pixels": 267786,
+              "mse": 6.914103003256008e-16,
+              "mae": 1.3812099542641933e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010008037800",
+              "valid_pixels": 285951,
+              "mse": 1.3293011737968437e-14,
+              "mae": 1.9159885172819938e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000AB24A00",
+              "valid_pixels": 295065,
+              "mse": 1.2835567788268259e-15,
+              "mae": 1.5902461773353228e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000A1B5F00",
+              "valid_pixels": 306906,
+              "mse": 9.098163827227074e-16,
+              "mae": 1.4192646509208861e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000AB10600",
+              "valid_pixels": 281707,
+              "mse": 1.2783814323756442e-15,
+              "mae": 1.786728138764666e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000C22D200",
+              "valid_pixels": 266501,
+              "mse": 6.928781884367829e-16,
+              "mae": 1.3604302911982133e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000C478800",
+              "valid_pixels": 298107,
+              "mse": 4.268751298847606e-14,
+              "mae": 2.88412756078851e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "104001000E362D00",
+              "valid_pixels": 300834,
+              "mse": 9.743393711466838e-16,
+              "mae": 1.2248070625354837e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010013D78C00",
+              "valid_pixels": 306567,
+              "mse": 1.8416697584271997e-14,
+              "mae": 1.692502426639888e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "train",
+              "catalog_id": "1040010016BADB00",
+              "valid_pixels": 321180,
+              "mse": 3.2249539562865502e-15,
+              "mae": 2.5271337558797472e-08,
+              "psnr_db": 120.0
+            },
+            {
+              "role": "holdout",
+              "catalog_id": "104001000A22A000",
+              "valid_pixels": 339489,
+              "mse": 1.338177541936242e-15,
+              "mae": 1.609905985009145e-08,
+              "psnr_db": 120.0
+            }
+          ],
+          "minimum_psnr_db": 120.0
+        }
+      },
+      "lidar_check": {
+        "status": "measured",
+        "depth_directory": "artifacts/validation/pilot-2015-19v-recipe-01-depth-r2",
+        "depth_report_sha256": "b3fbafff004954834176eea919dede49d61ae2ee43aff66ed0b6f673d4f02377",
+        "validation_report": "artifacts/validation/pilot-2015-19v-recipe-01-depth-r2/lidar/dsm-validation.json",
+        "validation_report_sha256": "32e3bce276ba4935e200b1ea812529787ae4de4963883eecebef76c293e0d69b",
+        "rendered_depth": {
+          "schema_version": 1,
+          "assumed_anchor": false,
+          "status": "measured",
+          "export_manifest_sha256": "62d6dd166f042f92da84d5bc0d963c2c2f1593ce259e19af38e28c40d17714db",
+          "fused_ply_sha256": "c6d406665f5dbf583c487444389d6b24a32a53bbda663737c4c2e9f3d13540de",
+          "reference": {
+            "aoi": "JAX_068",
+            "source": "DFC2019 Track3-Truth (HSIP airborne lidar, ANPS about 0.8 m), via the Sat-NeRF EarthVision2022 dataset.zip",
+            "files_sha256": {
+              "JAX_068_CLS.tif": "e877941431cfa3b0b70fa6f5c7ada257108a3c73b3b0d75cdf83edb890e73e62",
+              "JAX_068_DSM.tif": "ab128081136c07e34ee25df3dff5edf9db845b9cecdef8d991148ea9c0214529",
+              "JAX_068_DSM.txt": "b982868b9c13a776b1cd4c85af01246775808bd064545fde29c00d9f66c8f61b",
+              "readme.txt": "b50af409243c8c875a61196603b9f4e882fdcc7db0786932840658c8eb1cfb01"
+            },
+            "grid": {
+              "utm_epsg": 32617,
+              "west": 436078.995946,
+              "north": 3357751.999923,
+              "resolution_m": 0.5,
+              "size": 512
+            },
+            "heights": "WGS84 ellipsoidal (ground median about -17 m; orthometric would be about +12 m here)",
+            "acquisition_date": "unknown (HSIP U.S. Cities lidar; not stated in the DFC2019/US3D papers)"
+          },
+          "method": {
+            "placement": "fused export placed by model_to_enu then enu_to_ecef, converted to UTM with ellipsoidal heights",
+            "dsm": "max height per cell of back-projected rendered depth (see depth-report.json)",
+            "depth_points": 1344819,
+            "depth_points_sha256": "867630cbbb8ce26767afb5b108b5ba9be6b9f3220838a44393a0ed27822f9333",
+            "deviation": "Same rendered-depth principle as Skyfall, from one synthetic nadir camera instead of its camera path",
+            "registration": "Skyfall-GS/Sat-NeRF dsmr: recursive NCC shift, z offset, no z scaling",
+            "evaluated_extent": "250 m block (ENU square) inside the truth grid; CLS 65 (unlabelled) and water excluded from all_labelled"
+          },
+          "unregistered": {
+            "all_labelled": {
+              "pixels": 236177,
+              "completeness": 0.9997883391822273,
+              "bias_m": 1.7114213420354987,
+              "median_m": 1.3565725795924664,
+              "mae_m": 2.1821748143538673,
+              "rmse_m": 3.432122266971464,
+              "nmad_m": 0.8109342914918437
+            },
+            "ground": {
+              "pixels": 117685,
+              "completeness": 0.9997791200482538,
+              "bias_m": 1.8069889146856295,
+              "median_m": 1.4108457313850522,
+              "mae_m": 2.1859210600854504,
+              "rmse_m": 3.2980184220004576,
+              "nmad_m": 1.0237190572466701
+            },
+            "building": {
+              "pixels": 109074,
+              "completeness": 0.9997800142990706,
+              "bias_m": 1.5970925045722792,
+              "median_m": 1.3034820058383048,
+              "mae_m": 2.1751529494056574,
+              "rmse_m": 3.6247383254759047,
+              "nmad_m": 0.6006196286357939
+            },
+            "vegetation": {
+              "pixels": 9418,
+              "completeness": 1.0,
+              "bias_m": 1.841325125230718,
+              "median_m": 1.7918995674699545,
+              "mae_m": 2.216685959866678,
+              "rmse_m": 2.7046459713109354,
+              "nmad_m": 1.4536994653877802
+            }
+          },
+          "registration": {
+            "placement_measurement": true,
+            "search_range_per_level_px": 5,
+            "dx_px": -2.0,
+            "dy_px": -2.0,
+            "z_offset_m": -1.6849834493883318,
+            "splats_offset_from_lidar_m": {
+              "east": -1.0,
+              "north": 1.0,
+              "up": 1.6849834493883318,
+              "horizontal": 1.4142135623730951
+            }
+          },
+          "registered": {
+            "all_labelled": {
+              "pixels": 236175,
+              "completeness": 0.9997798727495164,
+              "bias_m": -0.004037826472226535,
+              "median_m": -0.3248462677001953,
+              "mae_m": 1.35870170651012,
+              "rmse_m": 2.5919783337005473,
+              "nmad_m": 0.7925283534049987
+            },
+            "ground": {
+              "pixels": 117683,
+              "completeness": 0.9997621292827348,
+              "bias_m": 0.0704127699378897,
+              "median_m": -0.2592792510986328,
+              "mae_m": 1.3957183154139885,
+              "rmse_m": 2.515349468915614,
+              "nmad_m": 0.9962632667541503
+            },
+            "building": {
+              "pixels": 109074,
+              "completeness": 0.9997800142990706,
+              "bias_m": -0.12727446669274445,
+              "median_m": -0.38982367515563965,
+              "mae_m": 1.3043299321158637,
+              "rmse_m": 2.7131668112594163,
+              "nmad_m": 0.5842141146183013
+            },
+            "vegetation": {
+              "pixels": 9418,
+              "completeness": 1.0,
+              "bias_m": 0.4929194636192006,
+              "median_m": 0.33907318115234375,
+              "mae_m": 1.5258626042214338,
+              "rmse_m": 2.0402812790995637,
+              "nmad_m": 1.6889485399246216
+            }
+          },
+          "outputs": {
+            "comparison_png": "dsm-comparison.png (truth | splat DSM | unregistered error | registered error; error scale +/-5 m, red = splats too high)"
+          }
+        }
+      },
+      "visual_review": {
+        "evaluation": "Full comparison.png reviewed: smoother and softer surfaces, warmer winter colours, border smearing remains; holdout appearance differs from reference.",
+        "artifacts": [
+          "artifacts/stage1/pilot-2015-19v-recipe-01/evaluation/comparison.png"
+        ],
+        "dsm": "artifacts/validation/pilot-2015-19v-recipe-01-depth-r2/lidar/dsm-comparison.png (generated; no choices based on holdout)"
+      },
+      "previous_export_attempt": {
         "status": "failed",
         "manifest_sha256": "1894ce13dc6c1587884b9f62eb8d0357272d5b217c79c63ee233e453ae3f6fb9",
         "fused_ply_sha256": "b5de12047184b3e750a13e49dfa0cb416e696e17e1ea39da905957941356be66",
@@ -512,16 +1269,21 @@
         },
         "render_equivalence_status": "not_reached: extent gate failed"
       },
-      "lidar_check": {
-        "status": "not_run",
-        "reason": "Export fails the existing 350 m horizontal radial ENU centre envelope; depth and lidar stages stopped, no gate relaxation."
+      "registered_mae_m": {
+        "all_labelled": 1.35870170651012,
+        "ground": 1.3957183154139885,
+        "building": 1.3043299321158637,
+        "vegetation": 1.5258626042214338
       },
-      "visual_review": {
-        "evaluation": "Full comparison.png reviewed: smoother and softer surfaces, warmer winter colours, border smearing remains; holdout appearance differs from reference.",
-        "artifacts": [
-          "artifacts/stage1/pilot-2015-19v-recipe-01/evaluation/comparison.png"
-        ],
-        "dsm": "Not generated: export extent gate failed."
+      "holdout_psnr_db": 15.490613446153752,
+      "decision": {
+        "registered_mae_improvement_m": 1.4582982934898803,
+        "class_mae_change_m": {
+          "ground": -1.3722816845860113,
+          "building": -1.5676700678841362,
+          "vegetation": -1.2511373957785663
+        },
+        "passes": true
       }
     }
   },
@@ -571,7 +1333,31 @@
       "apps/web/test-results/app.browser.js-offline-glo-30201-ts-and-release-substitution/app-splats-top.png",
       "apps/web/test-results/app.browser.js-offline-glo-30201-ts-and-release-substitution/app-splats-oblique.png",
       "test-results/pilot.browser.js-2015-pilo-29243-rint-and-refine-by-distance/pilot-top.png"
-    ]
+    ],
+    "followup_2026_10_30": {
+      "sfm_python": {
+        "passed": 100,
+        "skipped": 5,
+        "skip_reason": "Four existing dependency/codec skips; new CPU tensor test skips because torch is absent in sfm. Equivalent CPU smoke check passed in stage1."
+      },
+      "imagery": {
+        "passed": 34
+      },
+      "export_and_evaluation_unit": {
+        "passed": 14,
+        "skipped": 1
+      },
+      "cpu_tensor_subset_smoke": "passed with stage1 torch: geometry/filter/per-splat embeddings masked in order; camera embeddings retained",
+      "gpu_jobs_sequential": true,
+      "no_training": true,
+      "existing_gates_and_profiles_unchanged": true,
+      "commands": [
+        "export PYTHONPATH=; PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv-sfm/bin/python -m pytest -q tests/sfm/test_export.py tests/sfm/test_evaluation.py",
+        "export PYTHONPATH=; PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv-sfm/bin/python -m pytest -q tests/sfm tests/python",
+        "export PYTHONPATH=; PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv-imagery/bin/python -m pytest -q tests/imagery"
+      ],
+      "environment_failure": "Sandbox CUDA unavailable on first basic export attempt; partial export-r2 preserved. Successful GPU jobs used authorized access outside sandbox. stage1 has no pytest; torch-dependent masking check run separately on CPU."
+    }
   },
   "commands": [
     ".venv-imagery/bin/python -m pipeline.acquisitions select artifacts/imagery/acquisitions.json --approved configs/jax068-pilot-19v.json --output artifacts/imagery/pilot-19v/selection.json",
@@ -720,18 +1506,48 @@
     "weights_revision": "ad326bfb61facd6c52b5a825bc1e34d7c97d9672"
   },
   "tiling": {
-    "status": "not_selected",
-    "reason": "Both exports fail; fixed lidar decision rule cannot be established.",
+    "status": "tiled",
+    "directory": "artifacts/tiles/pilot-2015-19v-recipe-01-r1",
+    "profile": "configs/tiles-2015-pilot.json",
+    "report": "training/tiles-2015-19v.json",
+    "selected_release": "jax068-2015-19v-r1",
+    "publication": {
+      "status": "published",
+      "make_active": false,
+      "config": "configs/releases/jax068-2015-19v.json"
+    },
     "active_release": "jax068-2015-5v-r2",
     "rollback_release": "jax068-2015-5v-r1"
   },
-  "interpretation": "Both fixed profiles train within the existing splat and memory caps, but out-of-envelope splat centres stop export. Appearance PSNR alone cannot establish a height improvement. Whether pipeline data reaches about 1.4 m registered MAE remains unanswered; no holdout/lidar tuning and no gates relaxed.",
+  "interpretation": "Pipeline 19-view recipe reaches 1.359 m registered MAE with known anchor, improves all classes, and passes the unchanged fixed rule. Basic regresses to 3.027 m. Holdout appearance regresses for both (16.64/15.49 vs 17.73 dB); no holdout-driven choices. Recipe published inactive; five-view baseline remains active.",
   "next": "Phase 3: two neighbouring blocks (shared ownership grid)",
-  "commands_not_executed": [
-    ".venv-stage1/bin/python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-19v-01 --output artifacts/validation/pilot-2015-19v-01-depth",
-    ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-19v-01/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-19v-01-depth/lidar --points artifacts/validation/pilot-2015-19v-01-depth/depth-points.npz",
-    ".venv-stage1/bin/python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-19v-recipe-01 --output artifacts/validation/pilot-2015-19v-recipe-01-depth",
-    ".venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-19v-recipe-01/export --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-19v-recipe-01-depth/lidar --points artifacts/validation/pilot-2015-19v-recipe-01-depth/depth-points.npz"
+  "commands_not_executed": [],
+  "completed": "2026-10-30",
+  "followup_date": "2026-10-30",
+  "floater_policy": {
+    "max_removed_opacity_mass_fraction": 0.01,
+    "chosen_before_inspecting_removal_statistics": true,
+    "mass_definition": "sum(sigmoid(raw opacity)) removed / sum(sigmoid(raw opacity)) before fusion",
+    "reason": "Bound removal to a small share (1%) of total activated opacity; geometric and transform gates remain unchanged.",
+    "selection": "ENU horizontal centre radius strictly greater than existing FLOATER_ENVELOPE_M (350 m)",
+    "holdout_used_for_choices": false
+  },
+  "followup_commands": [
+    "source scripts/stage1-env.sh && export PYTHONPATH= && python -m pipeline.export --run artifacts/stage1/pilot-2015-19v-01 --selection artifacts/imagery/pilot-19v/selection.json --output artifacts/stage1/pilot-2015-19v-01/export-r3",
+    "source scripts/stage1-env.sh && export PYTHONPATH= && python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-19v-01 --export artifacts/stage1/pilot-2015-19v-01/export-r3 --output artifacts/validation/pilot-2015-19v-01-depth-r3",
+    "export PYTHONPATH=; .venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-19v-01/export-r3 --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-19v-01-depth-r3/lidar --points artifacts/validation/pilot-2015-19v-01-depth-r3/depth-points.npz",
+    "source scripts/stage1-env.sh && export PYTHONPATH= && python -m pipeline.export --run artifacts/stage1/pilot-2015-19v-recipe-01 --selection artifacts/imagery/pilot-19v/selection.json --output artifacts/stage1/pilot-2015-19v-recipe-01/export-r2",
+    "source scripts/stage1-env.sh && export PYTHONPATH= && python -m pipeline.render_depth --run artifacts/stage1/pilot-2015-19v-recipe-01 --export artifacts/stage1/pilot-2015-19v-recipe-01/export-r2 --output artifacts/validation/pilot-2015-19v-recipe-01-depth-r2",
+    "export PYTHONPATH=; .venv-imagery/bin/python -m pipeline.dsm_validation --export artifacts/stage1/pilot-2015-19v-recipe-01/export-r2 --truth artifacts/reference/dfc2019-jax068 --output artifacts/validation/pilot-2015-19v-recipe-01-depth-r2/lidar --points artifacts/validation/pilot-2015-19v-recipe-01-depth-r2/depth-points.npz"
   ],
-  "completed": "2026-10-29"
+  "baseline_reproducibility": {
+    "new_export": "artifacts/stage1/pilot-2015-8w-01/export-r3",
+    "removed_count": 0,
+    "removed_opacity_mass_fraction": 0,
+    "fused_ply_sha256": "037f4f5da900b5ff865f1b13a22a216835ad8cbf6fe70084bba749d673082a4e",
+    "ply_byte_identical": true,
+    "render_equivalence_identical": true,
+    "round_trip_identical": true,
+    "remaining_metadata_differences": "New zero-removal record, output paths and resolved artifacts symlink; assumed_anchor/extent metadata was added by earlier code revisions, not this change."
+  }
 }

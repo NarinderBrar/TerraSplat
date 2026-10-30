@@ -20,6 +20,54 @@ HALO_M = 20.0
 BLOCK_HALF_EXTENT_M = BLOCK_SIDE_M / 2 + HALO_M
 FLOATER_ENVELOPE_M = 350.0
 VERTICAL_ENVELOPE_M = 250.0
+MAX_REMOVED_OPACITY_MASS_FRACTION = 0.01
+FLOATER_POLICY_NOTE = (
+    "Fixed before inspecting 19-view removal statistics: allow at most 1% of total "
+    "activated raw opacity mass to be removed, bounding removal to a small share "
+    "of model opacity. Mass is sum(sigmoid(raw opacity)), not splat count or volume. "
+    "Remove only ENU horizontal centre radius >350 m before fusion; existing "
+    "extent, vertical and transform gates remain unchanged."
+)
+
+
+def floater_removal(attributes, georeference):
+    centres = np.stack([attributes[k] for k in ("x", "y", "z")], axis=1)
+    enu = apply_transform(georeference["model_to_enu"], centres)
+    logits = attributes["opacity"]
+    if not np.isfinite(logits).all():
+        raise ValueError("Nonfinite opacity before floater removal")
+    opacity = np.exp(-np.logaddexp(0, -logits))
+    radius = np.hypot(enu[:, 0], enu[:, 1])
+    keep = radius <= FLOATER_ENVELOPE_M
+    removed = radius[~keep]
+    total = float(opacity.sum())
+    if total <= 0:
+        raise ValueError("No activated opacity mass")
+    fraction = float(opacity[~keep].sum() / total)
+    return keep, {
+        "envelope_m": FLOATER_ENVELOPE_M,
+        "input_count": len(radius),
+        "removed_count": int((~keep).sum()),
+        "retained_count": int(keep.sum()),
+        "removed_opacity_mass_fraction": fraction,
+        "removed_radius_range_m": [float(removed.min()), float(removed.max())] if len(removed) else None,
+        "max_removed_opacity_mass_fraction": MAX_REMOVED_OPACITY_MASS_FRACTION,
+        "passed": fraction <= MAX_REMOVED_OPACITY_MASS_FRACTION and bool(keep.any()),
+        "note": FLOATER_POLICY_NOTE,
+    }
+
+
+def mask_gaussians(gaussians, keep):
+    """Apply the same ordered subset to geometry, filter and learned per-splat embeddings."""
+    import torch
+
+    mask = torch.as_tensor(keep, dtype=torch.bool, device=gaussians._xyz.device)
+    for name in ("_xyz", "_features_dc", "_features_rest", "_opacity", "_scaling", "_rotation", "_embeddings"):
+        value = getattr(gaussians, name, None)
+        if value is not None:
+            setattr(gaussians, name, torch.nn.Parameter(value[mask]))
+    gaussians.filter_3D = gaussians.filter_3D[mask]
+
 
 TILER_RULES = [
     "REPLACE refinement only; add no other refinement mode.",
@@ -89,7 +137,7 @@ def verify_run(run):
     return run, training, model, final_ply, georeference
 
 
-def create_fused_ply(model, output, iteration, skyfall=SKYFALL):
+def create_fused_ply(model, output, iteration, skyfall=SKYFALL, keep_mask=None):
     script = Path(skyfall) / "create_fused_ply.py"
     if not script.is_file():
         raise ValueError("Skyfall create_fused_ply.py is unavailable")
@@ -101,6 +149,17 @@ def create_fused_ply(model, output, iteration, skyfall=SKYFALL):
             "    kwargs.setdefault('weights_only', False)",
             "    return _load(*args, **kwargs)",
             "torch.load = load",
+            *([
+                f"sys.path.insert(0, {str(ROOT)!r})",
+                "import numpy as np",
+                "from pipeline.export import mask_gaussians",
+                "from scene.gaussian_model import GaussianModel",
+                "_save = GaussianModel.save_fused_ply",
+                "def save(self, *args, **kwargs):",
+                f"    mask_gaussians(self, np.load({str(keep_mask)!r}))",
+                "    return _save(self, *args, **kwargs)",
+                "GaussianModel.save_fused_ply = save",
+            ] if keep_mask is not None else []),
             "sys.argv = sys.argv[1:]",
             "runpy.run_path(sys.argv[0], run_name='__main__')",
         ]
@@ -290,11 +349,11 @@ def load_gsd(path, catalog_ids):
     return {**gsd_from_selection(json.loads(path.read_text()), catalog_ids), "source": str(path)}
 
 
-def render_equivalence(training, model, fused_ply, final_ply):
+def render_equivalence(training, model, fused_ply, final_ply, keep_mask=None):
     from pipeline.evaluation import image_metrics, render_context, render_ply
 
     gaussians, views, pipeline = render_context(training, model)
-    raw = render_ply(gaussians, views, pipeline, final_ply, fixed_appearance=True)
+    raw = render_ply(gaussians, views, pipeline, final_ply, fixed_appearance=True, keep_mask=keep_mask)
     fused = render_ply(gaussians, views, pipeline, fused_ply)
     records = []
     for key, item in raw.items():
@@ -312,13 +371,15 @@ def render_equivalence(training, model, fused_ply, final_ply):
             "Render the raw final model and the fused PLY with the same Skyfall "
             "renderer and cameras; PSNR is between the two renders over valid "
             "mask pixels at the evaluation resolution."
+            + (" Both renders use the identical ENU floater subset, including "
+               "per-splat appearance embeddings." if keep_mask is not None else "")
         ),
         "views": records,
         "minimum_psnr_db": min(record["psnr_db"] for record in records),
     }
 
 
-def export(run, selection=None, gsd=None):
+def export(run, selection=None, gsd=None, output=None):
     run, training, model, final_ply, georeference = verify_run(run)
     profile = training["profile"]
     catalog_ids = training["train_catalog_ids"] + training["holdout_catalog_ids"]
@@ -326,14 +387,25 @@ def export(run, selection=None, gsd=None):
         gsd_record = load_gsd(selection or DEFAULT_SELECTION, catalog_ids)
     else:
         gsd_record = {"gsd_m": float(gsd), "source": "command line"}
-    output = run / "export"
+    output = Path(output).resolve() if output is not None else run / "export"
     fused = output / f"{run.name}-fused.ply"
     if output.exists():
-        raise ValueError("Use a new export directory; remove the previous one first")
+        raise ValueError("Use a new export directory; existing exports are immutable")
     output.mkdir(parents=True)
-    create_fused_ply(model, fused, profile["iterations"], training.get("skyfall", SKYFALL))
+    keep, removal = floater_removal(read_attributes(final_ply), georeference)
+    if not removal["passed"]:
+        (output / "export-manifest.json").write_text(json.dumps({
+            "status": "failed", "floater_removal": removal,
+            "validation": {"failures": ["Removed opacity-mass fraction exceeds 1% or no splats remain"]},
+        }, indent=2) + "\n")
+        raise ValueError("Removed opacity-mass fraction exceeds 1% or no splats remain")
+    mask_path = None
+    if removal["removed_count"]:
+        mask_path = output / "retained-splats.npy"
+        np.save(mask_path, keep)
+    create_fused_ply(model, fused, profile["iterations"], training.get("skyfall", SKYFALL), mask_path)
     attributes = read_attributes(fused)
-    validation = validate_attributes(attributes, training["final_splats"])
+    validation = validate_attributes(attributes, training["final_splats"] - removal["removed_count"])
     bbox = enu_bbox_splat_centres(attributes, georeference)
     trip = round_trip(attributes, georeference, gsd_record["gsd_m"])
     failures = []
@@ -369,6 +441,7 @@ def export(run, selection=None, gsd=None):
             "bytes": fused.stat().st_size,
         },
         "splat_count": validation["splat_count"],
+        "floater_removal": removal,
         "sh_degree": profile["sh_degree"],
         "fusion": {
             "source": "Skyfall create_fused_ply.py with --load_from_checkpoints",
@@ -433,7 +506,7 @@ def export(run, selection=None, gsd=None):
         )
         raise ValueError("; ".join(failures))
     manifest["render_equivalence"] = render_equivalence(
-        training, model, fused, final_ply
+        training, model, fused, final_ply, keep if removal["removed_count"] else None
     )
     manifest["status"] = "exported"
     (output / "export-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
@@ -479,8 +552,9 @@ def main():
     parser.add_argument("--run", required=True)
     parser.add_argument("--selection", default=str(DEFAULT_SELECTION))
     parser.add_argument("--gsd", type=float)
+    parser.add_argument("--output")
     args = parser.parse_args()
-    print(json.dumps(export(args.run, args.selection, args.gsd), indent=2))
+    print(json.dumps(export(args.run, args.selection, args.gsd, args.output), indent=2))
 
 
 if __name__ == "__main__":

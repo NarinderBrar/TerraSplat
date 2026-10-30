@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "tiled",
+  "directory": "artifacts/tiles/pilot-2015-19v-recipe-01-r1",
+  "profile": {
+    "version": 1,
+    "id": "jax068-2015-tiles-baseline",
+    "block_half_extent_m": 125,
+    "leaf_max_splats": 8192,
+    "extent_sigma": 3,
+    "max_opacity": 0.99,
+    "note": "Crop to the 250 m core block (the 20 m halo is training context only). Leaves hold full-resolution splats; parents hold moment-matched voxel merges capped at leaf_max_splats."
+  },
+  "crop": {
+    "frame": "metric ENU square centred on the anchor",
+    "half_extent_m": 125,
+    "input_splats": 119232,
+    "owned_splats": 66606,
+    "removed_splats": 52626,
+    "owned_z_range_m": [
+      23.26711894705005,
+      103.05048263256043
+    ],
+    "max_extent_m": 76.28561710359571,
+    "p99_extent_m": 15.1620572267412
+  },
+  "levels": 3,
+  "tile_count": 21,
+  "encoding_totals": {
+    "splats": 91193,
+    "glbBytes": 1586904
+  },
+  "plan_sha256": "981324c5fdbe3512ca95948eb170c0f98add4e88b1b28878551b1ef819998dbd",
+  "tiles_report_sha256": "fa9ba4385f548c76b0456333c7a047f1c7285b2999bacde7650ffb8f375be5b6",
+  "export_manifest_sha256": "62d6dd166f042f92da84d5bc0d963c2c2f1593ce259e19af38e28c40d17714db",
+  "fused_ply_sha256": "c6d406665f5dbf583c487444389d6b24a32a53bbda663737c4c2e9f3d13540de",
+  "commands": [
+    "export PYTHONPATH=; .venv-imagery/bin/python -m pipeline.tiling --export artifacts/stage1/pilot-2015-19v-recipe-01/export-r2 --output artifacts/tiles/pilot-2015-19v-recipe-01-r1 --profile configs/tiles-2015-pilot.json",
+    "node scripts/encode-tiles.mjs artifacts/tiles/pilot-2015-19v-recipe-01-r1"
+  ]
+}

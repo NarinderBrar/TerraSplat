@@ -463,8 +463,50 @@ are unchanged; conditional recipe tiling/browser checks were not needed.
 
 ## Nineteen training views
 
-The 19-view export issue is parked and remains open in `tasks.md`; the active
-pipeline release is `jax068-2015-5v-r2`.
+### 2026-10-30: export unblocked, recipe passes
+
+The removal policy was fixed before inspecting removal statistics: remove ENU
+centres beyond the existing 350 m horizontal envelope before fusion, with a
+hard failure above **1% of total activated raw opacity mass**. This limits the
+removal to a small opacity share; every existing geometry/transform gate stays
+unchanged. Basic removes 38 splats (mass fraction 9.9382471e-8, radius
+350.283–396.348 m); recipe removes 16 (2.5247163e-8, 351.818–375.878 m).
+Fused-versus-raw-subset render equivalence uses the same geometry, 3D filter and
+learned per-splat appearance embeddings: minimum 97.18/120 dB. The five-view
+re-export removes zero; PLY bytes, render-equivalence record and round trip
+match the original exactly. Existing run/export files were preserved.
+
+| Run | MAE all | Ground | Building | Vegetation | Holdout PSNR |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Five-view baseline | 2.817 m | 2.768 | 2.872 | 2.777 | 17.73 dB |
+| 19-view basic | 3.027 m | 3.179 | 2.911 | 2.465 | 16.64 dB |
+| 19-view recipe | 1.359 m | 1.396 | 1.304 | 1.526 | 15.49 dB |
+
+The recipe has the lower registered all-labelled MAE and passes the unchanged
+rule: 1.458 m improvement (required >=0.2 m), with ground/building/vegetation
+changes of -1.372/-1.568/-1.251 m (no regression >0.3 m). Basic fails.
+Holdout PSNR is the existing trained-model evaluation; no holdout-based choices
+or training runs were made. Lidar flight date remains unknown.
+
+New exports: basic `export-r3`, recipe `export-r2`; depth/lidar evidence is in
+`artifacts/validation/pilot-2015-19v-01-depth-r3` and
+`artifacts/validation/pilot-2015-19v-recipe-01-depth-r2`. The first sandbox GPU
+attempt left a partial basic `export-r2`, preserved without modification.
+The winning recipe was tiled with the unchanged five-view
+`configs/tiles-2015-pilot.json` profile: 66,606 owned splats, 21 tiles,
+1,586,904 GLB bytes. Published `jax068-2015-19v-r1` with `make_active=False`;
+all active pointers remain unchanged, including `jax068-2015-5v-r2`.
+
+Validation: export/evaluation units 14 passed, 1 skipped (torch absent in SfM);
+SfM/Python 100 passed, 5 skipped; imagery 34 passed. The tensor-subset invariants
+also pass a separate CPU check using stage1 torch. Both GPU exports and depth
+renders passed sequentially. Commands, hashes and full registered metrics:
+[result-2015-19v.json](result-2015-19v.json). Tile evidence:
+[tiles-2015-19v.json](tiles-2015-19v.json).
+
+### 2026-10-29: original training and blocked-export record
+
+The following records the original attempt before the follow-up above.
 
 The approved [selection](../configs/jax068-pilot-19v.json) uses all 19 usable
 training acquisitions from October 5, 2014 to December 21, 2015 (442.007 days),

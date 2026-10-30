@@ -1,6 +1,6 @@
 # Stage 1 training findings
 
-Updated 2026-10-29. This page condenses the height experiments on the Jacksonville
+Updated 2026-10-30. This page condenses the height experiments on the Jacksonville
 JAX_068 block into guidance for later product training runs. The measured
 details, hashes and commands are in [the Stage 1 result](../training/RESULT_2015.md).
 
@@ -17,16 +17,25 @@ one 250 m block. Treat these as directions, not guarantees.
 | Pipeline `pilot-2015-8w-01` | 5 | Basic Stage 1 | 17.73 dB | 2.82 m | 2.77 | 2.87 | 2.78 | 4.17 |
 | Pipeline `pilot-2015-8w-depth-01` | 5 | Static MoGe priors on satellite images | 15.18 dB | 7.83 m | 7.48 | 8.51 | 3.94 | 10.66 |
 | Pipeline `pilot-2015-8w-recipe-01` | 5 | Authors' Stage 1 recipe | 17.21 dB | 2.78 m | 2.30 | 3.36 | 2.19 | 5.09 |
-| Pipeline `pilot-2015-19v-01` | 19 | Basic Stage 1 | 16.64 dB | — | — | — | — | — |
-| Pipeline `pilot-2015-19v-recipe-01` | 19 | Authors' Stage 1 recipe | 15.49 dB | — | — | — | — | — |
+| Pipeline `pilot-2015-19v-01` | 19 | Basic Stage 1 | 16.64 dB | 3.03 m | 3.18 | 2.91 | 2.47 | 4.85 |
+| Pipeline `pilot-2015-19v-recipe-01` | 19 | Authors' Stage 1 recipe | 15.49 dB | **1.36 m** | 1.40 | 1.30 | 1.53 | 2.59 |
 | Authors' data `ref-jax068-01` | 17 | Basic Stage 1 | 21.35 dB | 2.36 m | 2.67 | 2.06 | 1.93 | 4.03 |
 | Authors' data `ref-jax068-recipe-01` | 17 | Authors' Stage 1 recipe | 18.90 dB | **1.38 m** | 1.24 | 1.52 | 1.62 | 2.43 |
 
-The 19-view runs trained successfully but failed the existing 350 m radial
-ENU export envelope (maximum centre radius 396.35 m basic, 375.88 m recipe).
-Depth/lidar validation stopped; dashes mean unmeasured, not a regression score.
-The five-view release stays active because neither run establishes the fixed
-lidar decision rule. [Details](../training/RESULT_2015.md#nineteen-training-views).
+**2026-10-30 — 19-view export and lidar follow-up.** Declared a 1% maximum
+removed activated-opacity mass before inspecting removal statistics. Removed
+only centres beyond the unchanged 350 m ENU horizontal envelope before fusion:
+38 basic / 16 recipe splats, respectively 0.00000994% / 0.00000252% of mass.
+All existing gates pass on the retained splats; raw-subset versus fused render
+equivalence is 97.18 / 120 dB minimum. The five-view PLY is byte-identical,
+with identical render-equivalence and transform round-trip results.
+
+Recipe wins the fixed rule: registered all-labelled MAE improves by 1.458 m
+over five-view basic and every class improves. Basic regresses to 3.027 m.
+Recipe is published as `jax068-2015-19v-r1` **without activation**;
+`jax068-2015-5v-r2` stays active for review. Holdout appearance is worse
+(15.49 versus 17.73 dB); it was not used to choose settings.
+[Measurements and commands](../training/result-2015-19v.json).
 
 - **Basic Stage 1** uses the pilot settings: resolution 2, SH 2, no appearance
   model, no depth losses.
@@ -54,9 +63,9 @@ lidar decision rule. [Details](../training/RESULT_2015.md#nineteen-training-view
      viewpoints and asks MoGe for depth. With few views, the buildings are
      still smeared needle-like splats, so those renders and MoGe's depth are
      poor.
-   - The pipeline's own 19-view height comparison remains blocked at export;
-     it does not yet verify that recipe gain. Holdout PSNR fell to 16.64 dB
-     basic and 15.49 dB recipe across the 442-day acquisition span.
+   - On the pipeline's 19 views, recipe cuts MAE from 3.03 to 1.36 m and
+     improves every class over the five-view baseline. Holdout PSNR falls to
+     16.64 dB basic and 15.49 dB recipe across the 442-day acquisition span.
 3. **Do not use static MoGe priors on the satellite images**
    (`--lambda_depth`). The authors leave this off.
    - MoGe values were about 1,900–7,800 units with only about 0.2 units of
@@ -70,8 +79,8 @@ lidar decision rule. [Details](../training/RESULT_2015.md#nineteen-training-view
    PSNR fell 21.35 → 18.90 dB while MAE improved. Renders are smoother and
    shift colour slightly. Choose by product goal, and record both.
 5. **Placement is independent of the recipe.** On the pipeline data, the
-   horizontal offset from the lidar stayed 1.6–1.8 m (no ground control) and
-   vertical within about 1 m. More views and better recipes improve shape,
+   horizontal offset from the lidar is 1.4–2.2 m (no ground control); the
+   19-view basic/recipe vertical offsets are +3.34/+1.68 m. More views and better recipes improve shape,
    not absolute placement.
 6. **The laptop GPU is enough for a block.**
 
@@ -112,10 +121,9 @@ lidar decision rule. [Details](../training/RESULT_2015.md#nineteen-training-view
 
 ## Open questions
 
-- Whether pipeline data reaches about 1.4 m MAE with its own cameras and a
-  known anchor remains unanswered: both 19-view exports fail the existing
-  extent gate before rendered-depth lidar validation. Any future treatment of
-  low-opacity outliers needs a declared policy before another evaluation.
+- The 19-view recipe reaches 1.36 m MAE with pipeline cameras and a known
+  anchor on this block. Whether that generalizes beyond this block and
+  acquisition span remains unanswered.
 - Where the recipe starts to help: somewhere between 5 and 17 views.
 - How much seasonal and building change a wider date window adds.
 - Whether full resolution (resolution 1) or Stage 2 refinement on a larger

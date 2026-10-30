@@ -110,7 +110,7 @@ def render_context(training, model):
     return gaussians, views, pipeline
 
 
-def render_ply(gaussians, views, pipeline, ply, fixed_appearance=False):
+def render_ply(gaussians, views, pipeline, ply, fixed_appearance=False, keep_mask=None):
     import torch
     from gaussian_renderer import render
 
@@ -119,6 +119,10 @@ def render_ply(gaussians, views, pipeline, ply, fixed_appearance=False):
     if "fused" in Path(ply).name or "iteration_0" in str(ply):
         gaussians.appearance_enabled = False
     load_ply_model(gaussians, ply)
+    if keep_mask is not None:
+        from pipeline.export import mask_gaussians
+
+        mask_gaussians(gaussians, keep_mask)
     renders = {}
     with torch.no_grad():
         for role, camera in views:
