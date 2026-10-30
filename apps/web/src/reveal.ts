@@ -59,21 +59,33 @@ const COVARIANCE = /* glsl */ `
     // FULL: points appear behind the sweep (0..0.45), then grow into splats (0.45..1). GROW: points grow (0..1).
     float revealPoints = growOnly ? 1.0 : smoothstep(0.0, 0.45, reveal);
     float revealGrow = min(growOnly ? smoothstep(0.0, 1.0, reveal) : smoothstep(0.45, 1.0, reveal), 1.0 - revealData.y);
+    // Loading pulse for placeholder points: a ripple travelling out from the block centre about once a second,
+    // offset per point so the cloud shimmers rather than flashing in unison.
+    float revealJitter = fract(sin(dot(splatPosition.xyz, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
+    float revealPulse = revealData.y * (0.5 + 0.5 * sin(6.2831853 * (u_revealNow - length(splatPosition.xy) / 120.0
+        + 0.35 * revealJitter)));
     if (revealing) {
         if (revealPoints <= 0.0) {
             gl_Position = discardVec;
             return;
         }
-        float pointPx = u_revealPointPx * revealPoints;
-        covVectors = mix(vec4(pointPx, 0.0, 0.0, pointPx), covVectors, revealGrow);
+        float pointPx = u_revealPointPx * revealPoints * (1.0 + 0.6 * revealPulse);
+        vec4 revealAxes = vec4(pointPx, 0.0, 0.0, pointPx);
+        if (revealData.y > 0.0) {
+            // Placeholders are sparse coarse tiles: draw each splat as a shrunken copy of itself (25-45%, breathing
+            // with the pulse) so the cloud stays visible, but never smaller than a point.
+            vec4 shrunk = covVectors * (0.25 + 0.2 * revealPulse / revealData.y);
+            if (dot(shrunk.xy, shrunk.xy) > pointPx * pointPx) revealAxes = mix(revealAxes, shrunk, revealData.y);
+        }
+        covVectors = mix(revealAxes, covVectors, revealGrow);
     }
 `;
 
 const COLOUR = /* glsl */ `
     if (revealing) {
         // Points stay visible regardless of splat opacity; a glow marks the sweep front and fades as splats grow.
-        float glow = reveal < 1.0 ? (growOnly ? 0.3 : 0.6) * exp(-10.0 * reveal) : 0.0;
-        v_splatColor.a = mix(max(v_splatColor.a, 0.85), v_splatColor.a, revealGrow);
+        float glow = (reveal < 1.0 ? (growOnly ? 0.3 : 0.6) * exp(-10.0 * reveal) : 0.0) + 0.55 * revealPulse;
+        v_splatColor.a = mix(max(v_splatColor.a, 0.6 + 0.35 * revealPulse + 0.25 * (1.0 - revealData.y)), v_splatColor.a, revealGrow);
         v_splatColor.rgb = min(v_splatColor.rgb + glow * vec3(0.55, 0.85, 1.0), vec3(1.0));
     }
 `;

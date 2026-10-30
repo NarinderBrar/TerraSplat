@@ -13,7 +13,7 @@ Each time Cesium merges the selected tiles, every tile is classified against the
 | **Full**: appears where nothing related was shown (first view, panning to a new area) | glowing points sweep in from the block centre (250 m/s), then grow into its splats |
 | **Grow**: replaces a shown ancestor (zooming in) | starts as points and grows into its splats (about 1 s) |
 | **None**: replaces shown descendants (zooming out), or was already shown | unchanged |
-| **Placeholder** (independent of the above): drawn only because its children are still loading | points; fades back to its splats after 5 s if the children never arrive |
+| **Placeholder** (independent of the above): drawn only because its children are still loading | a pulsing "loading" cloud: each splat drawn at 25–45 % of its size, with a glow ripple travelling out from the block centre about once a second and a per-point shimmer; fades back to its splats after 5 s if the children never arrive |
 
 Every tile ends exactly as it rendered before the effects existed; LOD0 is unchanged and is the final tile a user sees.
 
