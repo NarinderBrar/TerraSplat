@@ -2,7 +2,7 @@
   "version": 1,
   "id": "3dep-shape-check",
   "declared_on": "2026-10-30",
-  "computed": false,
+  "computed": true,
   "purpose": "Decide whether the stable-masked 3DEP 2018 key (artifacts/reference/3dep-jax068-east/stable) agrees with DFC2019 in shape. Model grading removes one constant vertical offset (dsmr registration), so a constant datum offset between keys does not change grades; shape differences would.",
   "procedure": [
     "Same pixels as the failed absolute qualification: labelled in both DFC2019 and the stable 3DEP key, inside the DFC2019 JAX_068 grid.",
@@ -22,5 +22,6 @@
     "min_pixels": "The failed qualification compared 164,737 pixels; require at least 50,000 so the check is not decided by a small area."
   },
   "outcome_if_passed": "The stable 3DEP key qualifies for shape and may grade the neighbour experiment with registered metrics only; absolute (unregistered) 3DEP heights remain unqualified unless the datum is documented.",
-  "outcome_if_failed": "3DEP does not qualify; the neighbour experiment needs another reference."
+  "outcome_if_failed": "3DEP does not qualify; the neighbour experiment needs another reference.",
+  "result": "training/3dep-shape-check.json (2026-10-30): failed ground_mae 0.333 > 0.3 m; all-labelled 0.470 m, quadrant spread 0.014 m and min pixels passed; offset -1.577 m. DFC2019 documents WGS84 Z (pubgeo/dfc2019 data/README.md), so the conversion was not changed."
 }

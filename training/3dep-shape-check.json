@@ -1,0 +1,30 @@
+{
+  "rules_file": "configs/3dep-shape-check.json",
+  "offset_m": -1.577117919921875,
+  "all_labelled": {
+    "pixels": 164737,
+    "mae_m": 0.47045244962898325,
+    "median_m": 0.0,
+    "rmse_m": 2.167198700143698
+  },
+  "ground": {
+    "pixels": 70620,
+    "mae_m": 0.33284656564702175,
+    "median_m": -0.004218101501464844,
+    "rmse_m": 1.6544292282971078
+  },
+  "quadrant_offsets_m": {
+    "nw": -1.5630202293395996,
+    "ne": -1.5861034393310547,
+    "sw": -1.5631144046783447,
+    "se": -1.5912179946899414
+  },
+  "quadrant_offset_spread_m": 0.014100074768066406,
+  "checks": {
+    "min_pixels": true,
+    "all_labelled_mae": true,
+    "ground_mae": false,
+    "quadrant_offset_spread": true
+  },
+  "passed": false
+}
