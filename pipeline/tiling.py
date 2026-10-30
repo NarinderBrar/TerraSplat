@@ -459,7 +459,7 @@ def main():
     parser.add_argument("--output", required=True)
     parser.add_argument("--profile", default=str(ROOT / "configs/tiles-2015-pilot.json"))
     parser.add_argument("--grid", help="Shared ENU ownership grid")
-    parser.add_argument("--cell", choices=("west", "east"))
+    parser.add_argument("--cell", choices=("west", "centre", "east"))
     args = parser.parse_args()
     if bool(args.grid) != bool(args.cell):
         parser.error('--grid and --cell must be provided together')

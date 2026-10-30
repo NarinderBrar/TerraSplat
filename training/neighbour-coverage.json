@@ -1,0 +1,699 @@
+{
+  "status": "passed",
+  "block": {
+    "longitude": -81.66116035767325,
+    "latitude": 30.348819696974616,
+    "side_m": 250,
+    "halo_m": 20,
+    "ellipsoidal_height_range_m": [
+      -50,
+      300
+    ],
+    "selection_note": "True east neighbour: centre at (250,0,0) in jax068-grid-neighbour anchor ENU; unchanged pilot side, halo and height bracket."
+  },
+  "acquisitions": 20,
+  "products": 40,
+  "method": "Existing rpc_window: 17 samples per edge of the 290 m UTM crop footprint at -50, 125, 300 m ellipsoidal height, with 8 px padding, in both PAN and MSI RPCs. Holdout source coverage only; no model/profile choices.",
+  "records": [
+    {
+      "catalog_id": "104001000209A800",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 36287,
+        "row_off": 11667,
+        "width": 1208,
+        "height": 1063
+      },
+      "image_size": [
+        43008,
+        38912
+      ],
+      "min_edge_margin_px": 5513
+    },
+    {
+      "catalog_id": "104001000209A800",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 9079,
+        "row_off": 2910,
+        "width": 314,
+        "height": 278
+      },
+      "image_size": [
+        11264,
+        10240
+      ],
+      "min_edge_margin_px": 1871
+    },
+    {
+      "catalog_id": "1040010002A97700",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 37475,
+        "row_off": 11880,
+        "width": 1147,
+        "height": 1062
+      },
+      "image_size": [
+        43008,
+        38912
+      ],
+      "min_edge_margin_px": 4386
+    },
+    {
+      "catalog_id": "1040010002A97700",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 9376,
+        "row_off": 2963,
+        "width": 299,
+        "height": 278
+      },
+      "image_size": [
+        11264,
+        10240
+      ],
+      "min_edge_margin_px": 1589
+    },
+    {
+      "catalog_id": "1040010003371100",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14265,
+        "row_off": 6162,
+        "width": 1142,
+        "height": 1195
+      },
+      "image_size": [
+        43008,
+        45056
+      ],
+      "min_edge_margin_px": 6162
+    },
+    {
+      "catalog_id": "1040010003371100",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3573,
+        "row_off": 1534,
+        "width": 298,
+        "height": 312
+      },
+      "image_size": [
+        11264,
+        11264
+      ],
+      "min_edge_margin_px": 1534
+    },
+    {
+      "catalog_id": "10400100031BC200",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14390,
+        "row_off": 4910,
+        "width": 1101,
+        "height": 962
+      },
+      "image_size": [
+        43008,
+        46080
+      ],
+      "min_edge_margin_px": 4910
+    },
+    {
+      "catalog_id": "10400100031BC200",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3605,
+        "row_off": 1221,
+        "width": 288,
+        "height": 253
+      },
+      "image_size": [
+        11264,
+        12288
+      ],
+      "min_edge_margin_px": 1221
+    },
+    {
+      "catalog_id": "1040010004550F00",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14585,
+        "row_off": 5676,
+        "width": 1198,
+        "height": 1062
+      },
+      "image_size": [
+        43008,
+        46080
+      ],
+      "min_edge_margin_px": 5676
+    },
+    {
+      "catalog_id": "1040010004550F00",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3653,
+        "row_off": 1413,
+        "width": 312,
+        "height": 278
+      },
+      "image_size": [
+        11264,
+        12288
+      ],
+      "min_edge_margin_px": 1413
+    },
+    {
+      "catalog_id": "1040010005A0D800",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14495,
+        "row_off": 5521,
+        "width": 1124,
+        "height": 1154
+      },
+      "image_size": [
+        43008,
+        46080
+      ],
+      "min_edge_margin_px": 5521
+    },
+    {
+      "catalog_id": "1040010005A0D800",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3631,
+        "row_off": 1374,
+        "width": 294,
+        "height": 301
+      },
+      "image_size": [
+        11264,
+        12288
+      ],
+      "min_edge_margin_px": 1374
+    },
+    {
+      "catalog_id": "10400100066B8E00",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14433,
+        "row_off": 5085,
+        "width": 1087,
+        "height": 1132
+      },
+      "image_size": [
+        43008,
+        46080
+      ],
+      "min_edge_margin_px": 5085
+    },
+    {
+      "catalog_id": "10400100066B8E00",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3615,
+        "row_off": 1265,
+        "width": 285,
+        "height": 296
+      },
+      "image_size": [
+        11264,
+        12288
+      ],
+      "min_edge_margin_px": 1265
+    },
+    {
+      "catalog_id": "1040010007020F00",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14866,
+        "row_off": 5478,
+        "width": 1069,
+        "height": 1255
+      },
+      "image_size": [
+        43008,
+        41984
+      ],
+      "min_edge_margin_px": 5478
+    },
+    {
+      "catalog_id": "1040010007020F00",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3724,
+        "row_off": 1363,
+        "width": 279,
+        "height": 327
+      },
+      "image_size": [
+        11264,
+        11264
+      ],
+      "min_edge_margin_px": 1363
+    },
+    {
+      "catalog_id": "1040010006764E00",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 15353,
+        "row_off": 7705,
+        "width": 1032,
+        "height": 1278
+      },
+      "image_size": [
+        43008,
+        36864
+      ],
+      "min_edge_margin_px": 7705
+    },
+    {
+      "catalog_id": "1040010006764E00",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3845,
+        "row_off": 1920,
+        "width": 271,
+        "height": 332
+      },
+      "image_size": [
+        11264,
+        9216
+      ],
+      "min_edge_margin_px": 1920
+    },
+    {
+      "catalog_id": "1040010007980900",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14283,
+        "row_off": 4980,
+        "width": 1027,
+        "height": 1044
+      },
+      "image_size": [
+        43008,
+        46080
+      ],
+      "min_edge_margin_px": 4980
+    },
+    {
+      "catalog_id": "1040010007980900",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3578,
+        "row_off": 1239,
+        "width": 269,
+        "height": 273
+      },
+      "image_size": [
+        11264,
+        12288
+      ],
+      "min_edge_margin_px": 1239
+    },
+    {
+      "catalog_id": "1040010008037800",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14684,
+        "row_off": 4781,
+        "width": 950,
+        "height": 1203
+      },
+      "image_size": [
+        43008,
+        43008
+      ],
+      "min_edge_margin_px": 4781
+    },
+    {
+      "catalog_id": "1040010008037800",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3678,
+        "row_off": 1189,
+        "width": 250,
+        "height": 313
+      },
+      "image_size": [
+        11264,
+        11264
+      ],
+      "min_edge_margin_px": 1189
+    },
+    {
+      "catalog_id": "104001000AB24A00",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14637,
+        "row_off": 4773,
+        "width": 960,
+        "height": 1232
+      },
+      "image_size": [
+        43008,
+        43008
+      ],
+      "min_edge_margin_px": 4773
+    },
+    {
+      "catalog_id": "104001000AB24A00",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3666,
+        "row_off": 1186,
+        "width": 253,
+        "height": 321
+      },
+      "image_size": [
+        11264,
+        11264
+      ],
+      "min_edge_margin_px": 1186
+    },
+    {
+      "catalog_id": "104001000A1B5F00",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14905,
+        "row_off": 5448,
+        "width": 1236,
+        "height": 994
+      },
+      "image_size": [
+        43008,
+        45056
+      ],
+      "min_edge_margin_px": 5448
+    },
+    {
+      "catalog_id": "104001000A1B5F00",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3733,
+        "row_off": 1355,
+        "width": 322,
+        "height": 261
+      },
+      "image_size": [
+        11264,
+        11264
+      ],
+      "min_edge_margin_px": 1355
+    },
+    {
+      "catalog_id": "104001000AB10600",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 15315,
+        "row_off": 5318,
+        "width": 1241,
+        "height": 909
+      },
+      "image_size": [
+        43008,
+        44032
+      ],
+      "min_edge_margin_px": 5318
+    },
+    {
+      "catalog_id": "104001000AB10600",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3836,
+        "row_off": 1323,
+        "width": 323,
+        "height": 240
+      },
+      "image_size": [
+        11264,
+        11264
+      ],
+      "min_edge_margin_px": 1323
+    },
+    {
+      "catalog_id": "104001000C22D200",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14194,
+        "row_off": 4888,
+        "width": 1068,
+        "height": 1001
+      },
+      "image_size": [
+        43008,
+        47104
+      ],
+      "min_edge_margin_px": 4888
+    },
+    {
+      "catalog_id": "104001000C22D200",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3556,
+        "row_off": 1216,
+        "width": 279,
+        "height": 263
+      },
+      "image_size": [
+        11264,
+        12288
+      ],
+      "min_edge_margin_px": 1216
+    },
+    {
+      "catalog_id": "104001000C478800",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14443,
+        "row_off": 5376,
+        "width": 1152,
+        "height": 1037
+      },
+      "image_size": [
+        43008,
+        46080
+      ],
+      "min_edge_margin_px": 5376
+    },
+    {
+      "catalog_id": "104001000C478800",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3618,
+        "row_off": 1338,
+        "width": 300,
+        "height": 272
+      },
+      "image_size": [
+        11264,
+        12288
+      ],
+      "min_edge_margin_px": 1338
+    },
+    {
+      "catalog_id": "104001000E362D00",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 15465,
+        "row_off": 5213,
+        "width": 1240,
+        "height": 972
+      },
+      "image_size": [
+        43008,
+        44032
+      ],
+      "min_edge_margin_px": 5213
+    },
+    {
+      "catalog_id": "104001000E362D00",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3873,
+        "row_off": 1297,
+        "width": 323,
+        "height": 256
+      },
+      "image_size": [
+        11264,
+        11264
+      ],
+      "min_edge_margin_px": 1297
+    },
+    {
+      "catalog_id": "1040010013D78C00",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14536,
+        "row_off": 5158,
+        "width": 1128,
+        "height": 1088
+      },
+      "image_size": [
+        43008,
+        46080
+      ],
+      "min_edge_margin_px": 5158
+    },
+    {
+      "catalog_id": "1040010013D78C00",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3641,
+        "row_off": 1283,
+        "width": 295,
+        "height": 285
+      },
+      "image_size": [
+        11264,
+        12288
+      ],
+      "min_edge_margin_px": 1283
+    },
+    {
+      "catalog_id": "1040010016BADB00",
+      "role": "train",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 16194,
+        "row_off": 436,
+        "width": 1212,
+        "height": 1060
+      },
+      "image_size": [
+        43008,
+        33792
+      ],
+      "min_edge_margin_px": 436
+    },
+    {
+      "catalog_id": "1040010016BADB00",
+      "role": "train",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 4055,
+        "row_off": 103,
+        "width": 316,
+        "height": 277
+      },
+      "image_size": [
+        11264,
+        9216
+      ],
+      "min_edge_margin_px": 103
+    },
+    {
+      "catalog_id": "104001000A22A000",
+      "role": "holdout",
+      "sensor_product": "PAN",
+      "covered": true,
+      "window": {
+        "col_off": 14723,
+        "row_off": 5411,
+        "width": 1128,
+        "height": 1207
+      },
+      "image_size": [
+        43008,
+        45056
+      ],
+      "min_edge_margin_px": 5411
+    },
+    {
+      "catalog_id": "104001000A22A000",
+      "role": "holdout",
+      "sensor_product": "MSI",
+      "covered": true,
+      "window": {
+        "col_off": 3688,
+        "row_off": 1346,
+        "width": 294,
+        "height": 315
+      },
+      "image_size": [
+        11264,
+        11264
+      ],
+      "min_edge_margin_px": 1346
+    }
+  ]
+}

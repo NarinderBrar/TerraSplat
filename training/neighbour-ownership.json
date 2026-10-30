@@ -1,0 +1,40 @@
+{
+  "release_id": "jax068-2015-19v-r1",
+  "export": "artifacts/stage1/pilot-2015-19v-recipe-01/export-r2",
+  "export_manifest_sha256": "62d6dd166f042f92da84d5bc0d963c2c2f1593ce259e19af38e28c40d17714db",
+  "fused_ply_sha256": "c6d406665f5dbf583c487444389d6b24a32a53bbda663737c4c2e9f3d13540de",
+  "grid_sha256": "43f21f5164ba67b40173d30bf783fd36bc253ad69b8b665f81fcc986e7dbefba",
+  "old_closed_owned_centres": 66606,
+  "old_owned_on_own_east_125_exact": 0,
+  "old_owned_within_1m_own_east_125": 176,
+  "old_owned_on_shared_east_125_exact": 0,
+  "old_owned_within_1m_shared_east_125": 176,
+  "old_owned_in_neighbour_cell": 0,
+  "shared_east_max_old_owned_m": 124.99560403400885,
+  "shared_north_range_old_owned_m": [
+    -124.99978102502105,
+    124.99561457631422
+  ],
+  "proposed_centre_owned_centres": 66604,
+  "proposed_removed_from_old": 3,
+  "proposed_added_to_old": 1,
+  "proposed_doubled_centres": 0,
+  "minimum_abs_east_seam_distance_old_owned_m": 0.004395965991150774,
+  "old_east_edge_shared_east_range_m": [
+    124.99807055210324,
+    124.99807062045842
+  ],
+  "old_east_edge_gap_to_125_range_m": [
+    0.0019293795415791237,
+    0.001929447896756642
+  ],
+  "partition": {
+    "gap_width_m": 0,
+    "overlap_width_m": 0,
+    "north_ranges_match": true,
+    "boundary_east_m": 125,
+    "passed": true,
+    "boundary_owner": "east"
+  },
+  "scope": "Full-resolution Gaussian centres; not LOD centroids or kernel support."
+}

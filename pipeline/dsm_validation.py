@@ -379,7 +379,7 @@ def main():
     parser.add_argument("--aoi", default="JAX_068")
     parser.add_argument("--points", help="depth-points.npz from pipeline.render_depth (default: splat footprints)")
     parser.add_argument('--grid')
-    parser.add_argument('--cell', choices=('west', 'east'))
+    parser.add_argument('--cell', choices=('west', 'centre', 'east'))
     args = parser.parse_args()
     if bool(args.grid) != bool(args.cell):
         parser.error('--grid and --cell must be provided together')

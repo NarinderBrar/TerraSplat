@@ -1,4 +1,199 @@
-# True-neighbour 3DEP qualification — 2026-10-30
+# Neighbour preparation independent of the answer key — 2026-10-30
+
+The user explicitly authorized steps 4, 6 and the guarded step 7 while the 3DEP
+answer key remains on hold. The qualification results below are historical and
+unchanged. No answer-key output, `pipeline/lidar_reference.py`, qualification
+threshold or `configs/neighbour-decision.json` was changed. No training, GPU job,
+new imagery/lidar download or publication ran. Existing releases, live catalogue,
+runs, split outputs/rules and `apps/web/` were not modified by this work.
+
+## Step 4: grid and central ownership
+
+`configs/jax068-grid-neighbour.json` uses the original anchor and ENU→ECEF
+matrix. Half-open cells are centre east [-125,125), east [125,375), both north
+[-125,125). The east boundary belongs to east; the analytic partition has zero
+width gap/overlap. Eastn's centre is shared ENU (250,0,0), longitude
+−81.66116035767325°, latitude 30.348819696974616°. Its image crop retains the
+existing 250 m UTM square plus 20 m halo and [-50,300] m height bracket.
+
+Measured the exact full-resolution central release export (`export-r2`),
+checking its manifest/PLY hashes and count against the delivered tile plan.
+Reproducible read-only audit:
+
+```bash
+export PYTHONPATH=
+.venv-imagery/bin/python -m pipeline.neighbour_preparation ownership --output training/neighbour-ownership.json
+```
+
+Use a new output path when repeating. Evidence: `training/neighbour-ownership.json`.
+
+| Central release / proposed shared crop | Centres |
+| --- | ---: |
+| Existing closed own-frame crop | 66,606 |
+| Exactly on east=125 (own frame / shared frame) | 0 / 0 |
+| Within 1 m of east=125 (own frame / shared frame) | 176 / 176 |
+| Existing owned centres inside neighbour half-open cell | 0 |
+| Proposed shared centre crop | 66,604 |
+| Removed from existing / added from original export | 3 / 1 |
+| Proposed doubled centres | 0 |
+
+Maximum shared east of existing owned centres is **124.995604034 m**; the
+closest lies **0.004395966 m** west of the seam. There is no measured doubled
+centre at this seam, but the closed crop does not establish a half-open partition.
+Over the owned centres’ actual Up range (23.267–103.050 m), the closed crop’s
+east edge maps to shared east 124.998070552–124.998070620 m, a **1.92938–1.92945 mm
+geometric gap** to the neighbour boundary. These are affine edge extrema at
+its corners, not the nearest centre distance. It uses a slightly different
+calibrated observer (height −70 m), so merely
+changing ≤ to < in its own frame does not implement the shared-frame fix.
+
+**Proposal only:** re-tile the unchanged central `export-r2` using this grid's
+`centre` cell, encode as a new release such as `jax068-2015-19v-neighbour-r1`,
+and retain the old release. This would own 66,604 centres. No central tile/release
+was created or published. `partition_check` now accepts centre/east as well as
+west/east, and the tiling/validation CLIs accept `centre`; split behavior is
+covered by the existing regression tests. Counts describe full-resolution
+centres, not LOD parent centroids, Gaussian kernel support, or visual continuity.
+
+## Step 6: CPU eastn preparation
+
+The approved selection preserves the exact ordered 19 training ids and May 2
+holdout from `jax068-pilot-19v.json`. The recipe differs from
+`train-2015-pilot-19v-recipe.json` **only in id**; all numerical settings, notes,
+model path and timeouts are identical. May 2 is prepared independently as the
+existing evaluation-only camera/image, excluded from fitting, COLMAP database,
+training and pseudo views; no holdout image/metric informed a choice.
+
+All commands run offline against existing sources:
+
+```bash
+export PYTHONPATH=
+export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+.venv-imagery/bin/python -m pipeline.acquisitions scan artifacts/imagery/catalogue.json --block configs/jax068-eastn-block.json --offline --output artifacts/imagery/eastn-19v/acquisitions.json
+.venv-imagery/bin/python -m pipeline.acquisitions select artifacts/imagery/eastn-19v/acquisitions.json --approved configs/jax068-eastn-19v.json --output artifacts/imagery/eastn-19v/selection.json
+.venv-imagery/bin/python -m pipeline.sources artifacts/imagery/eastn-19v/selection.json --offline --max-total-gib 30 --output artifacts/imagery/eastn-19v/sources.json
+.venv-imagery/bin/python -m pipeline.block_inputs artifacts/imagery/eastn-19v/selection.json artifacts/imagery/eastn-19v/sources.json --output artifacts/imagery/eastn-19v/inputs
+.venv-imagery/bin/python -m pipeline.satellite_sfm artifacts/imagery/eastn-19v/selection.json --output artifacts/imagery/eastn-19v/calibration
+.venv-sfm/bin/python -m pipeline.reconstruct --inputs artifacts/imagery/eastn-19v/inputs --calibration artifacts/imagery/eastn-19v/calibration --approved configs/jax068-eastn-19v.json --output artifacts/imagery/eastn-19v/sfm
+.venv-sfm/bin/python -m pipeline.skyfall_inputs --reconstruction artifacts/imagery/eastn-19v/sfm --inputs artifacts/imagery/eastn-19v/inputs --approved configs/jax068-eastn-19v.json --output artifacts/imagery/eastn-19v/skyfall
+source scripts/stage1-env.sh
+python scripts/check-skyfall-inputs.py --scene artifacts/imagery/eastn-19v/skyfall
+python -m pipeline.phase2 artifacts/imagery/eastn-19v/skyfall/phase2-manifest.json --skip-environment --output artifacts/imagery/eastn-19v/skyfall/preflight-report.json
+```
+
+Do not rerun completed commands into existing output directories.
+
+Coverage: all **20 acquisitions / 40 PAN+MSI products** fully cover the neighbour
+block plus halo according to the existing `rpc_window` procedure: 17 samples
+per edge of the 290 m UTM footprint, at −50, 125 and 300 m ellipsoidal heights,
+with an additional 8 px padding. Minimum remaining source margin: **103 px**.
+`training/neighbour-coverage.json` records every image size/window and role.
+All 40 source hashes verified and products reused; the legacy sources report
+status says `downloaded` but every product has `reused: true`, with no new
+transfer. All RGB crops have valid fraction 1.0. Coverage of the holdout is source
+QC only. This is the established sampled RPC coverage check, not a claim of an
+analytic bound on a nonlinear RPC between samples.
+
+| Stage | Eastn status |
+| --- | --- |
+| Block config / approved selection / fixed recipe | Prepared; original 19/1 roles and recipe preserved |
+| Offline acquisition scan + select | Passed, 19 train + 1 holdout |
+| Offline source verification | Passed, all 40 cached PAN/MSI products reused |
+| block_inputs | Prepared, all 20 valid fractions 1.0 |
+| satellite_sfm | Passed; holdout RPC-only |
+| reconstruct | **24,461 points; 0.470499 px median**, 92,095 observations; p95 1.514585 px |
+| skyfall_inputs | Prepared, 24,461 points |
+| check-skyfall-inputs | Passed, 19 train / 1 holdout |
+| CPU preflight --skip-environment | Passed, environment_checked=false |
+| GPU environment / training / evaluation / publication | Not run |
+
+Matching took **866.944 seconds**, inside the unchanged 900-second timeout;
+feature extraction took 112.166 seconds. Both triangulation and bundle-adjustment
+passes completed normally. A direct read-only SQLite audit confirms exactly the
+approved 19 training image names and no May 2 image in the COLMAP database.
+No retry or gate/parameter relaxation was needed. The source/conversion reports
+and their hashes, exact commands, statuses and free space are recorded in
+`training/neighbour-preparation.json`. No CPU preparation step remains blocked.
+
+## Step 7: Stage B script, staged and deliberately blocked
+
+`scripts/neighbour-stage-b.sh` documents and enforces both prerequisites before
+sourcing the GPU environment, probing CUDA or writing any output:
+
+1. `artifacts/reference/3dep-jax068-east/qualification.json` exists with the
+   JSON boolean **`"accepted": true`**. False, missing, null, numeric 1 and string
+   "true" are rejected. The stable truth payload must also exist.
+2. `configs/neighbour-decision.json` exists and parses as a JSON object.
+
+The rejected qualification is unchanged and the decision file was deliberately
+not written. The guard was safely exercised: `bash scripts/neighbour-stage-b.sh`
+exits **2**, `Answer key is not qualified (accepted must be true):
+artifacts/reference/3dep-jax068-east/qualification.json`. No GPU work starts.
+
+There is an additional required dependency from deferred **step 5**:
+`scripts/neighbour-seam-check.py`. It is intentionally **not implemented** here
+because new rules/computations are outside the authorized steps. The script
+specifies its future CLI, and the startup guard refuses if it is missing even
+after the two JSON prerequisites exist. The old split checker cannot enforce
+same-key neighbour-relative MAE, residual seam limits or minimum evidence, so it
+is never called. This Stage B is staged, not executable end to end until step 5
+is completed and separately reviewed/authorized for GPU execution.
+
+The command chain is full environment preflight → neighbour recipe training →
+holdout evaluation → export → rendered depth → new per-cell validation of the
+neighbour and existing central export against the **same stable 3DEP key** →
+future neighbour seam/rule checker → explicit boolean pass check → shared-grid
+neighbour tiling → SPZ encoding → measured evidence → inactive publication into
+`artifacts/releases-neighbour`. Central export/depth are read-only; its new
+validation is written to `artifacts/validation/neighbour-centre-2015-19v-lidar`.
+No existing central run is re-exported or re-rendered. The release config and
+evidence collector are prepared, with no placeholder quality values. A failed
+or inconclusive rule report stops before tiling/publication. No central re-tile
+is part of this script; the proposal above remains unpublished.
+
+## Verification, inventory and exclusions
+
+**86 tests passed** (expected rasterio warnings for the existing separate text
+georeferencing convention). New tests cover fixed acquisition roles and exact
+recipe identity, centre position, closed-edge doubled-centre synthetic case,
+frame translation, half-open neighbour partition and tiny gap/overlap rejection,
+actual-grid centre/east tiling and publication footprints, missing/rejected/
+non-boolean qualification, missing decision/checker/truth, low disk, shell
+refusal before environment/output writes, and measured publication evidence with
+failed-rule and incorrect-holdout rejection. Existing split tests still pass.
+
+```bash
+export PYTHONPATH=
+export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+.venv-imagery/bin/python -m pytest tests/imagery/test_neighbour_preparation.py tests/sfm/test_seam_check.py tests/sfm/test_tiling.py tests/sfm/test_publish.py tests/imagery/test_dsm_validation.py tests/imagery/test_sources.py tests/imagery/test_acquisitions.py -q
+bash -n scripts/neighbour-stage-b.sh
+git diff --check -- pipeline docs/phase3/NEIGHBOUR_PREPARATION.md configs scripts tests training
+```
+
+The first ownership command used `.venv-sfm`, which lacks `plyfile`; the audit
+succeeded with `.venv-imagery`. This was an environment-package mismatch, not a
+sandbox denial. No CPU preparation command required escalation.
+
+Added files: `configs/jax068-grid-neighbour.json`, `configs/jax068-eastn-block.json`,
+`configs/jax068-eastn-19v.json`, `configs/train-2015-eastn-19v-recipe.json`,
+`configs/releases/jax068-2015-eastn-19v.json`, `pipeline/neighbour_preparation.py`,
+`scripts/neighbour-stage-b.sh`, `scripts/neighbour-evidence.py`,
+`tests/imagery/test_neighbour_preparation.py`, `training/neighbour-ownership.json`,
+`training/neighbour-coverage.json`, `training/neighbour-preparation.json`.
+Updated: `pipeline/ownership.py`, `pipeline/tiling.py`,
+`pipeline/dsm_validation.py`, this document and local ignored `tasks.md`.
+Generated artifacts are confined to `artifacts/imagery/eastn-19v/`.
+
+Not done: answer-key reconsideration/conversion/qualification, step 5 decision
+file or new rule computations, GPU preflight, training, evaluation, export,
+rendered depth, model grading, central re-tiling or any publication. No sandbox
+escalation was requested. Changes remain uncommitted; no index-changing Git
+commands, commits or pushes were used. Initial free space: workspace about
+77 GiB, artifacts about 60 GiB; final free space is 76.4 GiB / 59.9 GiB respectively, above the 20 GiB stop threshold.
+
+---
+
+# Prior run: true-neighbour 3DEP qualification — 2026-10-30
 
 **Stopped at step 3: answer key rejected.** No neighbour training, GPU jobs,
 imagery downloads, CPU imagery/SfM preparation or publication ran. Steps 4–8

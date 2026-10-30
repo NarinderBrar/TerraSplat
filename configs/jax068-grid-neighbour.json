@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "id": "jax068-neighbour",
+  "anchor": {
+    "longitude": -81.66376054127814,
+    "latitude": 30.34881972282938,
+    "ellipsoidal_height_m": 0
+  },
+  "enu_to_ecef": [
+    [
+      0.9894342861531981,
+      -0.07325407891764545,
+      0.1251144808023389,
+      798680.0686670588
+    ],
+    [
+      0.1449820450418308,
+      0.49992464419148114,
+      -0.8538475020432569,
+      -5450615.925429766
+    ],
+    [
+      0.0,
+      0.8629653469589311,
+      0.5052631096251256,
+      3203802.61729543
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "cell_side_m": 250,
+  "cells": {
+    "centre": {
+      "east_m": [
+        -125,
+        125
+      ],
+      "north_m": [
+        -125,
+        125
+      ],
+      "block": "configs/jax068-block.json",
+      "centre_longitude": -81.66376054127814,
+      "centre_latitude": 30.34881972282938
+    },
+    "east": {
+      "east_m": [
+        125,
+        375
+      ],
+      "north_m": [
+        -125,
+        125
+      ],
+      "block": "configs/jax068-eastn-block.json",
+      "centre_longitude": -81.66116035767325,
+      "centre_latitude": 30.348819696974616
+    }
+  },
+  "ownership": "Half-open shared anchor ENU: east_min <= east < east_max, north_min <= north < north_max. Boundary east=125 belongs to east. No tolerance expansion."
+}

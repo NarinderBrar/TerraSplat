@@ -1,0 +1,11 @@
+{
+  "longitude": -81.66116035767325,
+  "latitude": 30.348819696974616,
+  "side_m": 250,
+  "halo_m": 20,
+  "ellipsoidal_height_range_m": [
+    -50,
+    300
+  ],
+  "selection_note": "True east neighbour: centre at (250,0,0) in jax068-grid-neighbour anchor ENU; unchanged pilot side, halo and height bracket."
+}

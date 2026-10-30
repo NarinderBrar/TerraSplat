@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-30",
+  "status": "cpu_preparation_complete_stage_b_blocked",
+  "scope": "Steps 4, 6, guarded 7 only; answer key and step 5 remain on hold.",
+  "files_changed": [
+    "configs/jax068-grid-neighbour.json",
+    "configs/jax068-eastn-block.json",
+    "configs/jax068-eastn-19v.json",
+    "configs/train-2015-eastn-19v-recipe.json",
+    "configs/releases/jax068-2015-eastn-19v.json",
+    "pipeline/neighbour_preparation.py",
+    "pipeline/ownership.py",
+    "pipeline/tiling.py",
+    "pipeline/dsm_validation.py",
+    "scripts/neighbour-stage-b.sh",
+    "scripts/neighbour-evidence.py",
+    "tests/imagery/test_neighbour_preparation.py",
+    "training/neighbour-ownership.json",
+    "training/neighbour-coverage.json",
+    "training/neighbour-preparation.json",
+    "docs/phase3/NEIGHBOUR_PREPARATION.md",
+    "tasks.md"
+  ],
+  "new_artifacts_root": "artifacts/imagery/eastn-19v",
+  "reports_sha256": {
+    "artifacts/imagery/eastn-19v/selection.json": "a60535b90df416e871e97957bc1334ef997ec53c48ffc0698db0d01c05cd6554",
+    "artifacts/imagery/eastn-19v/sources.json": "e6a204ed5d4686760f513332da81188d0a216b38001844026c96fc83a0e363f7",
+    "artifacts/imagery/eastn-19v/inputs/inputs-report.json": "46bbe2fc7eda123ee7b731933b014ae9ff97d26efe476fd3259466b67d43a999",
+    "artifacts/imagery/eastn-19v/calibration/calibration-report.json": "f49fff0b78d317e43104b365edde533690acaf4202af782952eacd322fdcab9f",
+    "artifacts/imagery/eastn-19v/sfm/reconstruction-report.json": "284bdbcb07da614e575a64db95f379da55ed4eb92c24b54002ee9be11a814b7a",
+    "artifacts/imagery/eastn-19v/skyfall/conversion-report.json": "b016031b5dcbc7b450f0c61c280e22725a37de59c83a87de715b27e2f3be0692",
+    "artifacts/imagery/eastn-19v/skyfall/loader-report.json": "ae78d054ab2a1f194458d8104505b3c88e1e1cdf89bdf6cc11e26c392734b0d1",
+    "artifacts/imagery/eastn-19v/skyfall/preflight-report.json": "c862f85807a4d3a78468363747dad9105dcb924efcd6911ca83b66576b4076f9"
+  },
+  "commands": [
+    ".venv-imagery/bin/python -m pipeline.acquisitions scan artifacts/imagery/catalogue.json --block configs/jax068-eastn-block.json --offline --output artifacts/imagery/eastn-19v/acquisitions.json",
+    ".venv-imagery/bin/python -m pipeline.acquisitions select artifacts/imagery/eastn-19v/acquisitions.json --approved configs/jax068-eastn-19v.json --output artifacts/imagery/eastn-19v/selection.json",
+    ".venv-imagery/bin/python -m pipeline.sources artifacts/imagery/eastn-19v/selection.json --offline --max-total-gib 30 --output artifacts/imagery/eastn-19v/sources.json",
+    ".venv-imagery/bin/python -m pipeline.block_inputs artifacts/imagery/eastn-19v/selection.json artifacts/imagery/eastn-19v/sources.json --output artifacts/imagery/eastn-19v/inputs",
+    ".venv-imagery/bin/python -m pipeline.satellite_sfm artifacts/imagery/eastn-19v/selection.json --output artifacts/imagery/eastn-19v/calibration",
+    ".venv-sfm/bin/python -m pipeline.reconstruct --inputs artifacts/imagery/eastn-19v/inputs --calibration artifacts/imagery/eastn-19v/calibration --approved configs/jax068-eastn-19v.json --output artifacts/imagery/eastn-19v/sfm",
+    ".venv-sfm/bin/python -m pipeline.skyfall_inputs --reconstruction artifacts/imagery/eastn-19v/sfm --inputs artifacts/imagery/eastn-19v/inputs --approved configs/jax068-eastn-19v.json --output artifacts/imagery/eastn-19v/skyfall",
+    "python scripts/check-skyfall-inputs.py --scene artifacts/imagery/eastn-19v/skyfall",
+    "python -m pipeline.phase2 artifacts/imagery/eastn-19v/skyfall/phase2-manifest.json --skip-environment --output artifacts/imagery/eastn-19v/skyfall/preflight-report.json"
+  ],
+  "steps": {
+    "grid_ownership": "passed; fix proposed only",
+    "acquisitions": "passed: identical approved 19 train + May 2 holdout",
+    "sources": "passed: all 40 hashes verified; all reused; no download",
+    "block_inputs": "prepared_for_review; all 20 RGB valid fractions 1.0",
+    "satellite_sfm": "passed; holdout RPC-only",
+    "reconstruct": "reconstructed",
+    "skyfall_inputs": "prepared",
+    "check_skyfall_inputs": "passed",
+    "cpu_preflight": "passed; environment_checked=false",
+    "stage_b": "staged; not executed beyond startup rejection"
+  },
+  "coverage": {
+    "report": "training/neighbour-coverage.json",
+    "acquisitions": 20,
+    "pan_msi_products": 40,
+    "minimum_source_margin_px": 103
+  },
+  "sparse_points": 24461,
+  "reprojection_error_pixels": {
+    "observations": 92095,
+    "median": 0.470499196407484,
+    "p95": 1.514585331783298,
+    "max": 2.954089383334206
+  },
+  "sfm_commands": [
+    {
+      "name": "features",
+      "elapsed_seconds": 112.16575261800244,
+      "returncode": 0
+    },
+    {
+      "name": "matching",
+      "elapsed_seconds": 866.9442377889973,
+      "returncode": 0
+    },
+    {
+      "name": "triangulation-32",
+      "elapsed_seconds": 2.6236596840026323,
+      "returncode": 0
+    },
+    {
+      "name": "bundle-adjustment-32",
+      "elapsed_seconds": 0.9177383950009244,
+      "returncode": 0
+    },
+    {
+      "name": "triangulation-2",
+      "elapsed_seconds": 2.623375171999214,
+      "returncode": 0
+    },
+    {
+      "name": "bundle-adjustment-2",
+      "elapsed_seconds": 0.7659234550010297,
+      "returncode": 0
+    }
+  ],
+  "database_training_images": 19,
+  "database_image_camera_ids_match": true,
+  "holdout_in_database": false,
+  "holdout_used_for_choices": false,
+  "profile": {
+    "file": "configs/train-2015-eastn-19v-recipe.json",
+    "sha256": "cd0c4b6e2448c488d6994f53477139e9903c7ec8c8b1730f3e6218514e6dfa96",
+    "recipe_difference": "id only"
+  },
+  "ownership": "training/neighbour-ownership.json",
+  "stage_b_prerequisites": [
+    "artifacts/reference/3dep-jax068-east/qualification.json with accepted exactly true and stable truth payload",
+    "configs/neighbour-decision.json (not created)",
+    "scripts/neighbour-seam-check.py deferred step 5 implementation",
+    "Separate authorization for GPU execution"
+  ],
+  "stage_b_guard_test": {
+    "command": "bash scripts/neighbour-stage-b.sh",
+    "exit_code": 2,
+    "reason": "Answer key is not qualified (accepted must be true)",
+    "gpu_or_training_started": false
+  },
+  "tests": {
+    "regression_suite_passed": 86,
+    "new_tests_passed": 22,
+    "final_new_tests_rerun_passed": 22,
+    "shell_syntax": "passed",
+    "diff_check": "passed"
+  },
+  "free_gib": {
+    ".": 76.42707443237305,
+    "artifacts": 59.863525390625
+  },
+  "sandbox_blocked_commands": [],
+  "not_done": [
+    "Answer-key changes or qualification",
+    "Step 5 rules/decision file/new rule checker",
+    "GPU preflight/training/evaluation/export/rendered depth/model grading",
+    "Central re-tile or any publication"
+  ],
+  "protected_files_sha256": {
+    "pipeline/lidar_reference.py": "e0635aa752ef1c2490886e75a68c7cd02a43ae226b988b34bbff6e42df18ee9f",
+    "configs/phase3-split-decision.json": "9cc3cd9122fedf562ed133487d6b7c7e1ce9792190e3e95e02889b2995aeb4fe",
+    "pipeline/seam_check.py": "69671bf95ba7be313aaccaf8343239932bca75087682b224c425f6e0ba6d9fe5",
+    "artifacts/reference/3dep-jax068-east/qualification.json": "ff153aabe90fce5ef4dfbc4298ffca08d1432b5330ec712ce556d3050ad45d19"
+  }
+}

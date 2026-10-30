@@ -28,7 +28,8 @@ def cell_corners(grid, cell, target_to_ecef):
 
 def partition_check(grid):
     """An analytic check, including the line itself; no sampling tolerance hides gaps."""
-    west, east = (grid['cells'][k] for k in ('west', 'east'))
+    west_name = 'centre' if 'centre' in grid['cells'] else 'west'
+    west, east = (grid['cells'][k] for k in (west_name, 'east'))
     w0, w1 = west['east_m']
     e0, e1 = east['east_m']
     if not (w0 < w1 and e0 < e1 and west['north_m'][0] < west['north_m'][1]
