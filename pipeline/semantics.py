@@ -202,6 +202,46 @@ def preview(path, classes, truth_classes, scored, mapping):
     Image.fromarray(np.concatenate([ours, truth, disagree], 1)).save(path)
 
 
+def top_surface(depth_points, geo, truth):
+    """Top surface, its gap-filled copy, robust ground and height above ground on the truth grid."""
+    from scipy.ndimage import distance_transform_edt, percentile_filter
+
+    top = points_dsm(enu_to_utm(np.load(depth_points)['enu'], geo, 32617), truth)
+    valid = np.isfinite(top)
+    nearest = distance_transform_edt(~valid, return_distances=False, return_indices=True)
+    filled = top[tuple(nearest)]
+    ground = percentile_filter(filled, 5, size=51)
+    return top, valid, filled, ground, top - ground
+
+
+def cell_lonlat(truth):
+    from pyproj import Transformer
+
+    rows, cols = np.indices(truth['dsm'].shape)
+    east = truth['west'] + (cols.ravel() + 0.5) * truth['resolution']
+    north = truth['north'] - (rows.ravel() + 0.5) * truth['resolution']
+    return Transformer.from_crs(32617, 4326, always_xy=True).transform(east, north)
+
+
+def splat_classes(manifest, truth, top, ground, classes, building):
+    """Per-splat classes in fused-PLY order: surface splats take their cell class, walls inside buildings are building."""
+    geo, shape = manifest['georeference'], truth['dsm'].shape
+    vertices = read_ply(Path(manifest['fused_ply']['path']))
+    model = np.stack([vertices[k] for k in 'xyz'], 1).astype(np.float64)
+    transform = np.asarray(geo['model_to_enu'])
+    splats = enu_to_utm(model @ transform[:3, :3].T + transform[:3, 3], geo, 32617)
+    c = np.floor((splats[:, 0] - truth['west']) / truth['resolution']).astype(int)
+    r = np.floor((truth['north'] - splats[:, 1]) / truth['resolution']).astype(int)
+    inside = (r >= 0) & (r < shape[0]) & (c >= 0) & (c < shape[1])
+    splat_class = np.zeros(len(splats), np.uint8)
+    ri, ci = r[inside], c[inside]
+    surface = splats[inside, 2] >= top[ri, ci] - 1.5
+    wall = ~surface & building[ri, ci] & (splats[inside, 2] - ground[ri, ci] >= 1.0)
+    values = np.where(surface, classes[ri, ci], np.where(wall, CODES['building'], CODES['unknown']))
+    splat_class[inside] = np.where(np.isfinite(top[ri, ci]) | wall, values, CODES['unknown'])
+    return splat_class, inside, surface, wall
+
+
 def run(config_path, export_dir, depth_points, truth_dir, osm_path, imagery_dir, sources_path, output):
     import rasterio
 
@@ -213,21 +253,8 @@ def run(config_path, export_dir, depth_points, truth_dir, osm_path, imagery_dir,
     geo = manifest['georeference']
     truth = read_truth(truth_dir, 'JAX_068')
     shape = truth['dsm'].shape
-    utm = enu_to_utm(np.load(depth_points)['enu'], geo, 32617)
-    top = points_dsm(utm, truth)
-    valid = np.isfinite(top)
-
-    from scipy.ndimage import distance_transform_edt, percentile_filter
-    nearest = distance_transform_edt(~valid, return_distances=False, return_indices=True)
-    filled = top[tuple(nearest)]
-    ground = percentile_filter(filled, 5, size=51)
-    hag = top - ground
-
-    from pyproj import Transformer
-    rows, cols = np.indices(shape)
-    east = truth['west'] + (cols.ravel() + 0.5) * truth['resolution']
-    north = truth['north'] - (rows.ravel() + 0.5) * truth['resolution']
-    lon, lat = Transformer.from_crs(32617, 4326, always_xy=True).transform(east, north)
+    top, valid, filled, ground, hag = top_surface(depth_points, geo, truth)
+    lon, lat = cell_lonlat(truth)
     heights = np.nan_to_num(filled.ravel())
     sources = json.loads(Path(sources_path).read_text())
     esun = config['ndvi']['esun_thuillier_w_m2_um']
@@ -245,20 +272,7 @@ def run(config_path, export_dir, depth_points, truth_dir, osm_path, imagery_dir,
     classes, unmapped = classify(hag, np.nan_to_num(ndvi, nan=0.0), valid, building, water, road,
                                  config['classes'].get('thresholds'))
 
-    # Per-splat classes in fused-PLY order.
-    vertices = read_ply(Path(manifest['fused_ply']['path']))
-    model = np.stack([vertices[k] for k in 'xyz'], 1).astype(np.float64)
-    transform = np.asarray(geo['model_to_enu'])
-    splats = enu_to_utm(model @ transform[:3, :3].T + transform[:3, 3], geo, 32617)
-    c = np.floor((splats[:, 0] - truth['west']) / truth['resolution']).astype(int)
-    r = np.floor((truth['north'] - splats[:, 1]) / truth['resolution']).astype(int)
-    inside = (r >= 0) & (r < shape[0]) & (c >= 0) & (c < shape[1])
-    splat_class = np.zeros(len(splats), np.uint8)
-    ri, ci = r[inside], c[inside]
-    surface = splats[inside, 2] >= top[ri, ci] - 1.5
-    wall = ~surface & building[ri, ci] & (splats[inside, 2] - ground[ri, ci] >= 1.0)
-    values = np.where(surface, classes[ri, ci], np.where(wall, CODES['building'], CODES['unknown']))
-    splat_class[inside] = np.where(np.isfinite(top[ri, ci]) | wall, values, CODES['unknown'])
+    splat_class, inside, surface, wall = splat_classes(manifest, truth, top, ground, classes, building)
 
     scored = (truth['classes'] != 65) & (truth['classes'] != 17)
     mapping = config['evaluation']['mapping']
