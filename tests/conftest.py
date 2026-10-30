@@ -20,7 +20,10 @@ def tiled_release(tmp_path):
             'enu_anchor': {'latitude': 0, 'longitude': 0, 'ellipsoidal_height_m': 0},
             'crop': {'half_extent_m': 125, 'owned_z_range_m': [0, 40]}, 'tiles': [{'id': 'r'}],
             'export_manifest_sha256': 'a' * 64, 'fused_ply_sha256': 'b' * 64}
+    splats = ['KHR_gaussian_splatting', 'KHR_gaussian_splatting_compression_spz_2']
     tileset = {'asset': {'version': '1.1'}, 'geometricError': 400,
+               'extensionsUsed': ['3DTILES_content_gltf'], 'extensionsRequired': ['3DTILES_content_gltf'],
+               'extensions': {'3DTILES_content_gltf': {'extensionsUsed': splats, 'extensionsRequired': splats}},
                'root': {'transform': plan['root_transform'], 'boundingVolume': {
                    'box': [0, 0, 20, 125, 0, 0, 0, 125, 0, 0, 0, 20]},
                    'geometricError': 1, 'content': {'uri': 'tiles/r.glb'}}}

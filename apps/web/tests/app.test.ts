@@ -51,23 +51,6 @@ describe('footprint presentation', () => {
     expect(formatBytes(1591466)).toBe('1.59 MB');
   });
 });
-
-describe('Cesium 1.146 regional index compatibility', () => {
-  it('declares the outer splat profile and resolves external URLs without mutating source data', async () => {
-    const { regionalIndexUrl } = await import('../src/regionalIndex');
-    const source = { asset: { version: '1.1' }, root: {
-      transform: [1, 2, 3], boundingVolume: { box: [1, 2, 3] }, refine: 'ADD',
-      children: [{ content: { uri: '../../jax068-2015-5v-r1/tileset.json' } }],
-    } };
-    const url = regionalIndexUrl(source, 'http://localhost:8001/releases/index/jacksonville/tileset.json');
-    const result = JSON.parse(decodeURIComponent(url.split(',')[1]));
-    expect(result.extensions['3DTILES_content_gltf'].extensionsRequired).toContain('KHR_gaussian_splatting');
-    expect(result.root.children[0].content.uri).toBe('http://localhost:8001/releases/jax068-2015-5v-r1/tileset.json');
-    expect(result.root.transform).toEqual(source.root.transform);
-    expect(source.root.children[0].content.uri).toBe('../../jax068-2015-5v-r1/tileset.json');
-    expect(() => regionalIndexUrl({}, 'http://localhost/')).toThrow('Invalid regional tileset');
-  });
-});
 describe('display ground terrain', () => {
   const base = parseFootprints(footprints)[0];
   const feature = { ...base, properties: { ...base.properties, ground_height_m: -20.75 } };

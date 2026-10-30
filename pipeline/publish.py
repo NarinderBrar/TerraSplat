@@ -186,7 +186,7 @@ def catalog(directory):
 def build_indexes(directory, document):
     regions = {d['region'] for d in document['datasets']}
     for region in regions:
-        children, corners = [], []
+        children, corners, declared = [], [], {}
         for dataset in document['datasets']:
             if dataset['region'] != region or dataset['active_release_id'] is None:
                 continue
@@ -202,6 +202,10 @@ def build_indexes(directory, document):
             centre, half = (low + high) / 2, (high - low) / 2
             volume = {'box': [*centre, half[0], 0, 0, 0, half[1], 0, 0, 0, half[2]]}
             corners.extend(points)
+            for key in ('extensionsUsed', 'extensionsRequired'):
+                declared.setdefault(key, set()).update(tileset.get(key, []))
+                content = tileset.get('extensions', {}).get('3DTILES_content_gltf', {})
+                declared.setdefault('gltf_' + key, set()).update(content.get(key, []))
             # An external-content tile has the referenced tileset's geometricError.
             # Do not copy its transform here: the external root applies it once.
             children.append({'boundingVolume': volume, 'geometricError': tileset['geometricError'],
@@ -214,9 +218,18 @@ def build_indexes(directory, document):
             volume = {'box': [*centre, half[0], 0, 0, 0, half[1], 0, 0, 0, half[2]]}
         else:
             volume, error = {'sphere': [0, 0, 0, 1]}, 1
-        atomic_json(directory / 'index' / region / 'tileset.json', {
-            'asset': {'version': '1.1'}, 'geometricError': error,
-            'root': {'boundingVolume': volume, 'geometricError': error, 'refine': 'ADD', 'children': children}})
+        index = {'asset': {'version': '1.1'}, 'geometricError': error,
+                 'root': {'boundingVolume': volume, 'geometricError': error, 'refine': 'ADD', 'children': children}}
+        # Viewers such as Cesium pick content decoders from the outermost tileset, so repeat the releases'
+        # declarations here.
+        for key in ('extensionsUsed', 'extensionsRequired'):
+            if declared.get(key):
+                index[key] = sorted(declared[key])
+        gltf = {key: sorted(declared['gltf_' + key]) for key in ('extensionsUsed', 'extensionsRequired')
+                if declared.get('gltf_' + key)}
+        if gltf:
+            index['extensions'] = {'3DTILES_content_gltf': gltf}
+        atomic_json(directory / 'index' / region / 'tileset.json', index)
 
 
 def save_catalog(directory, document):

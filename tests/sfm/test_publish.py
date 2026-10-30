@@ -66,6 +66,10 @@ def test_activation_rollback_index(tiled_release):
     box = child['boundingVolume']['box']
     assert box == pytest.approx([6378157, 0, 0, 20, 0, 0, 0, 125, 0, 0, 0, 125])
     assert root['boundingVolume']['box'] == pytest.approx(box)
+    # The outer index repeats the releases' splat declarations for viewers that read only the outermost tileset.
+    assert index['extensionsRequired'] == ['3DTILES_content_gltf']
+    assert index['extensions']['3DTILES_content_gltf']['extensionsRequired'] == [
+        'KHR_gaussian_splatting', 'KHR_gaussian_splatting_compression_spz_2']
     with pytest.raises(ValueError, match='Unknown'):
         activate(releases, 'unknown')
     (releases / first['release_id'] / 'tiles/r.glb').write_bytes(b'changed')
