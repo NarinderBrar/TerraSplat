@@ -372,8 +372,10 @@ def plan(export_dir, output, profile, grid=None, cell=None):
     owned = (np.abs(splats["centres"][:, 0]) <= half) & (np.abs(splats["centres"][:, 1]) <= half)
     ownership = {}
     if grid is not None:
-        from pipeline.ownership import owned_mask, cell_corners, partition_check
-        if not partition_check(grid)['passed']:
+        from pipeline.ownership import owned_mask, cell_corners, grid_partition_check
+        if cell not in grid['cells']:
+            raise ValueError(f'Unknown ownership cell: {cell}')
+        if not grid_partition_check(grid)['passed']:
             raise ValueError('Ownership grid has a gap or overlap')
         owned = owned_mask(splats['centres'], georeference, grid, cell)
         ownership = {'frame': 'half-open cell in the shared grid ENU frame',
@@ -459,7 +461,7 @@ def main():
     parser.add_argument("--output", required=True)
     parser.add_argument("--profile", default=str(ROOT / "configs/tiles-2015-pilot.json"))
     parser.add_argument("--grid", help="Shared ENU ownership grid")
-    parser.add_argument("--cell", choices=("west", "centre", "east"))
+    parser.add_argument("--cell", help="Cell name in the ownership grid")
     args = parser.parse_args()
     if bool(args.grid) != bool(args.cell):
         parser.error('--grid and --cell must be provided together')

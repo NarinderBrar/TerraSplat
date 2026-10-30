@@ -16,6 +16,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SIDE = 250
 EAST = (-500, 500)
 NORTH = (-750, 250)
+# DFC2019 JAX_068 lidar (256 m about the anchor) reaches these cells only.
+LIDAR_CELLS = {'A2', 'A3', 'B2', 'B3'}
 
 
 def main():
@@ -45,7 +47,32 @@ def main():
                 'plus its 20 m halo (1040010016BADB00 ends north of +250 m; smallest margin 70 px).',
     }
     (ROOT / 'configs/jax068-grid-1km.json').write_text(json.dumps(grid, indent=2) + '\n')
+    write_jobs(cells)
     print(' '.join(cells))
+
+
+def write_jobs(cells):
+    """One pipeline.job file per cell, from the west split job; lidar truth only where DFC2019 reaches."""
+    template = json.loads((ROOT / 'configs/jobs/west-19v-job.json').read_text())
+    for name, cell in cells.items():
+        key = name.lower()
+        job = template | {
+            'output_root': f'artifacts/jobs/grid-1km-{key}',
+            'block_config': cell['block'],
+            'approved_selection': f'configs/grid-1km/{name}-19v.json',
+            'training_profile': 'configs/train-2015-pilot-19v-recipe.json',
+            'ownership_grid': 'configs/jax068-grid-1km.json',
+            'cell': name,
+        }
+        job['release'] = template['release'] | {
+            'dataset_id': f'jax068-2015-grid-{key}', 'dataset_title': f'JAX_068 1 km grid {name} (historical)',
+            'release_id': f'jax068-2015-grid-{key}-r1', 'title': f'JAX_068 1 km grid {name} · 19-view recipe',
+        }
+        if name in LIDAR_CELLS:
+            job['lidar_truth'] = 'artifacts/reference/dfc2019-jax068'
+        else:
+            job.pop('lidar_truth', None)
+        (ROOT / f'configs/jobs/grid-1km-{key}.json').write_text(json.dumps(job, indent=2) + '\n')
 
 
 if __name__ == '__main__':

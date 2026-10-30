@@ -215,3 +215,15 @@ def test_publication_evidence_uses_actual_holdout_and_refuses_overwrite(tmp_path
     assert len(result['inputs_sha256']) == 5
     with pytest.raises(FileExistsError):
         collect('west')
+
+
+def test_general_partition_accepts_the_1km_grid_and_finds_gaps_and_overlaps():
+    import json
+    from pathlib import Path
+    from pipeline.ownership import grid_partition_check
+    g = json.loads((Path(__file__).resolve().parents[2] / 'configs/jax068-grid-1km.json').read_text())
+    assert grid_partition_check(g) == {'cells': 16, 'lattice_gaps': 0, 'lattice_overlaps': 0, 'passed': True}
+    gap = copy.deepcopy(g); gap['cells']['B2']['east_m'] = [-250, -10]
+    assert grid_partition_check(gap)['lattice_gaps'] > 0
+    overlap = copy.deepcopy(g); overlap['cells']['B2']['east_m'] = [-250, 10]
+    assert grid_partition_check(overlap)['lattice_overlaps'] > 0

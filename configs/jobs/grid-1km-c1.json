@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "output_root": "artifacts/jobs/grid-1km-c1",
+  "catalogue": "artifacts/imagery/catalogue.json",
+  "block_config": "configs/grid-1km/C1-block.json",
+  "approved_selection": "configs/grid-1km/C1-19v.json",
+  "source_cache": "artifacts/imagery/raw",
+  "training_profile": "configs/train-2015-pilot-19v-recipe.json",
+  "tile_profile": "configs/tiles-2015-pilot.json",
+  "release": {
+    "dataset_id": "jax068-2015-grid-c1",
+    "dataset_title": "JAX_068 1 km grid C1 (historical)",
+    "region": "jacksonville",
+    "release_id": "jax068-2015-grid-c1-r1",
+    "title": "JAX_068 1 km grid C1 \u00b7 19-view recipe",
+    "description": "Historical 250 m block; fixed 19 training acquisitions and independent May 2 holdout. Quality is measured from this job; no holdout or lidar tuning.",
+    "evidence": [
+      "{dsm_validation}/validation/dsm-validation.json",
+      "{evaluation}/run/evaluation/evaluation-report.json",
+      "{encoding}/tiles/tile-plan.json",
+      "{encoding}/tiles/tiles-report.json"
+    ],
+    "quality_sources": {
+      "registered_lidar_mae_all_m": {
+        "file": "{dsm_validation}/validation/dsm-validation.json",
+        "pointer": "/registered/all_labelled/mae_m"
+      },
+      "registered_lidar_mae_ground_m": {
+        "file": "{dsm_validation}/validation/dsm-validation.json",
+        "pointer": "/registered/ground/mae_m"
+      },
+      "registered_lidar_mae_buildings_m": {
+        "file": "{dsm_validation}/validation/dsm-validation.json",
+        "pointer": "/registered/building/mae_m"
+      },
+      "registered_lidar_mae_vegetation_m": {
+        "file": "{dsm_validation}/validation/dsm-validation.json",
+        "pointer": "/registered/vegetation/mae_m"
+      },
+      "registered_lidar_rmse_m": {
+        "file": "{dsm_validation}/validation/dsm-validation.json",
+        "pointer": "/registered/all_labelled/rmse_m"
+      },
+      "completeness": {
+        "file": "{dsm_validation}/validation/dsm-validation.json",
+        "pointer": "/registered/all_labelled/completeness"
+      },
+      "horizontal_offset_m": {
+        "file": "{dsm_validation}/validation/dsm-validation.json",
+        "pointer": "/registration/splats_offset_from_lidar_m/horizontal"
+      },
+      "holdout_psnr_db": {
+        "file": "{evaluation}/run/evaluation/evaluation-report.json",
+        "pointer": "/records/final/19/psnr_db"
+      },
+      "splats": {
+        "file": "{encoding}/tiles/tile-plan.json",
+        "pointer": "/crop/owned_splats"
+      },
+      "glb_bytes": {
+        "file": "{encoding}/tiles/tiles-report.json",
+        "pointer": "/totals/glbBytes"
+      }
+    }
+  },
+  "ownership_grid": "configs/jax068-grid-1km.json",
+  "cell": "C1"
+}

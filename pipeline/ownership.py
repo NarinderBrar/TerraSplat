@@ -41,3 +41,22 @@ def partition_check(grid):
             'north_ranges_match': same_north, 'boundary_east_m': w1,
             'passed': delta == 0 and same_north,
             'boundary_owner': 'east' if delta == 0 else None}
+
+
+def grid_partition_check(grid):
+    """Any number of axis-aligned cells: every lattice square of their bounding rectangle is owned exactly once."""
+    cells = list(grid['cells'].values())
+    for cell in cells:
+        if not (cell['east_m'][0] < cell['east_m'][1] and cell['north_m'][0] < cell['north_m'][1]):
+            raise ValueError('Invalid ownership rectangles')
+    easts = sorted({x for c in cells for x in c['east_m']})
+    norths = sorted({y for c in cells for y in c['north_m']})
+    gaps = overlaps = 0
+    for e0, e1 in zip(easts, easts[1:]):
+        for n0, n1 in zip(norths, norths[1:]):
+            owners = sum(c['east_m'][0] <= e0 and e1 <= c['east_m'][1] and c['north_m'][0] <= n0 and n1 <= c['north_m'][1]
+                         for c in cells)
+            gaps += owners == 0
+            overlaps += owners > 1
+    return {'cells': len(cells), 'lattice_gaps': gaps, 'lattice_overlaps': overlaps,
+            'passed': gaps == 0 and overlaps == 0}
