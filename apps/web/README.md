@@ -25,6 +25,34 @@ The app build is in `apps/web/dist`; serve it with `/api` and `/releases` routed
 or run `npm --prefix apps/web exec vite -- preview --host 127.0.0.1 --port 4173` locally.
 Cesium assets are copied locally by the prepare step and excluded from Git.
 
+### Running Chrome on the NVIDIA GPU (Linux hybrid-graphics laptops)
+
+On laptops with Intel + NVIDIA graphics in PRIME "on-demand" mode, Chrome draws on the integrated Intel GPU.
+Splat rendering is GPU-bound: Chrome traces on 2026-10-30 showed our code using only 2–16% of the main
+thread while the Intel UHD (TGL GT1) was 68–95% busy, giving about 10 fps while moving the map. On the
+RTX 3060 the same views were about 10× faster. Start a separate Chrome on the NVIDIA GPU with:
+
+```bash
+__NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only google-chrome \
+  --user-data-dir=/tmp/chrome-nvidia --use-angle=vulkan \
+  --enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan http://127.0.0.1:5173/
+```
+
+Why each part is needed:
+
+- `__NV_PRIME_RENDER_OFFLOAD=1` and `__VK_LAYER_NV_optimus=NVIDIA_only` ask the driver to render this
+  process on the NVIDIA GPU and expose only that GPU to Vulkan.
+- `--use-angle=vulkan` and the `Vulkan…` features make Chrome's WebGL use Vulkan. The usual GLX/EGL
+  offload variables do not work here: Chrome's window format comes from the Intel driver and the NVIDIA
+  EGL driver rejects it (`eglInitialize: Invalid visual ID requested`), so WebGL falls back to software
+  (SwiftShader) or fails.
+- `--user-data-dir` forces a new Chrome process. Without it, an already-running Chrome simply opens a new
+  window and ignores all of the settings above.
+
+Check `chrome://gpu`: `GL_RENDERER` should name the NVIDIA GPU. With this setup Chrome also refuses WebGL
+contexts that request `powerPreference: "high-performance"` (Cesium's default), so the app probes for that
+and falls back to the browser default; see `powerPreference()` in `src/globe.ts`.
+
 ## Configuration
 
 Vite variables are set before dev/build, for example:
@@ -73,15 +101,14 @@ See [Cesium globe translucency](https://cesium.com/learn/cesiumjs/ref-doc/GlobeT
 
 The controller uses Cesium's cursor-based zoom and 3D globe grab via `rotateEventTypes`;
 `translateEventTypes` applies only to 2D/Columbus view ([controller reference](https://cesium.com/learn/cesiumjs/ref-doc/ScreenSpaceCameraController.html)).
-Camera height is bounded to 35 m–30,000 km. Tiles use SSE 12, 128 MiB cache plus 32 MiB overflow,
+Camera height is bounded to 35 m–30,000 km. Tiles use SSE 8, 128 MiB cache plus 32 MiB overflow,
 movement request culling, foveated SSE, fog and request-render mode. REPLACE splats keep skip-LOD off.
 Worker completion explicitly requests a frame so decoding/sorting can finish after camera movement stops.
 These are initial budgets, not measured GPU performance claims.
 
-Cesium 1.146 chooses its splat decoder using only the outer tileset's glTF declarations. The current
-published regional indexes omit those declarations. The app adds the pinned splat profile to an
-in-memory index and resolves its external URLs before loading it as one tileset. Release files, bounds,
-transforms and API responses remain unchanged; a regression test covers this compatibility adapter.
+Cesium 1.146 chooses its splat decoder using only the outer tileset's glTF declarations. The app loads
+each dataset's release tileset directly, and the publisher also repeats the releases' declarations on the
+regional indexes for other viewers.
 
 ## Validation
 
