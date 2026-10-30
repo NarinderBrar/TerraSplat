@@ -143,3 +143,19 @@ class IndexLink(BaseModel):
 
 class Health(BaseModel):
     status: Literal['ok'] = 'ok'
+
+
+class JobStage(BaseModel):
+    name: str
+    status: str
+    gpu: bool
+    elapsed_seconds: float | None
+
+
+class JobStatus(BaseModel):
+    name: str
+    stages_total: int
+    stages_done: int
+    state: Literal['running', 'failed', 'stopped', 'done', 'pending']
+    current: JobStage | None
+    updated_at: str | None

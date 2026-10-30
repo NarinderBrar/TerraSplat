@@ -45,3 +45,11 @@ output { display: block; font-variant-numeric: tabular-nums; }
 .class-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; list-style: none; padding: 0; margin: 8px 0; font-size: 12px; }
 .class-legend li { display: flex; align-items: center; gap: 5px; }
 .class-legend span { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.jobs { margin-top: 18px; font-size: 12px; color: #4f625f; }
+.jobs summary { cursor: pointer; font-weight: 600; }
+.jobs ul { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; max-height: 260px; overflow-y: auto; }
+.jobs li { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; }
+.jobs progress { width: 90px; height: 6px; }
+.jobs .job-state { grid-column: 1 / -1; color: #7a8b88; }
+.jobs .job-running .job-state { color: #1f7a5a; }
+.jobs .job-failed .job-state, .jobs-error { color: #b3261e; }

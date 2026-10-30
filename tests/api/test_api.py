@@ -129,3 +129,28 @@ def test_skyfall_quality_can_be_unmeasured_without_claiming_lidar_accuracy(tiled
         assert feature['properties']['headline_mae_m'] is None
         assert feature['properties']['source_label'] == cfg['source_label']
         assert feature['properties']['accuracy_label'] == cfg['accuracy_label']
+
+
+def test_jobs_endpoint_summarises_state_files_without_paths(tmp_path):
+    from services.api.main import job_status
+    jobs = tmp_path / 'jobs'
+    (jobs / 'grid-a1').mkdir(parents=True)
+    state = {'stages': {
+        'select': {'status': 'done', 'gpu': False, 'start_time': '2026-10-30T10:00:00+00:00', 'end_time': '2026-10-30T10:00:01+00:00'},
+        'training': {'status': 'running', 'gpu': True, 'start_time': '2026-10-30T10:01:00+00:00', 'end_time': None,
+                     'log_path': '/secret/path.log'},
+        'publish': {'status': 'pending', 'gpu': False}}}
+    (jobs / 'grid-a1' / 'job-state.json').write_text(json.dumps(state))
+    (jobs / 'broken').mkdir()
+    (jobs / 'broken' / 'job-state.json').write_text('{not json')
+    with TestClient(create_app(tmp_path / 'releases', jobs_dir=jobs)) as c:
+        body = c.get('/api/jobs').json()
+    assert [j['name'] for j in body] == ['grid-a1']
+    assert body[0]['stages_done'] == 1 and body[0]['stages_total'] == 3 and body[0]['state'] == 'running'
+    assert body[0]['current']['name'] == 'training' and body[0]['current']['gpu'] is True
+    assert 'secret' not in json.dumps(body)
+    stopped = {'stages': {'cpu': {'status': 'done', 'gpu': False, 'end_time': '2026-10-30T10:00:00+00:00'},
+                          'training': {'status': 'pending', 'gpu': True}}}
+    assert job_status('x', stopped)['state'] == 'stopped'
+    done = {'stages': {'cpu': {'status': 'done', 'gpu': False, 'end_time': '2026-10-30T10:00:00+00:00'}}}
+    assert job_status('x', done)['state'] == 'done'

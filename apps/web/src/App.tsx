@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { getDatasets, getDataset, getFootprints, getManifest, type Dataset, type DatasetDetail, type Footprint, type Manifest, type Release } from './api';
 import { footprintTooltip, formatBytes } from './format';
 import { Globe, isSkyfall, type MapStats, type Layers } from './globe';
+import { JobsPanel } from './JobsPanel';
 import { ReleasePanel } from './ReleasePanel';
 
 export function App() {
@@ -119,6 +120,7 @@ export function App() {
       </li>)}</ul>}
       {!dataset && <p className="hint">Start with the whole Earth. Enable footprints to discover available 3D blocks, or pan and zoom to explore.</p>}
       {dataset && <ReleasePanel dataset={dataset} release={release} manifest={manifest} busy={busy} onChange={r => { void switchRelease(r); }} />}
+      <JobsPanel />
       <label className="debug-toggle"><input type="checkbox" checked={reveal} onChange={e => { setReveal(e.target.checked); globe.current?.setReveal(e.target.checked); }} /> Reveal effects</label>
       <label className="debug-toggle"><input type="checkbox" checked={debug} onChange={e => { setDebug(e.target.checked); globe.current?.setDebug(e.target.checked); }} /> Tile diagnostics</label>
       {debug && <output data-testid="tile-stats">Loaded {stats.loaded} · visible {stats.visible} · {formatBytes(stats.bytes)} in memory</output>}

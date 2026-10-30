@@ -88,3 +88,12 @@ it('labels Skyfall source and unmeasured lidar without inventing a score', () =>
   expect(footprintTooltip(f)).not.toContain('lidar MAE');
   expect(captureRange({ train: ['unavailable'], holdout: ['unavailable'] })).toBe('Capture dates unavailable');
 });
+describe('pipeline jobs', () => {
+  it('validates the jobs payload', async () => {
+    const { parseJobs } = await import('../src/api');
+    const jobs = parseJobs([{ name: 'grid-1km-a1', stages_total: 16, stages_done: 8, state: 'stopped', current: null, updated_at: null }]);
+    expect(jobs[0].stages_done).toBe(8);
+    expect(() => parseJobs({})).toThrow('Invalid jobs');
+    expect(() => parseJobs([{ name: 'x' }])).toThrow();
+  });
+});

@@ -5,13 +5,14 @@ import mimetypes
 import os
 from pathlib import Path
 import re
+from datetime import datetime, timezone
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
 from services.api.models import (
-    Dataset, DatasetSummary, FeatureCollection, Health, IndexLink, Manifest, QualityReport, ReleaseSummary,
+    Dataset, DatasetSummary, FeatureCollection, Health, IndexLink, JobStatus, Manifest, QualityReport, ReleaseSummary,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -52,8 +53,32 @@ class ReleaseFiles(StaticFiles):
         return response
 
 
-def create_app(releases_dir=None, allowed_origins=None):
+def job_status(name, state, now=None):
+    """Summary of a pipeline.job state file: progress and the running or failed stage, without local paths."""
+    now = now or datetime.now(timezone.utc)
+    stages = state.get('stages', {})
+    done = sum(s.get('status') == 'done' for s in stages.values())
+    current = next(((n, s) for n, s in stages.items() if s.get('status') in ('running', 'failed')), None)
+    times = [t for s in stages.values() for t in (s.get('start_time'), s.get('end_time')) if t]
+    if current:
+        name_, stage = current
+        started = datetime.fromisoformat(stage['start_time']) if stage.get('start_time') else None
+        ended = datetime.fromisoformat(stage['end_time']) if stage.get('end_time') else now
+        elapsed = (ended - started).total_seconds() if started else None
+        current = {'name': name_, 'status': stage['status'], 'gpu': bool(stage.get('gpu')), 'elapsed_seconds': elapsed}
+    # A job stopped before a GPU stage (--no-gpu) has no running stage and pending GPU stages.
+    pending_gpu = any(s.get('status') != 'done' and s.get('gpu') for s in stages.values())
+    status = (current['status'] if current else 'done' if done == len(stages) and stages
+              else 'stopped' if done else 'pending')
+    if status == 'stopped' and not pending_gpu:
+        status = 'pending'
+    return {'name': name, 'stages_total': len(stages), 'stages_done': done, 'state': status, 'current': current,
+            'updated_at': max(times) if times else None}
+
+
+def create_app(releases_dir=None, allowed_origins=None, jobs_dir=None):
     directory = Path(releases_dir or os.environ.get('TERRASPLAT_RELEASES_DIR', ROOT / 'artifacts/releases')).resolve()
+    jobs = Path(jobs_dir or os.environ.get('TERRASPLAT_JOBS_DIR', ROOT / 'artifacts/jobs')).resolve()
     origins = allowed_origins if allowed_origins is not None else [
         origin.strip() for origin in os.environ.get('TERRASPLAT_CORS_ORIGINS', DEFAULT_ORIGINS).split(',')
         if origin.strip()]
@@ -140,6 +165,17 @@ def create_app(releases_dir=None, allowed_origins=None):
                 or not (directory / 'index' / region / 'tileset.json').is_file()):
             raise HTTPException(404, 'Region not found')
         return {'region': region, 'tileset_url': f'/releases/index/{region}/tileset.json'}
+
+    @app.get('/api/jobs')
+    def job_list() -> list[JobStatus]:
+        """Pipeline jobs under the jobs directory (one folder per job with job-state.json)."""
+        result = []
+        for path in sorted(jobs.glob('*/job-state.json')) if jobs.is_dir() else []:
+            try:
+                result.append(job_status(path.parent.name, json.loads(path.read_text())))
+            except (OSError, ValueError, KeyError):
+                continue  # a state file being rewritten; it is atomic, so skip until the next poll
+        return result
 
     app.mount('/releases', ReleaseFiles(directory=directory, check_dir=False), name='releases')
     return app

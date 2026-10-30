@@ -105,3 +105,18 @@ export async function getManifest(id: string, signal?: AbortSignal): Promise<Man
   strings(data.evidence);
   return data as unknown as Manifest;
 }
+export interface JobStatus {
+  name: string; stages_total: number; stages_done: number;
+  state: 'running' | 'failed' | 'stopped' | 'done' | 'pending';
+  current: { name: string; status: string; gpu: boolean; elapsed_seconds: number | null } | null;
+  updated_at: string | null;
+}
+export function parseJobs(value: unknown): JobStatus[] {
+  if (!Array.isArray(value)) throw new Error('Invalid jobs');
+  for (const job of value) {
+    const j = object(job);
+    field(j.name, 'string'); field(j.stages_total, 'number'); field(j.stages_done, 'number'); field(j.state, 'string');
+  }
+  return value as JobStatus[];
+}
+export const getJobs = async (signal?: AbortSignal) => parseJobs(await getJson('/api/jobs', signal));
