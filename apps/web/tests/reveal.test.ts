@@ -8,22 +8,22 @@ describe('splat reveal effects', () => {
   it('injects into the pinned Cesium splat shader and refuses unknown shaders', () => {
     const injected = injectRevealShader(shader)!;
     expect(injected).toContain('uniform highp sampler2D u_revealTexture;');
-    expect(injected).toContain('vec3 revealData = revealState(texIdx, splatPosition.xyz);');
-    expect(injected).toContain('#define PLACEHOLDER_SECONDS 5.0');
+    expect(injected).toContain('vec4 revealData = texelFetch(u_revealTexture,');
+    expect(injected).toContain('#define PLACEHOLDER_SECONDS 20.0');
     expect(injected).toContain('if (!revealing && dot(covVectors.xy');
     // The effect sits between the covariance and the end of main, leaving Cesium's code otherwise intact.
-    expect(injected.indexOf('revealState(texIdx')).toBeGreaterThan(injected.indexOf('calcCovVectors(splatViewPos.xyz, Vrk)'));
-    expect(injected.indexOf('if (revealing) {\n        // Points')).toBeLessThan(injected.indexOf('v_splitDirection = u_splitDirection;'));
+    expect(injected.indexOf('vec4 revealData')).toBeGreaterThan(injected.indexOf('calcCovVectors(splatViewPos.xyz, Vrk)'));
+    expect(injected.indexOf('if (revealing) {\n        // Appearing points')).toBeLessThan(injected.indexOf('v_splitDirection = u_splitDirection;'));
     expect(injectRevealShader(shader.replace('void main() {', 'void main(){'))).toBeUndefined();
   });
 
   it('lays out per-splat state in merge order and truncates like the splat budget', () => {
     const { data, width, height } = revealTexels([
-      { count: 3, arrival: 1.5, mode: Mode.None, placeholderSince: 4, },
-      { count: 4, arrival: 2.5, mode: Mode.Grow, placeholderSince: -1 }], 5, 4);
+      { count: 3, arrival: 1.5, mode: Mode.None, placeholderSince: 4, leaf: false },
+      { count: 4, arrival: 2.5, mode: Mode.Grow, placeholderSince: -1, leaf: true }], 5, 4);
     expect([width, height]).toEqual([4, 2]);
     expect(Array.from(data.subarray(0, 4))).toEqual([1.5, 0, 4, 0]);
-    expect(Array.from(data.subarray(12, 20))).toEqual([2.5, 2, -1, 0, 2.5, 2, -1, 0]);
+    expect(Array.from(data.subarray(12, 20))).toEqual([2.5, 2, -1, 1, 2.5, 2, -1, 1]);
     expect(Array.from(data.subarray(20))).toEqual(new Array(12).fill(0));
   });
 

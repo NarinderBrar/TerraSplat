@@ -123,5 +123,6 @@ Software rendering verifies correctness; it does not establish the 30 FPS target
 Follow-ups: real GPU FPS measurements on a fixed camera route (30 FPS target), jobs endpoint,
 semantic layers/queries, lidar DSM comparison when a delivery layer exists.
 
-Reveal effects: newly shown tiles sweep in as glowing points, then grow into their unchanged splats; refinement
-swaps instantly. Toggle "Reveal effects" in the panel; off for reduced motion. [Design](../../docs/REVEAL_EFFECTS.md).
+Reveal effects: coarse levels draw as a point cloud revealed bottom to top, glowing while LOD0 loads; LOD0 grows in
+bottom to top and renders unchanged. Blocks draw within 50 km and refine fully to LOD0 within 1 km. Toggle "Reveal
+effects" in the panel; off for reduced motion. [Design](../../docs/REVEAL_EFFECTS.md).

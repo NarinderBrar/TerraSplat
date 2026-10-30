@@ -27,6 +27,13 @@ function powerPreference(): WebGLPowerPreference {
   gl?.getExtension('WEBGL_lose_context')?.loseContext();
   return gl ? 'high-performance' : 'default';
 }
+// Splat blocks draw only within SPLAT_RANGE_M of the camera. Coarse levels render as a point cloud (reveal.ts), so
+// within FULL_DETAIL_M the whole block is refined to LOD0; otherwise Cesium would leave parts coarse (points) forever.
+const SPLAT_RANGE_M = 50_000;
+const FULL_DETAIL_M = 1_000;
+const FULL_DETAIL_SSE = 0.05;
+// Full detail needs the whole block resident (largest block: 38 MB of GLB, more once decoded).
+const FULL_DETAIL_CACHE_BYTES = 192 * 1024 * 1024;
 const tileOptions = {
   // 12 stopped at 2-4 m merged parents at 900 m (cars smeared); 8 reaches full-resolution leaves there.
   maximumScreenSpaceError: 8, cacheBytes: 128 * 1024 * 1024,
@@ -107,7 +114,7 @@ export class Globe {
     // Pinned 1.146 exposes this event at runtime but omits it from its declarations.
     const tasks = C.TaskProcessor as typeof C.TaskProcessor & { taskCompletedEvent: Cesium.Event };
     this.removeListeners.push(tasks.taskCompletedEvent.addEventListener(() => scene.requestRender()));
-    this.removeListeners.push(scene.preRender.addEventListener(() => this.visible.clear()));
+    this.removeListeners.push(scene.preRender.addEventListener(() => { this.visible.clear(); this.applyRange(); }));
     // Stats feed React state; emitting after every frame re-rendered the whole panel each frame.
     // Emit at most every STATS_INTERVAL_MS, with a trailing update once movement stops.
     this.removeListeners.push(scene.postRender.addEventListener(() => this.queueStats()));
@@ -236,10 +243,28 @@ export class Globe {
     if (id === 'skyfall-jax-068') return this.layers.overlap === 'skyfall';
     return true;
   }
+  /** Show blocks within SPLAT_RANGE_M and refine those within FULL_DETAIL_M completely (see the constants). */
+  private applyRange() {
+    const camera = this.viewer.camera.positionWC;
+    for (const [id, tileset] of this.indexes) {
+      const sphere = tileset.boundingSphere;
+      const distance = C.Cartesian3.distance(camera, sphere.center) - sphere.radius;
+      const show = this.datasetVisible(id) && distance < SPLAT_RANGE_M;
+      const full = distance < FULL_DETAIL_M;
+      const sse = full ? FULL_DETAIL_SSE : tileOptions.maximumScreenSpaceError;
+      const cache = full ? Math.max(FULL_DETAIL_CACHE_BYTES, this.cacheBudget) : this.cacheBudget;
+      if (tileset.show !== show || tileset.maximumScreenSpaceError !== sse || tileset.cacheBytes !== cache) {
+        tileset.show = show;
+        tileset.maximumScreenSpaceError = sse;
+        tileset.cacheBytes = cache;
+        this.viewer.scene.requestRender();
+      }
+    }
+  }
   setLayers(layers: Layers) {
     this.layers = layers;
-    for (const [id, tileset] of this.indexes) tileset.show = this.datasetVisible(id);
-    this.loadedUrls = [...this.indexes].filter(([, t]) => t.show).map(([, t]) => this.tileUrls.get(t)!);
+    this.applyRange();
+    this.loadedUrls = [...this.indexes].filter(([id]) => this.datasetVisible(id)).map(([, t]) => this.tileUrls.get(t)!);
     this.useGroundTerrain([...this.features.values()].filter(f => this.datasetVisible(f.properties.dataset_id)));
     this.viewer.scene.requestRender();
   }

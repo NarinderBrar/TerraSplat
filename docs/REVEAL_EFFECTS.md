@@ -4,23 +4,28 @@ Status: implemented 2026-10-30 in `apps/web/src/reveal.ts` (design below, as rev
 [splat-reveal-effects](https://github.com/sparkjsdev/spark/blob/main/examples/splat-reveal-effects/index.html)
 example, implemented inside our existing Cesium renderer.
 
-## Behaviour
+## Behaviour (revised 2026-10-30, third iteration)
 
-Each time Cesium merges the selected tiles, every tile is classified against the previous merge:
+Only LOD0 (leaf tiles) is ever drawn as splats. Coarse levels are a fixed-size point cloud (2 px), never scaled
+splats. Sweeps climb bottom to top over the block's height with per-point random jitter; there is no radial wave.
 
-| Situation | Look |
+| Stage | Look |
 | --- | --- |
-| **Full**: appears where nothing related was shown (first view, panning to a new area) | glowing points sweep in from the block centre (250 m/s), then grow into its splats |
-| **Grow**: replaces a shown ancestor (zooming in) | starts as points and grows into its splats (about 1 s) |
-| **None**: replaces shown descendants (zooming out), or was already shown | unchanged |
-| **Placeholder** (independent of the above): drawn only because its children are still loading | a pulsing "loading" cloud: each splat drawn at 25–45 % of its size, with a glow ripple travelling out from the block centre about once a second and a per-point shimmer; fades back to its splats after 5 s if the children never arrive |
+| 1. A coarse tile appears | its points are revealed bottom to top |
+| 2. A coarse tile is a placeholder (its children are loading) | a glow band rises bottom to top every 1.8 s, plus random sparkles; stops after 20 s if the children never arrive |
+| 3. A leaf tile appears | it grows from points into its splats bottom to top, then renders exactly as before |
+| Zooming out (coarse replaces shown leaves) | points, no sweep |
 
-Every tile ends exactly as it rendered before the effects existed; LOD0 is unchanged and is the final tile a user sees.
+Distances, set in `apps/web/src/globe.ts`:
+- **Beyond 50 km** from a block's bounding sphere, the block is not drawn; the base imagery stands in.
+- **Within 1 km**, the block is refined completely to LOD0 (`maximumScreenSpaceError` 0.05, cache raised to 192 MB). Without
+  this, Cesium leaves distant parts of a nearby block at a coarse level, which would stay points forever beside finished
+  splats.
+- In between, the block is a point cloud at Cesium's normal level of detail.
 
-History (2026-10-30): the first build kept coarse tiles as points permanently, which made mixed views a patchwork
-and was dropped. The second build animated only first appearances, so zooming back in showed blurry coarse tiles
-with no transition. The current rules treat a coarse tile by why it is on screen: dots only while it stands in for
-loading detail.
+History: (1) coarse tiles as permanent points made a patchwork; (2) animating only first appearances left blurry
+coarse tiles on zoom-in; (3) a radial "loading" wave and shrunken-splat placeholders were replaced, at the user's
+request, by bottom-to-top sweeps, random sparkles and fixed-size points.
 
 Effects change size, opacity and colour only, not splat positions (see *Performance*). Spark's spiral, rain and
 unroll effects move splats and are out of scope.

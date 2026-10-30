@@ -6,13 +6,15 @@ import type * as Cesium from 'cesium';
  * Cesium merges every selected tile of a tileset into one splat batch, so the GPU no longer knows a splat's tile.
  * We record the merge order by wrapping GaussianSplatPrimitive.transformTile (called once per tile, in merge order,
  * after the data generation is bumped), then give the committed snapshot a per-splat texture of tile state and
- * inject the effect into the splat vertex shader. Per merge, each tile is:
- * - FULL: appearing where nothing related was shown: glowing points sweep in from the block centre, then grow;
- * - GROW: replacing a shown ancestor (zooming in): starts as points and grows into its splats;
- * - NONE: replacing shown descendants (zooming out), or already shown: unchanged;
- * - a placeholder, independently: shown only because its children are still loading. It draws as points, fading back
- *   to its splats after PLACEHOLDER_SECONDS if the children never arrive.
- * Once a reveal finishes and no placeholder remains, the shader skips every change.
+ * inject the effect into the splat vertex shader.
+ *
+ * Only LOD0 (leaf tiles) is ever drawn as splats; coarse tiles are a point cloud. Sweeps run bottom to top over the
+ * block's height, with per-point random jitter:
+ * 1. a coarse tile appearing (mode FULL or GROW) reveals its points bottom to top;
+ * 2. while a coarse tile is a placeholder (drawn only because its children are loading), a glow band rises bottom to
+ *    top with random sparkles, for at most PLACEHOLDER_SECONDS;
+ * 3. a leaf tile appearing grows from points into its splats bottom to top, then renders exactly as before.
+ * Tiles replacing shown descendants (zooming out) or already shown (mode NONE) appear without a sweep.
  */
 
 // Exact text from Cesium 1.146 PrimitiveGaussianSplatVS.glsl; injection is skipped if any marker is missing.
@@ -23,69 +25,63 @@ const MARKERS = {
   end: 'v_splitDirection = u_splitDirection;',
 };
 
-export const PLACEHOLDER_SECONDS = 5;
+export const PLACEHOLDER_SECONDS = 20;
 export enum Mode { None = 0, Full = 1, Grow = 2 }
-export interface TileState { arrival: number; mode: Mode; placeholderSince: number }
+export interface TileState { arrival: number; mode: Mode; placeholderSince: number; leaf: boolean }
 
 const GLOBALS = /* glsl */ `
 uniform highp sampler2D u_revealTexture;
 uniform float u_revealNow;
-uniform float u_revealDuration;
-uniform float u_revealSpeed;
+uniform float u_revealSweep;
+uniform float u_revealFade;
 uniform float u_revealPointPx;
 uniform float u_revealAnimate;
+uniform vec2 u_revealHeight;
 
-// x: progress 0..1 (1 when not animating); y: placeholder point weight 0..1; z: mode (0 none, 1 full, 2 grow).
-vec3 revealState(uint index, vec3 position) {
-  uint rowMask = uint(u_splatRowMask);
-  vec4 data = texelFetch(u_revealTexture, ivec2(int(index & rowMask), int(index >> uint(u_splatRowShift))), 0);
-  if (u_revealAnimate < 0.5) return vec3(1.0, 0.0, 0.0);
-  float progress = 1.0;
-  if (data.y > 0.5) {
-    bool full = data.y < 1.5;
-    float delay = full ? length(position.xy) / u_revealSpeed : 0.0;
-    progress = clamp((u_revealNow - data.x - delay) / (full ? u_revealDuration : 0.55 * u_revealDuration), 0.0, 1.0);
-  }
-  float points = data.z >= 0.0 ? 1.0 - smoothstep(PLACEHOLDER_SECONDS - 1.0, PLACEHOLDER_SECONDS, u_revealNow - data.z) : 0.0;
-  return vec3(progress, points, data.y);
+float revealHash(vec3 p) {
+  return fract(sin(dot(p, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
 }
 `;
 
 const COVARIANCE = /* glsl */ `
-    vec3 revealData = revealState(texIdx, splatPosition.xyz);
-    float reveal = revealData.x;
-    bool revealing = reveal < 1.0 || revealData.y > 0.0;
-    bool growOnly = revealData.z > 1.5;
-    // FULL: points appear behind the sweep (0..0.45), then grow into splats (0.45..1). GROW: points grow (0..1).
-    float revealPoints = growOnly ? 1.0 : smoothstep(0.0, 0.45, reveal);
-    float revealGrow = min(growOnly ? smoothstep(0.0, 1.0, reveal) : smoothstep(0.45, 1.0, reveal), 1.0 - revealData.y);
-    // Loading pulse for placeholder points: a ripple travelling out from the block centre about once a second,
-    // offset per point so the cloud shimmers rather than flashing in unison.
-    float revealJitter = fract(sin(dot(splatPosition.xyz, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
-    float revealPulse = revealData.y * (0.5 + 0.5 * sin(6.2831853 * (u_revealNow - length(splatPosition.xy) / 120.0
-        + 0.35 * revealJitter)));
+    uint revealRowMask = uint(u_splatRowMask);
+    vec4 revealData = texelFetch(u_revealTexture,
+        ivec2(int(texIdx & revealRowMask), int(texIdx >> uint(u_splatRowShift))), 0);
+    bool revealLeaf = revealData.w > 0.5;
+    // Height within the block 0..1 and per-point jitter give a bottom-to-top sweep with a noisy edge.
+    float revealH = clamp((splatPosition.z - u_revealHeight.x) / max(u_revealHeight.y - u_revealHeight.x, 1.0), 0.0, 1.0);
+    float revealJitter = revealHash(splatPosition.xyz);
+    float reveal = 1.0;
+    if (u_revealAnimate > 0.5 && revealData.y > 0.5) {
+        reveal = clamp((u_revealNow - revealData.x - revealH * u_revealSweep - 0.3 * revealJitter) / u_revealFade, 0.0, 1.0);
+    }
+    float revealLoading = 0.0;
+    if (u_revealAnimate > 0.5 && revealData.z >= 0.0) {
+        revealLoading = 1.0 - smoothstep(PLACEHOLDER_SECONDS - 2.0, PLACEHOLDER_SECONDS, u_revealNow - revealData.z);
+    }
+    // Coarse tiles are always points; leaf tiles are points until their sweep reaches them, then grow into splats.
+    bool revealing = !revealLeaf || reveal < 1.0;
+    float revealGrow = revealLeaf ? smoothstep(0.0, 1.0, reveal) : 0.0;
     if (revealing) {
-        if (revealPoints <= 0.0) {
+        float pointPx = u_revealPointPx * (revealLeaf ? 1.0 : reveal);
+        if (pointPx <= 0.0) {
             gl_Position = discardVec;
             return;
         }
-        float pointPx = u_revealPointPx * revealPoints * (1.0 + 0.6 * revealPulse);
-        vec4 revealAxes = vec4(pointPx, 0.0, 0.0, pointPx);
-        if (revealData.y > 0.0) {
-            // Placeholders are sparse coarse tiles: draw each splat as a shrunken copy of itself (25-45%, breathing
-            // with the pulse) so the cloud stays visible, but never smaller than a point.
-            vec4 shrunk = covVectors * (0.25 + 0.2 * revealPulse / revealData.y);
-            if (dot(shrunk.xy, shrunk.xy) > pointPx * pointPx) revealAxes = mix(revealAxes, shrunk, revealData.y);
-        }
-        covVectors = mix(revealAxes, covVectors, revealGrow);
+        covVectors = mix(vec4(pointPx, 0.0, 0.0, pointPx), covVectors, revealGrow);
     }
 `;
 
 const COLOUR = /* glsl */ `
     if (revealing) {
-        // Points stay visible regardless of splat opacity; a glow marks the sweep front and fades as splats grow.
-        float glow = (reveal < 1.0 ? (growOnly ? 0.3 : 0.6) * exp(-10.0 * reveal) : 0.0) + 0.55 * revealPulse;
-        v_splatColor.a = mix(max(v_splatColor.a, 0.6 + 0.35 * revealPulse + 0.25 * (1.0 - revealData.y)), v_splatColor.a, revealGrow);
+        // Appearing points flash briefly; loading points carry a glow band rising bottom to top plus random sparkles.
+        float glow = 0.5 * (1.0 - reveal);
+        if (revealLoading > 0.0) {
+            float band = fract((u_revealNow - revealData.z) / 1.8);
+            glow += revealLoading * 0.6 * exp(-pow((revealH - band) * 7.0, 2.0));
+            glow += revealLoading * 0.7 * step(0.94, revealHash(splatPosition.xyz + floor(u_revealNow * 6.0)));
+        }
+        v_splatColor.a = mix(max(v_splatColor.a, 0.85), v_splatColor.a, revealGrow);
         v_splatColor.rgb = min(v_splatColor.rgb + glow * vec3(0.55, 0.85, 1.0), vec3(1.0));
     }
 `;
@@ -100,14 +96,14 @@ export function injectRevealShader(source: string): string | undefined {
     .replace(MARKERS.end, COLOUR + MARKERS.end);
 }
 
-/** Per-splat (arrival, mode, placeholder-since or -1, 0) in Cesium's row layout, truncated like Cesium's splat budget. */
+/** Per-splat (arrival, mode, placeholder-since or -1, leaf) in Cesium's row layout, truncated like Cesium's splat budget. */
 export function revealTexels(tiles: (TileState & { count: number })[], numSplats: number, rowWidth: number) {
   const height = Math.max(1, Math.ceil(numSplats / rowWidth));
   const data = new Float32Array(rowWidth * height * 4);
   let offset = 0;
   for (const tile of tiles) {
     const end = Math.min(offset + tile.count, numSplats);
-    for (let i = offset; i < end; i++) data.set([tile.arrival, tile.mode, tile.placeholderSince, 0], 4 * i);
+    for (let i = offset; i < end; i++) data.set([tile.arrival, tile.mode, tile.placeholderSince, tile.leaf ? 1 : 0], 4 * i);
     offset += tile.count;
     if (offset >= numSplats) break;
   }
@@ -154,13 +150,14 @@ export class Reveal {
   /** False when Cesium's internals differ from 1.146; the viewer then renders exactly as before. */
   readonly installed: boolean;
   animate = !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  duration = 1.8;
-  speed = 250; // metres per second for the sweep from the block centre
-  pointPx = 1.6;
+  sweep = 1.4; // seconds for a sweep to climb from the bottom to the top of the block
+  fade = 0.5; // seconds for one point to appear or grow once the sweep reaches it
+  pointPx = 2.0;
   private readonly start = performance.now() / 1000;
   private readonly states = new WeakMap<Tile, TileState>();
   private readonly merges = new WeakMap<Primitive, Map<number, Merge>>();
-  private readonly textures = new WeakMap<Primitive, { generation: number; texture: GpuObject; context: unknown }>();
+  private readonly textures = new WeakMap<Primitive,
+    { generation: number; texture: GpuObject; context: unknown; height: Cesium.Cartesian2 }>();
   private readonly committed = new Set<Primitive>();
   /** Counts by mode in the latest committed merge, for diagnostics and tests. */
   readonly stats = { merges: 0, full: 0, grow: 0, none: 0, placeholders: 0 };
@@ -237,14 +234,14 @@ export class Reveal {
     const mode = appearance(tile, new Set(previous?.tiles ?? []));
     // Kept tiles continue their animation; new appearances restart it.
     const state: TileState = mode === Mode.None && prior && previous?.tiles.includes(tile)
-      ? { ...prior } : { arrival: now, mode, placeholderSince: -1 };
+      ? { ...prior } : { arrival: now, mode, placeholderSince: -1, leaf: tile.children.length === 0 };
     const placeholder = Reveal.isPlaceholder(tile);
     state.placeholderSince = placeholder ? (prior && prior.placeholderSince >= 0 ? prior.placeholderSince : now) : -1;
     this.states.set(tile, state);
     merge.tiles.push(tile);
     merge.states.push(state);
     merge.counts.push(tile.content.pointsLength);
-    if (state.mode !== Mode.None) this.busyUntil = Math.max(this.busyUntil, state.arrival + 375 / this.speed + this.duration);
+    if (state.mode !== Mode.None) this.busyUntil = Math.max(this.busyUntil, state.arrival + this.sweep + this.fade + 0.3);
     if (placeholder) this.busyUntil = Math.max(this.busyUntil, state.placeholderSince + PLACEHOLDER_SECONDS);
   }
 
@@ -280,8 +277,9 @@ export class Reveal {
       // Read through the cache: placeholder refreshes replace the texture without rebuilding the command.
       u_revealTexture: () => this.textures.get(primitive)?.texture,
       u_revealNow: () => this.now(),
-      u_revealDuration: () => this.duration,
-      u_revealSpeed: () => this.speed,
+      u_revealSweep: () => this.sweep,
+      u_revealFade: () => this.fade,
+      u_revealHeight: () => this.textures.get(primitive)?.height,
       u_revealPointPx: () => this.pointPx,
       u_revealAnimate: () => (this.animate ? 1 : 0),
     });
@@ -300,7 +298,12 @@ export class Reveal {
       sampler: new R.Sampler({ minificationFilter: C.TextureMinificationFilter.NEAREST,
         magnificationFilter: C.TextureMagnificationFilter.NEAREST }),
     });
-    const cached = { generation: merge.generation, texture, context };
+    // Bottom-to-top sweeps span the merged splats' height in the primitive's ENU frame (z up).
+    const positions = (primitive as unknown as { _positions?: Float32Array })._positions;
+    let low = Infinity, high = -Infinity;
+    if (positions) for (let i = 2; i < positions.length; i += 3 * 37) { low = Math.min(low, positions[i]); high = Math.max(high, positions[i]); }
+    const height = Number.isFinite(low) ? new C.Cartesian2(low, high) : new C.Cartesian2(-50, 150);
+    const cached = { generation: merge.generation, texture, context, height };
     this.textures.set(primitive, cached);
     this.scene.requestRender();
     return cached;
