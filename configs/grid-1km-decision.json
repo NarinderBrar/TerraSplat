@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "grid-1km-lidar-cells",
+  "declared_on": "2026-10-30",
+  "training_executed": false,
+  "scope": "Cells A2, A3, B2, B3 of configs/jax068-grid-1km.json and their four shared seams, where the DFC2019 JAX_068 lidar reaches (about 26% of each cell). The other 12 cells have no independent reference and are labelled unmeasured.",
+  "baseline": {
+    "model": "jax068-2015-19v-r1 (single central 19-view recipe block): artifacts/stage1/pilot-2015-19v-recipe-01/export-r2 with depth-r2",
+    "method": "pipeline.dsm_validation with --grid configs/jax068-grid-1km.json --cell <cell>; registered all-labelled MAE on the same lidar pixels as each grid cell will use",
+    "registered_all_labelled_mae_m": {
+      "A2": 1.3947,
+      "A3": 1.0828,
+      "B2": 1.8789,
+      "B3": 1.0915
+    },
+    "evidence": "training/grid-1km-baseline/<cell>-dsm-validation.json"
+  },
+  "rules": {
+    "cell_mae_max_excess_over_baseline_m": 0.3,
+    "seam_band_mae_max_excess_over_interior_m": 0.5,
+    "seam_residual_step_ground_max_abs_m": 0.5,
+    "seam_residual_step_all_max_abs_m": 1.0,
+    "ownership_doubled_centres_max": 0,
+    "min_lidar_coverage_fraction": 0.2
+  },
+  "seams": {
+    "A2|A3": "east = 0 m, north 0..128 m (vertical)",
+    "B2|B3": "east = 0 m, north -128..0 m (vertical)",
+    "A2|B2": "north = 0 m, east -128..0 m (horizontal)",
+    "A3|B3": "north = 0 m, east 0..128 m (horizontal)"
+  },
+  "justification": {
+    "cell_mae": "Same-area comparison with the single-block model (lesson 1 of docs/phase3/SPLIT_RESULT.md); 0.3 m is the existing class-regression budget. The split experiment measured +0.02/+0.04 m for the same comparison.",
+    "seam_band": "Unchanged from the split experiment's rule (0.5 m excess over each cell's interior, \u00b110 m band).",
+    "seam_step": "Residual: the model's median height step across the seam minus the lidar's own step over the same 10 m strips (lesson 2). Limits as in the split experiment, which measured 0.33 m (ground) and 0.14 m (all).",
+    "coverage": "Each cell has about 26% lidar coverage (about 60,000 labelled pixels); below 20% a result is inconclusive, never a pass."
+  },
+  "outcome": "Report per cell and seam. Passing cells and seams may be activated in the app; failures are published inactive with the measurement and discussed before activation. Thresholds are not changed after training."
+}
