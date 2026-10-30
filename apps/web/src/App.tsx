@@ -105,14 +105,14 @@ export function App() {
         <label><input type="checkbox" checked={layers.skyfall} onChange={e => changeLayers({ ...layers, skyfall: e.target.checked })} /> Skyfall scenes</label>
         <label htmlFor="overlap">JAX_068 overlap</label>
         <select id="overlap" value={layers.overlap} onChange={e => changeLayers({ ...layers, overlap: e.target.value as Layers['overlap'] })}>
-          <option value="skyfall">Skyfall Stage 1</option><option value="pipeline">Pipeline 2015</option>
+          <option value="skyfall">Skyfall</option><option value="pipeline">Pipeline 2015</option>
         </select>
       </fieldset>
       <button className="footprints-toggle" aria-pressed={showFootprints} disabled={!ready} onClick={() => {
         const next = !showFootprints; setShowFootprints(next); globe.current?.showFootprints(next); setTooltip({ text: '', x: 0, y: 0 });
       }}>◇ &nbsp; 3D Footprints</button>
       {showFootprints && <ul className="footprint-list">{footprints.map(f => <li key={f.properties.release_id}>
-        <button title={footprintTooltip(f)} onClick={() => choose(f)}>{f.properties.title}<span>{f.properties.dataset_id.startsWith('skyfall-') ? 'TerraSplat Stage 1 · visual registration' : 'Pipeline 2015 · known anchor'} · fly to block ↗</span></button>
+        <button title={footprintTooltip(f)} onClick={() => choose(f)}>{f.properties.title}<span>{f.properties.dataset_id.startsWith('skyfall-') ? `${f.properties.source_label ?? 'Skyfall'} · visual registration` : 'Pipeline 2015 · known anchor'} · fly to block ↗</span></button>
       </li>)}</ul>}
       {!dataset && <p className="hint">Start with the whole Earth. Enable footprints to discover available 3D blocks, or pan and zoom to explore.</p>}
       {dataset && <ReleasePanel dataset={dataset} release={release} manifest={manifest} busy={busy} onChange={r => { void switchRelease(r); }} />}

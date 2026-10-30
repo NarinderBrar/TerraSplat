@@ -96,17 +96,21 @@ def verify_frame(source, registration):
             "limitation": "Frame compatibility only; final-model landmarks are not independent Stage 1 accuracy"}
 
 
+def placed_georeference(registration, core_model_xy=(0, 0)):
+    anchor = registration_placement(registration, 0, core_model_xy)["anchor"]
+    height, method = ground_ellipsoid(anchor["longitude"], anchor["latitude"], registration["scene"][:3])
+    geo = registration_placement(registration, height, core_model_xy)
+    geo["vertical_method"] = "TerraScope calibrated groundZ mapped to " + method
+    return geo
+
+
 def place(run, source, registration_path, output, depth_points=None, core_model_xy=(0, 0)):
     run, output = Path(run), Path(output)
     if output.exists():
         raise ValueError("Use a new placed export directory")
     registration = json.loads(Path(registration_path).read_text())
     frame = verify_frame(source, registration)
-    preliminary = registration_placement(registration, 0, core_model_xy)
-    anchor = preliminary["anchor"]
-    height, method = ground_ellipsoid(anchor["longitude"], anchor["latitude"], registration["scene"][:3])
-    geo = registration_placement(registration, height, core_model_xy)
-    geo["vertical_method"] = "TerraScope calibrated groundZ mapped to " + method
+    geo = placed_georeference(registration, core_model_xy)
     original = run / "export/export-manifest.json"
     manifest = json.loads(original.read_text())
     if manifest["status"] != "exported":

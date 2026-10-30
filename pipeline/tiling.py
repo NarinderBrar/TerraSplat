@@ -355,13 +355,15 @@ def plan(export_dir, output, profile):
     fused = Path(manifest["fused_ply"]["path"])
     if digest(fused) != manifest["fused_ply"]["sha256"]:
         raise ValueError("Fused PLY changed after export")
-    training = json.loads((Path(manifest["run_directory"]) / "training-report.json").read_text())
+    # Models trained elsewhere have no run directory; their manifest names the scene they were trained on.
+    scene = manifest.get("camera_scene") or json.loads(
+        (Path(manifest["run_directory"]) / "training-report.json").read_text())["input_scene"]
     georeference = manifest["georeference"]
 
     splats = read_fused_ply(fused)
     if len(splats["centres"]) != manifest["splat_count"]:
         raise ValueError("Fused PLY splat count differs from the export manifest")
-    cameras = camera_centres(training["input_scene"])
+    cameras = camera_centres(scene)
     splats["dc"] = bake_view_colour(splats["centres"], splats["dc"], splats["rest"], cameras)
     splats["rest"] = np.zeros((len(splats["centres"]), 0, 3))
     splats = to_enu(splats, georeference["model_to_enu"])

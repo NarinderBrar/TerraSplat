@@ -11,7 +11,8 @@ Prepared data: `jayinnn/Skyfall-GS-datasets`, revision
 `82bcd8ae044afcf3182d335a47d0694ba2b4daa2`, 2,337,656,814 bytes at
 `../Ref/Skyfall-GS/data`. The local download manifest records every file hash.
 The pinned [dataset card](https://huggingface.co/datasets/jayinnn/Skyfall-GS-datasets/blob/82bcd8ae044afcf3182d335a47d0694ba2b4daa2/README.md) declares Apache-2.0.
-No finished `*_final.ply` is used. Reference inputs and TerraScope stay read-only.
+The authors' finished `*_final.ply` models are used only for the finished-model
+releases below, never for training. Reference inputs and TerraScope stay read-only.
 
 `configs/train-ref-jax068-recipe.json` fixes the authors' Stage 1 flags:
 30k iterations, appearance model, SH 1, live MoGe pseudo-depth weight 0.5,
@@ -99,3 +100,39 @@ Visual registrations were measured on those final models; shared prepared frames
 are compatible, but local Stage 1 distortions can differ. Approximate flat ground
 patches may have seams. Capture dates are unavailable in the prepared inputs;
 NYC scenes are synthetic. No production or raw-imagery provenance is claimed.
+
+## Authors' finished models
+
+Every Skyfall dataset's active release is now the authors' finished model, from
+[`jayinnn/Skyfall-GS-ply`](https://huggingface.co/jayinnn/Skyfall-GS-ply/tree/cdd48ec6ad5177afba2e57d28ddb86118143009c)
+at revision `cdd48ec6ad5177afba2e57d28ddb86118143009c` (Apache-2.0). The files are kept read-only at
+`../Ref/Skyfall-GS/data/final-ply-cdd48ec`, with their hashes in `SHA256SUMS`. Our Stage 1 JAX_068
+(`skyfall-jax-068-stage1-r1`, 1.38 m lidar MAE) is still a release of `skyfall-jax-068` and can be picked in the
+release panel.
+
+Run `.venv-imagery/bin/python -u -m pipeline.skyfall_final [--scenes ...]`. It writes a placed export manifest
+under `artifacts/skyfall/<scene>/final-placed/` and then reuses the tiler, the SPZ encoder and the publisher.
+TerraScope measured its registrations on these same models, so `placed_georeference` applies them directly. The
+tiler bakes SH colour over the cameras in the scene's `transforms_train.json` (`camera_scene`), because these
+models have no training run. Display ground comes from the top surface of the opaque (alpha > 0.5) splat centres.
+For JAX_068 this matches the Stage 1 rendered-depth ground to within 4 mm. Crops and tile profiles match the
+Stage 1 ones.
+
+| Scene | Model splats | Core splats | Tiles / levels | GLB bytes |
+| --- | ---: | ---: | ---: | ---: |
+| JAX_004 | 1,524,134 | 759,990 | 85 / 4 | 15,218,268 |
+| JAX_068 | 2,309,268 | 866,196 | 117 / 5 | 19,471,076 |
+| JAX_164 | 2,792,816 | 941,323 | 169 / 5 | 24,059,964 |
+| JAX_168 | 2,548,531 | 988,755 | 181 / 5 | 25,438,404 |
+| JAX_175 | 2,236,547 | 843,843 | 117 / 5 | 19,247,972 |
+| JAX_214 | 2,135,548 | 952,822 | 201 / 5 | 25,975,660 |
+| JAX_260 | 2,183,823 | 931,575 | 149 / 5 | 21,871,196 |
+| JAX_264 | 2,624,195 | 874,729 | 113 / 5 | 19,260,940 |
+| NYC_004 | 2,344,147 | 1,444,036 | 293 / 7 | 38,452,448 |
+| NYC_010 | 3,083,544 | 1,193,841 | 273 / 5 | 34,167,980 |
+| NYC_219 | 3,117,175 | 1,192,960 | 277 / 5 | 34,257,028 |
+| NYC_336 | 2,052,721 | 578,461 | 93 / 5 | 14,445,784 |
+
+Leaves stay within 268–278 KB. SPZ clamps 6 log-scale components in JAX_264 and none elsewhere. Lidar error, holdout
+PSNR and horizontal offset are not measured for these releases (`null`). They need the Skyfall renderer to
+produce depth from the finished models. Coarse parent levels look blobby at around 900 m; LOD tuning is pending.

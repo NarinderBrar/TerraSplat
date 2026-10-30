@@ -153,7 +153,7 @@ def footprint(plan):
         min(heights), max(heights)]
 
 
-def ground_height(points_path, plan, cell_m=1.0, bin_m=0.5):
+def ground_height(points_path, plan, cell_m=1.0, bin_m=0.5, surface_name='rendered-depth DSM'):
     """Display ground: the most common height of the model's own rendered-depth DSM inside the owned crop.
 
     Points are ENU metres about the plan's anchor. The value comes from the model, not the lidar, so the
@@ -173,7 +173,7 @@ def ground_height(points_path, plan, cell_m=1.0, bin_m=0.5):
     low = edges[counts.argmax()]
     mode = float(np.median(surface[(surface >= low) & (surface < low + bin_m)]))
     return {'ellipsoidal_height_m': plan['enu_anchor']['ellipsoidal_height_m'] + mode,
-            'method': (f'median of the modal {bin_m:g} m bin of the rendered-depth DSM ({cell_m:g} m cells) '
+            'method': (f'median of the modal {bin_m:g} m bin of the {surface_name} ({cell_m:g} m cells) '
                        'inside the owned crop'),
             'source_sha256': sha256(points_path)}
 
@@ -302,7 +302,9 @@ def publish(config_path, directory, make_active=False):
                     value = value[int(part)] if isinstance(value, list) else value[part]
                 quality[key] = value
             geometry, bbox = footprint(plan)
-            ground = ground_height(ROOT / config['ground_points'], plan) if 'ground_points' in config else None
+            ground = ground_height(ROOT / config['ground_points'], plan,
+                                   surface_name=config.get('ground_surface', 'rendered-depth DSM')) \
+                if 'ground_points' in config else None
             files = {p.relative_to(staging).as_posix(): sha256(p) for p in sorted(staging.rglob('*')) if p.is_file()}
             for name, expected in hashes.items():
                 if files[name] != expected:

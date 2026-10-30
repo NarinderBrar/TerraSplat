@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 
 test('Skyfall visibility, coarse-to-fine streaming and overlap layers', async ({ page }, info) => {
-  test.skip(!existsSync('../../artifacts/releases/skyfall-jax-068-stage1-r1/release.json'), 'Publish Stage 1 JAX_068 first');
+  test.skip(!existsSync('../../artifacts/releases/skyfall-jax-068-final-r1/release.json'), 'Publish the finished JAX_068 model first');
   const errors = [], glbs = [], external = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('request', r => {
@@ -38,9 +38,11 @@ test('Skyfall visibility, coarse-to-fine streaming and overlap layers', async ({
   expect(far.filter(u => u.includes('jax068-2015'))).toHaveLength(0);
   await camera(220, 0.0015, 0.0013);
   await expect.poll(() => page.evaluate(() => window.terra.stats().visible), { timeout: 120000 }).toBeGreaterThan(1);
+  // Deeper trees refine over several passes; tilesReady can be true between them.
+  await expect.poll(() => new Set(glbs.filter(u => u.includes('skyfall-jax-068'))).size, { timeout: 120000 }).toBeGreaterThan(1);
   await expect.poll(() => page.evaluate(() => window.terra.tilesReady()), { timeout: 120000 }).toBe(true);
   const fixedRequests = [...new Set(glbs.filter(u => u.includes('skyfall-jax-068')))];
-  const total = await page.evaluate(() => fetch('/api/releases/skyfall-jax-068-stage1-r1').then(r => r.json()).then(m => m.tile_count));
+  const total = await page.evaluate(() => fetch('/api/releases/skyfall-jax-068-final-r1').then(r => r.json()).then(m => m.tile_count));
   expect(fixedRequests.length).toBeGreaterThan(1);
   expect(fixedRequests.length).toBeLessThan(total);
   await writeFile(info.outputPath('streaming.json'), JSON.stringify({ far, fixedRequests, total }, null, 2));

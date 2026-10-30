@@ -1,0 +1,71 @@
+{
+  "dataset_id": "skyfall-nyc-010",
+  "dataset_title": "Skyfall NYC_010",
+  "region": "new-york",
+  "release_id": "skyfall-nyc-010-final-r1",
+  "title": "Skyfall NYC_010 \u00b7 authors' finished model",
+  "description": "Skyfall-GS authors' finished model (jayinnn/Skyfall-GS-ply, Apache-2.0); visually registered by TerraScope (about 1.3-3.8 m); vertical approximate; not produced from TerraSplat's raw-imagery pipeline",
+  "tiles_dir": "artifacts/tiles/skyfall-nyc-010-final-r1",
+  "stage1_run_dir": "../Ref/Skyfall-GS/data/final-ply-cdd48ec/NYC_010_final.ply",
+  "evidence": [
+    "training/skyfall-nyc-010-final.json"
+  ],
+  "capture_dates": {
+    "train": [
+      "unavailable"
+    ],
+    "holdout": [
+      "unavailable"
+    ]
+  },
+  "quality_sources": {
+    "registered_lidar_mae_all_m": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/registered_lidar_mae_all_m"
+    },
+    "registered_lidar_mae_ground_m": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/registered_lidar_mae_ground_m"
+    },
+    "registered_lidar_mae_buildings_m": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/registered_lidar_mae_buildings_m"
+    },
+    "registered_lidar_mae_vegetation_m": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/registered_lidar_mae_vegetation_m"
+    },
+    "registered_lidar_rmse_m": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/registered_lidar_rmse_m"
+    },
+    "horizontal_offset_m": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/horizontal_offset_m"
+    },
+    "completeness": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/completeness"
+    },
+    "holdout_psnr_db": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/holdout_psnr_db"
+    },
+    "splats": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/splats"
+    },
+    "tiles": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/tiles"
+    },
+    "glb_bytes": {
+      "file": "training/skyfall-nyc-010-final.json",
+      "pointer": "/quality/glb_bytes"
+    }
+  },
+  "ground_points": "artifacts/skyfall/NYC_010/final-placed/surface-points.npz",
+  "ground_surface": "opaque splat-centre surface",
+  "source_label": "Skyfall-GS authors' finished model",
+  "accuracy_label": "TerraScope visual registration ~1.3\u20133.8 m; vertical approximate"
+}

@@ -1,0 +1,1683 @@
+{
+  "scene": "JAX_264",
+  "label": "Skyfall-GS authors' finished model (jayinnn/Skyfall-GS-ply, Apache-2.0); visually registered by TerraScope (about 1.3-3.8 m); vertical approximate; not produced from TerraSplat's raw-imagery pipeline",
+  "quality": {
+    "registered_lidar_mae_all_m": null,
+    "registered_lidar_mae_ground_m": null,
+    "registered_lidar_mae_buildings_m": null,
+    "registered_lidar_mae_vegetation_m": null,
+    "registered_lidar_rmse_m": null,
+    "horizontal_offset_m": null,
+    "completeness": null,
+    "holdout_psnr_db": null,
+    "splats": 874729,
+    "tiles": 113,
+    "glb_bytes": 19260940
+  },
+  "model": {
+    "repository": "jayinnn/Skyfall-GS-ply",
+    "revision": "cdd48ec6ad5177afba2e57d28ddb86118143009c",
+    "file": "JAX_264_final.ply",
+    "sha256": "ae3503b936aac5cdbb8363154d7762e2f221d7eb8486bbb8ee620cc9df03f359",
+    "splats": 2624195
+  },
+  "holdout_used_for_training_or_selection": "unknown; trained by the authors",
+  "placement": {
+    "registration_sha256": "3b684839cb779bc0dc4b2c83d17d5ea53f21ac5ad997941ccd7dbe0b35750937",
+    "frame_check": {
+      "normalization": {
+        "rotation": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": 1.0,
+        "z_shift": 0.0
+      },
+      "sparse_points": 89947,
+      "p01_model": [
+        -336.3297641263912,
+        -347.09639877659924,
+        20.695975081017504
+      ],
+      "p99_model": [
+        337.5454079255052,
+        341.235897355756,
+        47.31183890171814
+      ],
+      "registration_raster_contains_sparse_core": true,
+      "limitation": "Frame compatibility only; final-model landmarks are not independent Stage 1 accuracy"
+    },
+    "label": "Skyfall-GS authors' finished model (jayinnn/Skyfall-GS-ply, Apache-2.0); visually registered by TerraScope (about 1.3-3.8 m); vertical approximate; not produced from TerraSplat's raw-imagery pipeline",
+    "vertical_method": "TerraScope calibrated groundZ mapped to EGM96 egm96_15.gtx via pyproj; approximate city orthometric street 12 m"
+  },
+  "anchor": {
+    "longitude": -81.6528551421137,
+    "latitude": 30.31190308097151,
+    "ellipsoidal_height_m": -17.71405084113903
+  },
+  "crop": {
+    "frame": "metric ENU square centred on the anchor",
+    "half_extent_m": 250,
+    "input_splats": 2624195,
+    "owned_splats": 874729,
+    "removed_splats": 1749466,
+    "owned_z_range_m": [
+      -94.40773667072835,
+      79.4918741479395
+    ],
+    "max_extent_m": 38.06039523632438,
+    "p99_extent_m": 15.349272378155101
+  },
+  "levels": 5,
+  "encoding": {
+    "tiles": {
+      "r": {
+        "splats": 3298,
+        "glbBytes": 58352,
+        "glbSha256": "934870eadf4fa5f0c80c6291b1caac9a786223ca943b1def384d004b7e195718",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019595254833759124,
+        "scaleError": 0.03124701976776123
+      },
+      "r0": {
+        "splats": 3791,
+        "glbBytes": 67052,
+        "glbSha256": "3de915e5a237fc2bfc2217c72aa89ddf7248d09f8ed15d4856ba348244312e8f",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019598177917948822,
+        "scaleError": 0.031248807907104492
+      },
+      "r00": {
+        "splats": 4790,
+        "glbBytes": 84500,
+        "glbSha256": "e6e342e7358df58a8a9b792a7f295616cab9e4b20e6de7e42f71ea58f3cf230c",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019594434438697794,
+        "scaleError": 0.0312483012676239
+      },
+      "r000": {
+        "splats": 15381,
+        "glbBytes": 268864,
+        "glbSha256": "ceacd733db5a11ae3f95af8939234590225188ab1c0424adc0064304b2af6320",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019605282176119454,
+        "scaleError": 0.031249523162841797
+      },
+      "r001": {
+        "splats": 13179,
+        "glbBytes": 229324,
+        "glbSha256": "e988e93fe8256e6415d2c439fdfa0c49f31140af5841987fd1e0cad16bd73033",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960399522255074,
+        "scaleError": 0.03125011920928955
+      },
+      "r002": {
+        "splats": 15374,
+        "glbBytes": 266132,
+        "glbSha256": "aa83d3cc06f1691d67c3990c62be90d2fd948130b3ae1fe80e415a5abb535b32",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607417152163187,
+        "scaleError": 0.031249523162841797
+      },
+      "r0020": {
+        "splats": 3705,
+        "glbBytes": 65776,
+        "glbSha256": "7b76eccebde3a5c496553bda463149baf0fbf8d9c06d184da51427b4717b8b25",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607417152163187,
+        "scaleError": 0.031249523162841797
+      },
+      "r0021": {
+        "splats": 4641,
+        "glbBytes": 83412,
+        "glbSha256": "da4964432429d496e7d333b9b1a6a05dbcecd5724ebdf4eca1d9dd31d8757908",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019602225963425424,
+        "scaleError": 0.031249340623617172
+      },
+      "r0022": {
+        "splats": 4188,
+        "glbBytes": 74856,
+        "glbSha256": "c786dee065422b115dd97efce1f3812a3004853fd1a97afb6e7cff0a907c9543",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960544208897408,
+        "scaleError": 0.031248390674591064
+      },
+      "r0023": {
+        "splats": 3978,
+        "glbBytes": 71044,
+        "glbSha256": "83b01752ad9c874866ddf09df24df9f80fae119db6b198ec630da6fce272f0bd",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960117950563528,
+        "scaleError": 0.03124934434890747
+      },
+      "r003": {
+        "splats": 13333,
+        "glbBytes": 232172,
+        "glbSha256": "a45f92e7825dd0b87c06f97fa8c4404c973fa38b329b0f9cad2ebc37d349eb21",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960276494070462,
+        "scaleError": 0.03124818205833435
+      },
+      "r01": {
+        "splats": 4616,
+        "glbBytes": 80972,
+        "glbSha256": "92fb7899ca556d3164529ff6b9780398f2c020c016630f4c15a306b85c1b9657",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.00196003013964742,
+        "scaleError": 0.03124946355819702
+      },
+      "r010": {
+        "splats": 15651,
+        "glbBytes": 271668,
+        "glbSha256": "d7d0a05df915cb0ee7ade6743ad7ecb79bcc336dc8971a924aa4cd56f18430bf",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607299882625773,
+        "scaleError": 0.031249046325683594
+      },
+      "r011": {
+        "splats": 14047,
+        "glbBytes": 243604,
+        "glbSha256": "b6d5b1635c72ef054c255ae146189b1a5b2fd0b8331724fa54153ac39223989b",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019608466825997706,
+        "scaleError": 0.031248807907104492
+      },
+      "r012": {
+        "splats": 12655,
+        "glbBytes": 220100,
+        "glbSha256": "5379d4b601266b1e8b69ced73105e46564bf00479fb9b31530c4943e7a174e61",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960743355912953,
+        "scaleError": 0.03124946355819702
+      },
+      "r013": {
+        "splats": 12612,
+        "glbBytes": 218372,
+        "glbSha256": "4f3c47f02a7eb35b3cd11e6577c66397d208c1621adeb47c805e39b2cb628739",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607266061673068,
+        "scaleError": 0.03125011920928955
+      },
+      "r02": {
+        "splats": 4448,
+        "glbBytes": 77956,
+        "glbSha256": "37463425072d5428e1a3c15e72a8f535b19f0dc576fea32f4375afcb98d2c4b4",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019603506462100295,
+        "scaleError": 0.031247347593307495
+      },
+      "r020": {
+        "splats": 13024,
+        "glbBytes": 223536,
+        "glbSha256": "fda9cd9ae18530d0dd9afdd4d93ec6485001617111031ae3194f2f8f7228a8f3",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019605114339657087,
+        "scaleError": 0.031250134110450745
+      },
+      "r0200": {
+        "splats": 4707,
+        "glbBytes": 84348,
+        "glbSha256": "eddba8eea9ccd4c6b2a042e85f0f8f8ba8fb3d6553ab2e58233ce1eae554bbb1",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960634600692346,
+        "scaleError": 0.031249046325683594
+      },
+      "r0201": {
+        "splats": 5891,
+        "glbBytes": 104312,
+        "glbSha256": "c0d2aee0dd946bfabe48b713195bf7e03f7957d4d90540fbb90c07a57ecf74d9",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019605771409418812,
+        "scaleError": 0.03124663233757019
+      },
+      "r0202": {
+        "splats": 5290,
+        "glbBytes": 93888,
+        "glbSha256": "3ce45692d699be4cc7c1bd9af5f40cc96100996c68e496b147f5d1aef448726d",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960767604552438,
+        "scaleError": 0.031248152256011963
+      },
+      "r0203": {
+        "splats": 4621,
+        "glbBytes": 82252,
+        "glbSha256": "c31a7aa98e60583de689d9bc74119cfa2c3d9a0f3249a98dee0cb68c67a34d82",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960551379980191,
+        "scaleError": 0.031246662139892578
+      },
+      "r021": {
+        "splats": 14852,
+        "glbBytes": 259104,
+        "glbSha256": "85d618f8b057630442536dda632d13c6d9cd7b501226431912ccaea14c2d4122",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607776490221662,
+        "scaleError": 0.031249642372131348
+      },
+      "r022": {
+        "splats": 16098,
+        "glbBytes": 278696,
+        "glbSha256": "14c5310a09f1500aa4e8bcc0d58c29e640b66eafd53023ac351a75e10d74b374",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019603104179266723,
+        "scaleError": 0.031249523162841797
+      },
+      "r023": {
+        "splats": 15348,
+        "glbBytes": 267472,
+        "glbSha256": "4ba9bb68080c548e3b7d78d943c8374b03a96f31025a2f411c9de2d91728d572",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019604838859779844,
+        "scaleError": 0.031249582767486572
+      },
+      "r03": {
+        "splats": 13122,
+        "glbBytes": 223580,
+        "glbSha256": "8054c7adfe4852b9aaa36c2724088a1b1070cd4dd0590531b080d0e91f454948",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960657378341446,
+        "scaleError": 0.031249336898326874
+      },
+      "r030": {
+        "splats": 14884,
+        "glbBytes": 258980,
+        "glbSha256": "3dcb967352339a5023ef2225c26c152ebf1469deffe4880d3eee205a10f95598",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607628746018957,
+        "scaleError": 0.031249403953552246
+      },
+      "r031": {
+        "splats": 11303,
+        "glbBytes": 197480,
+        "glbSha256": "fe57b5fa06b3f03bdb48e29098b651e25c85f9b9dc316cf1ad52094223f22204",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960663438711041,
+        "scaleError": 0.031247735023498535
+      },
+      "r032": {
+        "splats": 12573,
+        "glbBytes": 218248,
+        "glbSha256": "a5c27775416e1c1006f3f446470990af36ab1a2fea28c8fc1d507669644439ac",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607737672549252,
+        "scaleError": 0.03124856948852539
+      },
+      "r033": {
+        "splats": 8907,
+        "glbBytes": 155884,
+        "glbSha256": "37ec327c4d7821bdcbb539d5f78fb14a3aad38d45a05c697afead7979f8a09d3",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019605301243229567,
+        "scaleError": 0.03124910593032837
+      },
+      "r1": {
+        "splats": 3994,
+        "glbBytes": 70392,
+        "glbSha256": "91843dfabc064514769f6eeaa23ff8078ae105d3fcb71575f3d991fc1d1c730d",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960652822952491,
+        "scaleError": 0.031247995793819427
+      },
+      "r10": {
+        "splats": 4488,
+        "glbBytes": 78608,
+        "glbSha256": "fa0efb59b0c9af90d5d61fa027b66e71289bfd68299245acd6dae1992240f191",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019595022343636,
+        "scaleError": 0.03124918043613434
+      },
+      "r100": {
+        "splats": 11738,
+        "glbBytes": 203808,
+        "glbSha256": "c7c13c50ce93cbe16610e2baaa94873d22b463df1f78661018f03967ba5ed97b",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 1,
+          "above": 0
+        },
+        "opacityError": 0.00196086736084522,
+        "scaleError": 0.2699403762817383
+      },
+      "r101": {
+        "splats": 14872,
+        "glbBytes": 259576,
+        "glbSha256": "f5f84395463eef0f35e3b43bf0c5957c10f685773303f6b5dc10321ca9d0fd2f",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607885107458256,
+        "scaleError": 0.03125038556754589
+      },
+      "r102": {
+        "splats": 16381,
+        "glbBytes": 280376,
+        "glbSha256": "4d6263748287b3ca278b5f88ba2d702f438af479da386eb8dd19393db584caa6",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607646877095597,
+        "scaleError": 0.03125
+      },
+      "r103": {
+        "splats": 13011,
+        "glbBytes": 226112,
+        "glbSha256": "292430d6764da83216a7c52ccaf07ef9de3b7f1611c98566034f11b504cf2393",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019605948260271733,
+        "scaleError": 0.031250059604644775
+      },
+      "r11": {
+        "splats": 4783,
+        "glbBytes": 83844,
+        "glbSha256": "1b100ee73c594c1e1794b363497c0c800226ce8d461c9f09d1f0c55fdaf6f658",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960078145557209,
+        "scaleError": 0.0312502384185791
+      },
+      "r110": {
+        "splats": 15865,
+        "glbBytes": 276928,
+        "glbSha256": "c9cfb5c610d07789b2e8995f5fc8e2c461c57c59794c6dc75a846150aa1295c0",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960685480618729,
+        "scaleError": 0.03125011920928955
+      },
+      "r111": {
+        "splats": 11569,
+        "glbBytes": 201532,
+        "glbSha256": "f7a0c9358200031edc7979a22e31dcf94ff003974c281de96f67250da3157a3a",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019597842797617893,
+        "scaleError": 0.031249701976776123
+      },
+      "r112": {
+        "splats": 15846,
+        "glbBytes": 273840,
+        "glbSha256": "8a3fafc631b1eb888301c580d6284eecb88317bf006090c778f94a9e3c9bced7",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607663652772,
+        "scaleError": 0.031249284744262695
+      },
+      "r113": {
+        "splats": 12922,
+        "glbBytes": 225316,
+        "glbSha256": "e4f076266b9e3e461c98d6629ca810e16e57fa4de5c760cd4d27e0c308753beb",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960669584255781,
+        "scaleError": 0.03125029802322388
+      },
+      "r12": {
+        "splats": 12623,
+        "glbBytes": 215664,
+        "glbSha256": "c54f7a62d981ebb213a272a8572df2470a2345b97999fd661c2b25e6fd922817",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019604675758965184,
+        "scaleError": 0.031249284744262695
+      },
+      "r120": {
+        "splats": 12028,
+        "glbBytes": 209452,
+        "glbSha256": "a9dff6d1e1ad1a7c46323444c85f249f035f144808c9d0e5f2a69523b630d115",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019606358287836967,
+        "scaleError": 0.031249165534973145
+      },
+      "r121": {
+        "splats": 15000,
+        "glbBytes": 256224,
+        "glbSha256": "c7cdebc808532f41ddcfcb7705c2612ea65d251d11e73717f70ad1cc9690dac1",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960730814449363,
+        "scaleError": 0.031249403953552246
+      },
+      "r1210": {
+        "splats": 3764,
+        "glbBytes": 66556,
+        "glbSha256": "a2f826836f9c1802cd7cec0118101cbd64a4eb805d00091afbf6ed2d4da403a4",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960333462971399,
+        "scaleError": 0.031248092651367188
+      },
+      "r1211": {
+        "splats": 3588,
+        "glbBytes": 62948,
+        "glbSha256": "66f0ce48bf9ac0d8bedb4522d1fa087ffdc5ad2fcee510b441f0e1d07889cf81",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019593212760424805,
+        "scaleError": 0.031249403953552246
+      },
+      "r1212": {
+        "splats": 3501,
+        "glbBytes": 61112,
+        "glbSha256": "1bc79e354558298b65a5940ca1370525e965d7b9f8105c8a3ad4b0bda9bce47e",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960730814449363,
+        "scaleError": 0.031247198581695557
+      },
+      "r1213": {
+        "splats": 6153,
+        "glbBytes": 108348,
+        "glbSha256": "d7e9fd8f5e79d37c25bd5c00fbc2b600fde7a6f51df6396999c4f18b056880e7",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019604382004982934,
+        "scaleError": 0.031248390674591064
+      },
+      "r122": {
+        "splats": 3395,
+        "glbBytes": 59760,
+        "glbSha256": "0bb475d825228d039338e59922eeb0b68625e7ae1d7adb98389339cc10effeab",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607947412936255,
+        "scaleError": 0.031249165534973145
+      },
+      "r123": {
+        "splats": 11861,
+        "glbBytes": 207036,
+        "glbSha256": "a9b5313143fb63d37a54631b10d68dbe1e12b59eaf6a98984e460ce88ecb9470",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019601727583899997,
+        "scaleError": 0.031248390674591064
+      },
+      "r13": {
+        "splats": 4860,
+        "glbBytes": 85776,
+        "glbSha256": "8edf3ae7115c898c8d25916361715b80e58bac4a0d412ee541201a2daa81b843",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960652822952491,
+        "scaleError": 0.03124898672103882
+      },
+      "r130": {
+        "splats": 16241,
+        "glbBytes": 283520,
+        "glbSha256": "1843bdfe084b7dfc8aa6f9461a2d4e74a77a9a1db2505a18854f1a7681ba9547",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019606230121541612,
+        "scaleError": 0.03124821186065674
+      },
+      "r131": {
+        "splats": 15983,
+        "glbBytes": 277540,
+        "glbSha256": "b0f37ae123e7d0f52bf9fc6ee269b5249b9fb5532d3ba2a40dbebaceb6670f9c",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960652822952491,
+        "scaleError": 0.03124833106994629
+      },
+      "r132": {
+        "splats": 13941,
+        "glbBytes": 242732,
+        "glbSha256": "7f9a007160cd6672def40386bceb518536ea58291caf39d0b8438d501b8c5b05",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960552504313706,
+        "scaleError": 0.03125011920928955
+      },
+      "r133": {
+        "splats": 13895,
+        "glbBytes": 241392,
+        "glbSha256": "dd6f8556cbf0fbdf090a3f34a21650c42347757b773ab926cf7b8432ed74e25d",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607759943488234,
+        "scaleError": 0.0312502384185791
+      },
+      "r2": {
+        "splats": 4190,
+        "glbBytes": 73544,
+        "glbSha256": "8ba8456720cecab9347e6ac2769aadf56a0fdf21868f068ceff5e481d3503a0c",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019604705957927404,
+        "scaleError": 0.03124833106994629
+      },
+      "r20": {
+        "splats": 4665,
+        "glbBytes": 82136,
+        "glbSha256": "13c001f632efd5ba51b61c2232c7ee50ca4b73dca90ac8b1d43b29fd29de38ef",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019599153781412193,
+        "scaleError": 0.031250208616256714
+      },
+      "r200": {
+        "splats": 14733,
+        "glbBytes": 254124,
+        "glbSha256": "a82e29626769108262798911ae2311cc07fa175b0dd5b5f2489d357bf731fe44",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607498216575037,
+        "scaleError": 0.03125
+      },
+      "r2000": {
+        "splats": 3679,
+        "glbBytes": 65348,
+        "glbSha256": "621b30eedac722178a18fc0767477d9ca53f822444cb760ea1717847a093513c",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607498216575037,
+        "scaleError": 0.031245872378349304
+      },
+      "r2001": {
+        "splats": 4303,
+        "glbBytes": 76580,
+        "glbSha256": "02c8f2bdada7cbffade89b4a5f9218ca231f5111419bfea1a0dd5ec0e9f950d0",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960714170609945,
+        "scaleError": 0.031249523162841797
+      },
+      "r2002": {
+        "splats": 3803,
+        "glbBytes": 67620,
+        "glbSha256": "c7f4435ee9c27eb1ebd6859fea4d3eaf6a346440942a37d6c732710bbaf1bddf",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960369797187944,
+        "scaleError": 0.031249523162841797
+      },
+      "r2003": {
+        "splats": 4781,
+        "glbBytes": 85280,
+        "glbSha256": "bbcd104b787f45a175339161751a3748a3c961fbc4fe2aebf517b46855678e8b",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019605296625063717,
+        "scaleError": 0.03125
+      },
+      "r201": {
+        "splats": 13515,
+        "glbBytes": 235104,
+        "glbSha256": "df5fc1bb0471a08c40011ef33f9df1aaa3e323934336cc5c737cb2c00a7b88a8",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019603426676418345,
+        "scaleError": 0.03124988079071045
+      },
+      "r202": {
+        "splats": 15045,
+        "glbBytes": 263012,
+        "glbSha256": "3eee1b263fc90e8640b865901ee75bf0ba3dcdaca535cc7ce354b51be72eb5df",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607588496460826,
+        "scaleError": 0.0312502384185791
+      },
+      "r203": {
+        "splats": 15449,
+        "glbBytes": 266700,
+        "glbSha256": "37cc725cd4ddc32dfcee1c574119827f5bcd1245d650ebc0b55708f307e3ebaf",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607867029626247,
+        "scaleError": 0.031249254941940308
+      },
+      "r2030": {
+        "splats": 4267,
+        "glbBytes": 76488,
+        "glbSha256": "b00226d26040f4591182abf56cf4fb9e1cb9e1ee465da5c9455efebe28aab259",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019599805640029277,
+        "scaleError": 0.03124678134918213
+      },
+      "r2031": {
+        "splats": 4878,
+        "glbBytes": 87312,
+        "glbSha256": "295f9021bb2c96a4de37d86709937b1439a49a65b253ae9945d61d05f834a067",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607867029626247,
+        "scaleError": 0.03124481439590454
+      },
+      "r2032": {
+        "splats": 3463,
+        "glbBytes": 61368,
+        "glbSha256": "cee80476eac61ed1977f24b1dae045ecd55d60673cd7cd47a28fafc79b006236",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019604334663467365,
+        "scaleError": 0.031239092350006104
+      },
+      "r2033": {
+        "splats": 3831,
+        "glbBytes": 68304,
+        "glbSha256": "c6fefda4d5f2f5f70653246c8c69c57ea1120dd2019d7e989193ad1c010ecb64",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019605838450628688,
+        "scaleError": 0.031249254941940308
+      },
+      "r21": {
+        "splats": 4770,
+        "glbBytes": 83744,
+        "glbSha256": "c465afbf298e478fb244484955808a2499364b7a56ec9913adfa5df7dc3547a8",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960458756266062,
+        "scaleError": 0.03124755620956421
+      },
+      "r210": {
+        "splats": 14657,
+        "glbBytes": 253340,
+        "glbSha256": "b94f1856be11cae081b1a9ae783e787c825a42d9fbc78ff05c9f8db8947d96e1",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607645346351177,
+        "scaleError": 0.031248092651367188
+      },
+      "r2100": {
+        "splats": 3597,
+        "glbBytes": 63576,
+        "glbSha256": "ae50338d38d411027bc7646d21994d32c17f0dbccf99b6eeb3dca398de1116c3",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960737246483435,
+        "scaleError": 0.031240463256835938
+      },
+      "r2101": {
+        "splats": 3004,
+        "glbBytes": 53568,
+        "glbSha256": "7c46f77b098eb7b3e11911e0388b7ac4b6bf72b436a12f8c3b2f92650f91c4db",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001959869237992906,
+        "scaleError": 0.03124821186065674
+      },
+      "r2102": {
+        "splats": 4184,
+        "glbBytes": 74172,
+        "glbSha256": "9abcf59d982669a006fd6124476239c53f65f84956d121815c9b60975896cc97",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607645346351177,
+        "scaleError": 0.031248748302459717
+      },
+      "r2103": {
+        "splats": 5868,
+        "glbBytes": 104076,
+        "glbSha256": "28add207255716eac11176ced33417abb94420598fff58aee3552838aae5bf11",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960067088519035,
+        "scaleError": 0.031247615814208984
+      },
+      "r211": {
+        "splats": 15240,
+        "glbBytes": 263984,
+        "glbSha256": "bd5cd051d424230edd9618b4788a5fcb4f785746eefac5803a5c5fd9223c58fc",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607421705032935,
+        "scaleError": 0.03125011920928955
+      },
+      "r212": {
+        "splats": 15941,
+        "glbBytes": 277528,
+        "glbSha256": "7317075be9cf64bb617cd199f96d88561aa15abad8425de503fdc69aceb9ebf7",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607466990214095,
+        "scaleError": 0.03125011920928955
+      },
+      "r213": {
+        "splats": 14768,
+        "glbBytes": 258376,
+        "glbSha256": "85fa0257be715375567c5e7a936b6cae9bab6bdae26a3a955ff0690d566d461d",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019606884979111866,
+        "scaleError": 0.031249940395355225
+      },
+      "r22": {
+        "splats": 5030,
+        "glbBytes": 88184,
+        "glbSha256": "abbf48b9b8287be36f34de30b78dd8eb9a58b02c6bf4388b9122adb0869eaa0c",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960787150334209,
+        "scaleError": 0.0312492698431015
+      },
+      "r220": {
+        "splats": 12028,
+        "glbBytes": 210796,
+        "glbSha256": "3cbf3cb761666ec13ce5b1562cb3bc29b2d3e6bda8b4bb19c9bfe554df6d8589",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019606280933467946,
+        "scaleError": 0.03125
+      },
+      "r221": {
+        "splats": 15623,
+        "glbBytes": 270396,
+        "glbSha256": "f0a97a3c91b58741cfa55ab84a490c90be0b56335a82b3a4343434178d1db8ae",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019606448461701453,
+        "scaleError": 0.031249023973941803
+      },
+      "r222": {
+        "splats": 12571,
+        "glbBytes": 215300,
+        "glbSha256": "a47b0378a16723780a7425de257ac60af8e504ad3c317aa26f628f833aada110",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960719345982742,
+        "scaleError": 0.03124856948852539
+      },
+      "r2220": {
+        "splats": 5184,
+        "glbBytes": 92540,
+        "glbSha256": "1b71c214845970bacb1aab45b5f335f925796f679d9aa123099d4b037dca9fca",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960719345982742,
+        "scaleError": 0.031248748302459717
+      },
+      "r2221": {
+        "splats": 4344,
+        "glbBytes": 76964,
+        "glbSha256": "d0e32f146a77081954c3240b4528f293bd1e8c8932ae11e0703db4fdf713f802",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960682281684223,
+        "scaleError": 0.03124856948852539
+      },
+      "r2222": {
+        "splats": 4121,
+        "glbBytes": 72004,
+        "glbSha256": "42efdfdd18fa97b27eb5ca166e17404d949b684aa0e691f786cab54ecd73e4a9",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960563146346239,
+        "scaleError": 0.03124856948852539
+      },
+      "r2223": {
+        "splats": 4177,
+        "glbBytes": 73444,
+        "glbSha256": "b8beffc0dc21f6c321f44bd475918ce32df2fb141d2c96f35e1269f0237f3afb",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960545639207889,
+        "scaleError": 0.031248092651367188
+      },
+      "r223": {
+        "splats": 15021,
+        "glbBytes": 260160,
+        "glbSha256": "523d92dd079061bfd9ad1508415636e79d66d47c7638744237154c9641ee92a6",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960787150334209,
+        "scaleError": 0.031249701976776123
+      },
+      "r23": {
+        "splats": 4576,
+        "glbBytes": 80240,
+        "glbSha256": "869848c99c27ce586ad2a61e33c3403a0ca396293e7ca36cd4f965d5fce7975e",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019598209091585828,
+        "scaleError": 0.031250178813934326
+      },
+      "r230": {
+        "splats": 15717,
+        "glbBytes": 273888,
+        "glbSha256": "467be0890591a75b7b46a4cfccb92b16268680ba1edd189f433d40599c829a01",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.00196054640484411,
+        "scaleError": 0.031249523162841797
+      },
+      "r231": {
+        "splats": 15240,
+        "glbBytes": 266724,
+        "glbSha256": "fd83766bd2e5f207ff8ecb91164505b7aef38f6da8d50bc01e8d5ef93050b906",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960735507639033,
+        "scaleError": 0.03125
+      },
+      "r232": {
+        "splats": 14115,
+        "glbBytes": 245260,
+        "glbSha256": "17fbe5c56bdb6eeedd0fdd529871ba6b3ac826719160006195972409ab184348",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019608239645145797,
+        "scaleError": 0.03125
+      },
+      "r233": {
+        "splats": 12958,
+        "glbBytes": 222860,
+        "glbSha256": "c33c72ed659861105c6359711bd12ddd460b5213780706b4ebce5be5e692ce4f",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960790422974368,
+        "scaleError": 0.031249403953552246
+      },
+      "r3": {
+        "splats": 4290,
+        "glbBytes": 75876,
+        "glbSha256": "018cdbb70ef7a9a095c4eff1ed1603ea65fad769eeebba2004d06ce84b7d6ebc",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019603674967997864,
+        "scaleError": 0.03124910593032837
+      },
+      "r30": {
+        "splats": 13124,
+        "glbBytes": 224520,
+        "glbSha256": "487b83ac06bda4c6aa0a4cda7ee30562603dbfd2e378b3b500b18d86ccf2df85",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019603674967997864,
+        "scaleError": 0.03125
+      },
+      "r300": {
+        "splats": 9956,
+        "glbBytes": 173008,
+        "glbSha256": "2bfceb0a13b2421cda19b505b8ffc406d26d4e8d60176ca50daab1446034f6ad",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019604413619457167,
+        "scaleError": 0.031248867511749268
+      },
+      "r301": {
+        "splats": 9471,
+        "glbBytes": 166000,
+        "glbSha256": "f74119e0684275b6ee2b4182113cae44ede759ddf599db3744401020085c4bf4",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960075464380817,
+        "scaleError": 0.03124690055847168
+      },
+      "r302": {
+        "splats": 7600,
+        "glbBytes": 133204,
+        "glbSha256": "6984d6d01a5ed43ef6ece9499644fcfcdd06053680dc334700b324212486117c",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960656748161038,
+        "scaleError": 0.03125
+      },
+      "r303": {
+        "splats": 10927,
+        "glbBytes": 191604,
+        "glbSha256": "456cde203c9ef9dabd1f5b5787176e43d3b1fbf875d07cea3539f3f5e4a7fe4c",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019608279367751003,
+        "scaleError": 0.031249523162841797
+      },
+      "r31": {
+        "splats": 4726,
+        "glbBytes": 82796,
+        "glbSha256": "f88c6741b74aa26c8b53f44fa96e4fac7b8b314cec2706d4f19330cd0fde81ab",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019601447142902906,
+        "scaleError": 0.031246662139892578
+      },
+      "r310": {
+        "splats": 15203,
+        "glbBytes": 265092,
+        "glbSha256": "f9754f0b96e54e3f1e15f530c5b682fc29832431195f3ad281c019569da1db30",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960760828366992,
+        "scaleError": 0.03124988079071045
+      },
+      "r311": {
+        "splats": 14119,
+        "glbBytes": 243112,
+        "glbSha256": "82c2ccc8b108a455462e9fb11ce188bdb96a551ad4d8554afbcb1608e0183e4f",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960729304848516,
+        "scaleError": 0.03124988079071045
+      },
+      "r312": {
+        "splats": 13414,
+        "glbBytes": 230140,
+        "glbSha256": "e14bbc89fa8b9ee54c975cd37249b1137ef8c99f79662ca471b2ce8443153deb",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960614989789833,
+        "scaleError": 0.031246423721313477
+      },
+      "r313": {
+        "splats": 11618,
+        "glbBytes": 203480,
+        "glbSha256": "ee9cc2194c7b2e3bdc4ef69f249cd50e2afa059a42e05bbacfb9a64bbcb2e7e9",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960574574180085,
+        "scaleError": 0.031248807907104492
+      },
+      "r32": {
+        "splats": 15188,
+        "glbBytes": 259736,
+        "glbSha256": "e9d63ab7f787f43464facf267c2795f41d81fe7f38f0ecd5137c90027636da3a",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019598825234215522,
+        "scaleError": 0.0312502384185791
+      },
+      "r320": {
+        "splats": 11224,
+        "glbBytes": 196164,
+        "glbSha256": "a6e48bebf917687d54e7a98d897b03867a6f64971b5f6a521819785779170734",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019603200821336486,
+        "scaleError": 0.03125035762786865
+      },
+      "r321": {
+        "splats": 12894,
+        "glbBytes": 222544,
+        "glbSha256": "75851da7da5e2629f40d5bce182fd4f59cf8f603478c9822b440311e1fc22183",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607016311009584,
+        "scaleError": 0.031249165534973145
+      },
+      "r322": {
+        "splats": 13294,
+        "glbBytes": 227368,
+        "glbSha256": "32ee6bd476fa95584418147578152548efd52c98e7df8ae6c4ce393a3e418477",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019606181574072234,
+        "scaleError": 0.031246647238731384
+      },
+      "r323": {
+        "splats": 10567,
+        "glbBytes": 184908,
+        "glbSha256": "fd0202cd8a4c1be4eee1dc2eb7a521b08a5624d5c39954cd238a6029b3acde22",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960313831015803,
+        "scaleError": 0.03124864399433136
+      },
+      "r33": {
+        "splats": 5058,
+        "glbBytes": 89352,
+        "glbSha256": "3df8d18cc121d51ad14bdd2d24d517d85009acbf42ea6d961fa3d85a913cfb26",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001959633701104524,
+        "scaleError": 0.03124767541885376
+      },
+      "r330": {
+        "splats": 12390,
+        "glbBytes": 217900,
+        "glbSha256": "85f0fda79f04658bf760746dd22cd8e94981fd174abb04daec0a6ef0ba194190",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 5,
+          "above": 0
+        },
+        "opacityError": 0.001960522381148133,
+        "scaleError": 0.4465780258178711
+      },
+      "r331": {
+        "splats": 9191,
+        "glbBytes": 162092,
+        "glbSha256": "99a2741965228c0b32bcb448a5b7d65869e52dbad5cc90bdb54dcd440e0e81b1",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.001960260842815309,
+        "scaleError": 0.03124713897705078
+      },
+      "r332": {
+        "splats": 14516,
+        "glbBytes": 251968,
+        "glbSha256": "24fa2ea9e2ba72b0be424c990ed35e418c2e49c83b7b6a01912e8fc4d5c874f0",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019605566305662125,
+        "scaleError": 0.03124946355819702
+      },
+      "r333": {
+        "splats": 11252,
+        "glbBytes": 195704,
+        "glbSha256": "f4cdc8b2ab27fa34709765ae1007160c7c5b7c77ca01e00137a6370effad2cb6",
+        "positionError": 0.0001220703125,
+        "logScaleClamping": {
+          "min": -10,
+          "max": 5.9375,
+          "below": 0,
+          "above": 0
+        },
+        "opacityError": 0.0019607565748155364,
+        "scaleError": 0.031249403953552246
+      }
+    },
+    "totals": {
+      "splats": 1105967,
+      "glbBytes": 19260940
+    },
+    "tilesetSha256": "dac0dc1e25dbc0a60b91e3ac39d9398879b6cc8ff44b061b53f5d285fcb8a45f",
+    "planSha256": "112e9a503511ade19453eb72311951f6184233589b22020a877c1243d2ecf82a",
+    "generator": "TerraSplat tiler / @adobe/spz 0.2.3"
+  }
+}
