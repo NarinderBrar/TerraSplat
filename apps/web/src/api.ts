@@ -26,7 +26,7 @@ export interface Footprint {
 export interface Manifest {
   release_id: string; dataset_id: string; title: string; description: string;
   anchor: { latitude: number; longitude: number; ellipsoidal_height_m: number };
-  footprint: Footprint['geometry']; limitations: string; evidence: string[];
+  footprint: Footprint['geometry']; limitations: string; evidence: string[]; source_label?: string;
 }
 const base = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
 export const apiUrl = (path: string) => `${base}${path}`;

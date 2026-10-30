@@ -49,3 +49,13 @@ above 2 m; and 21,660 cells are tall, non-green and unmapped, mostly height nois
 Building labels are usable now (IoU 0.70, precision and recall about 0.82). Vegetation and ground are limited by the
 model's geometry more than by the rules; next options are a height-independent tree cue (e.g. NDVI texture or the
 RedEdge band) and an independent test once class labels for another area are available.
+
+## Viewing classes in the app (Phase 4.2, first version)
+
+`pipeline/semantic_colours.py` writes a copy of an export whose splat colours are the class colours (geometry,
+opacity and order unchanged; unknown splats keep their own colour in greyscale). It is tiled with the release's own
+tile profile and published as a second, inactive release of the same dataset:
+`jax068-2015-19v-classes-r1`, "JAX_068 19-view · semantic classes (experimental)". Choose it in the release dropdown;
+the panel shows a colour legend. Coarse levels average the class colours of merged splats.
+
+![Class colours on the 19-view block](semantics-v2-app.png)

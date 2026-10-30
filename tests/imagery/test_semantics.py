@@ -101,3 +101,18 @@ def test_v2_splits_trees_from_grass_and_widens_the_low_band():
     # v1 thresholds leave the 1.6 m cells unknown and call both green cells vegetation.
     v1, _ = classify(hag, ndvi, np.ones((1, 4), bool), np.zeros((1, 4), bool), np.zeros((1, 4), bool), road)
     assert v1.tolist() == [[CODES['vegetation'], CODES['vegetation'], CODES['unknown'], CODES['unknown']]]
+
+
+def test_recolour_sets_class_colours_and_greys_unknown():
+    from pipeline.semantic_colours import SH_C0, recolour
+    from pipeline.semantics import COLOURS
+    dtype = [('x', 'f4'), ('f_dc_0', 'f4'), ('f_dc_1', 'f4'), ('f_dc_2', 'f4'), ('f_rest_0', 'f4'), ('opacity', 'f4')]
+    vertices = np.zeros(2, dtype)
+    vertices['f_dc_0'] = (0.9 - 0.5) / SH_C0  # a reddish unknown splat
+    vertices['f_rest_0'] = 1.0
+    vertices['opacity'] = [1.5, -0.5]
+    out = recolour(vertices, np.array([CODES['building'], CODES['unknown']], np.uint8))
+    rgb = lambda i: [0.5 + SH_C0 * out[f'f_dc_{c}'][i] for c in range(3)]
+    assert rgb(0) == pytest.approx(np.asarray(COLOURS[CODES['building']]) / 255, abs=1e-6)
+    assert rgb(1)[0] == pytest.approx(rgb(1)[1]) == pytest.approx((0.9 + 0.5 + 0.5) / 3, abs=1e-6)
+    assert (out['f_rest_0'] == 0).all() and out['opacity'].tolist() == vertices['opacity'].tolist()
