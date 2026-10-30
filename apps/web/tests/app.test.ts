@@ -97,3 +97,16 @@ describe('pipeline jobs', () => {
     expect(() => parseJobs([{ name: 'x' }])).toThrow();
   });
 });
+describe('rendering quality tiers', () => {
+  it('reduces quality for integrated and software GPUs, with an override', async () => {
+    const { qualityFor, QUALITY_PROFILES } = await import('../src/quality');
+    expect(qualityFor('ANGLE (Intel, Mesa Intel(R) UHD Graphics (TGL GT1), OpenGL 4.6)')).toBe('reduced');
+    expect(qualityFor('ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)), SwiftShader driver)')).toBe('reduced');
+    expect(qualityFor('ANGLE (NVIDIA, Vulkan 1.4.329 (NVIDIA NVIDIA GeForce RTX 3060 Laptop GPU (0x00002520)), NVIDIA)')).toBe('full');
+    expect(qualityFor('Apple M2')).toBe('full');
+    expect(qualityFor(undefined)).toBe('full');
+    expect(qualityFor('Mali-G78', 'full')).toBe('full');
+    expect(qualityFor('NVIDIA RTX', 'reduced')).toBe('reduced');
+    expect(QUALITY_PROFILES.reduced.fullDetailBlocks).toBeLessThan(QUALITY_PROFILES.full.fullDetailBlocks);
+  });
+});

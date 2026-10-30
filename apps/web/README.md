@@ -25,6 +25,13 @@ The app build is in `apps/web/dist`; serve it with `/api` and `/releases` routed
 or run `npm --prefix apps/web exec vite -- preview --host 127.0.0.1 --port 4173` locally.
 Cesium assets are copied locally by the prepare step and excluded from Git.
 
+### Quality tiers
+
+The app reads the WebGL renderer at start-up (`src/quality.ts`). Integrated and software GPUs (Intel UHD/HD, Mali,
+Adreno, PowerVR, SwiftShader, llvmpipe) get the reduced profile: 60 % resolution while the camera moves, screen-space
+error 12 instead of 8, full LOD0 for only the nearest block instead of four, and no continuous loading glow; the panel
+says so. Add `?quality=full` or `?quality=reduced` to the address to override.
+
 ### Running Chrome on the NVIDIA GPU (Linux hybrid-graphics laptops)
 
 On laptops with Intel + NVIDIA graphics in PRIME "on-demand" mode, Chrome draws on the integrated Intel GPU.

@@ -38,6 +38,7 @@ uniform float u_revealFade;
 uniform float u_revealPause;
 uniform float u_revealPointPx;
 uniform float u_revealAnimate;
+uniform float u_revealLoadingGlow;
 uniform vec2 u_revealHeight;
 
 float revealHash(vec3 p) {
@@ -62,7 +63,7 @@ const COVARIANCE = /* glsl */ `
         revealGrowScan = clamp((elapsed - u_revealSweep - u_revealFade - 0.3 - u_revealPause - edge) / u_revealFade, 0.0, 1.0);
     }
     float revealLoading = 0.0;
-    if (u_revealAnimate > 0.5 && revealData.z >= 0.0) {
+    if (u_revealAnimate > 0.5 && u_revealLoadingGlow > 0.5 && revealData.z >= 0.0) {
         revealLoading = 1.0 - smoothstep(PLACEHOLDER_SECONDS - 2.0, PLACEHOLDER_SECONDS, u_revealNow - revealData.z);
     }
     // Coarse tiles are always points; leaf tiles are points until the second scan grows them into splats.
@@ -160,6 +161,8 @@ export class Reveal {
   fade = 0.5; // seconds for one point to appear or grow once the sweep reaches it
   pause = 0.4; // seconds between the point scan and the splat scan
   pointPx = 2.0;
+  /** The placeholder glow animates continuously; weak GPUs turn it off to avoid rendering every frame. */
+  loadingGlow = true;
   private readonly start = performance.now() / 1000;
   private readonly states = new WeakMap<Tile, TileState>();
   private readonly merges = new WeakMap<Primitive, Map<number, Merge>>();
@@ -217,7 +220,7 @@ export class Reveal {
         if (placeholder !== state.placeholderSince >= 0) {
           state.placeholderSince = placeholder ? now : -1;
           changed = true;
-          if (placeholder) this.busyUntil = Math.max(this.busyUntil, now + PLACEHOLDER_SECONDS);
+          if (placeholder && this.loadingGlow) this.busyUntil = Math.max(this.busyUntil, now + PLACEHOLDER_SECONDS);
         }
       });
       if (changed) this.upload(primitive, merge, cached.context);
@@ -251,7 +254,7 @@ export class Reveal {
     if (state.mode !== Mode.None) {
       this.busyUntil = Math.max(this.busyUntil, state.arrival + 2 * (this.sweep + this.fade + 0.3) + this.pause);
     }
-    if (placeholder) this.busyUntil = Math.max(this.busyUntil, state.placeholderSince + PLACEHOLDER_SECONDS);
+    if (placeholder && this.loadingGlow) this.busyUntil = Math.max(this.busyUntil, state.placeholderSince + PLACEHOLDER_SECONDS);
   }
 
   private decorate(primitive: Primitive, context: unknown) {
@@ -292,6 +295,7 @@ export class Reveal {
       u_revealHeight: () => this.textures.get(primitive)?.height,
       u_revealPointPx: () => this.pointPx,
       u_revealAnimate: () => (this.animate ? 1 : 0),
+      u_revealLoadingGlow: () => (this.loadingGlow ? 1 : 0),
     });
     this.scene.requestRender();
   }

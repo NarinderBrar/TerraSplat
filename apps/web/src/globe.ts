@@ -4,6 +4,7 @@ import { footprintCentre, footprintTooltip } from './format';
 import { controlMapping } from './controls';
 import { groundPatches, heightmap } from './ground';
 import { Reveal } from './reveal';
+import { QUALITY_PROFILES, qualityFor, webglRenderer, type Quality } from './quality';
 
 declare global { interface Window { Cesium: typeof Cesium; terra?: Globe } }
 const C = window.Cesium;
@@ -33,7 +34,6 @@ const SPLAT_RANGE_M = 50_000;
 const FULL_DETAIL_M = 1_000;
 const FULL_DETAIL_SSE = 0.05;
 // Over a grid of blocks, full detail is limited to the nearest few (a 2 x 2 neighbourhood); the rest stay points.
-const FULL_DETAIL_MAX_BLOCKS = 4;
 // Full detail needs the whole block resident (largest block: 38 MB of GLB, more once decoded).
 const FULL_DETAIL_CACHE_BYTES = 192 * 1024 * 1024;
 const tileOptions = {
@@ -47,6 +47,9 @@ export const isSkyfall = (id: string) => id.startsWith('skyfall-');
 export class Globe {
   readonly viewer: Cesium.Viewer;
   readonly reveal: Reveal;
+  /** Rendering tier from the GPU (or ?quality=full|reduced); see quality.ts. */
+  readonly quality: Quality = qualityFor(webglRenderer(), new URLSearchParams(location.search).get('quality'));
+  private readonly profile = QUALITY_PROFILES[this.quality];
   private tileUrls = new WeakMap<Cesium.Cesium3DTileset, string>();
   private loadedTiles = new WeakMap<Cesium.Cesium3DTileset, Set<Cesium.Cesium3DTile>>();
   private indexes = new Map<string, Cesium.Cesium3DTileset>();
@@ -78,6 +81,7 @@ export class Globe {
     });
     const { scene, camera } = this.viewer;
     this.reveal = new Reveal(C, scene);
+    this.reveal.loadingGlow = this.profile.loadingGlow;
     scene.highDynamicRange = false;
     scene.backgroundColor = C.Color.fromCssColorString('#101a24');
     scene.globe.depthTestAgainstTerrain = false;
@@ -127,6 +131,11 @@ export class Globe {
     this.removeListeners.push(camera.changed.addEventListener(() => {
       scene.requestRender();
     }));
+    // Weak GPUs draw at lower resolution while the camera moves and at full resolution once it stops.
+    if (this.profile.movingResolutionScale < 1) {
+      this.removeListeners.push(camera.moveStart.addEventListener(() => { this.viewer.resolutionScale = this.profile.movingResolutionScale; }));
+      this.removeListeners.push(camera.moveEnd.addEventListener(() => { this.viewer.resolutionScale = 1; scene.requestRender(); }));
+    }
     this.removeListeners.push(camera.moveEnd.addEventListener(() => {
       if (camera.positionCartographic.height > 20_000) return;
       const rect = camera.computeViewRectangle();
@@ -222,7 +231,8 @@ export class Globe {
   setReveal(animate: boolean) { this.reveal.animate = animate; this.viewer.scene.requestRender(); }
   showFootprints(show: boolean) { this.footprints.show = show; this.viewer.scene.requestRender(); }
   private async load(url: string, show = true) {
-    const tileset = await C.Cesium3DTileset.fromUrl(apiUrl(url), { ...tileOptions, cacheBytes: this.cacheBudget,
+    const tileset = await C.Cesium3DTileset.fromUrl(apiUrl(url), { ...tileOptions,
+      maximumScreenSpaceError: this.profile.maximumScreenSpaceError, cacheBytes: this.cacheBudget,
       maximumCacheOverflowBytes: this.cacheBudget / 4 });
     tileset.show = show;
     if (this.disposed) { tileset.destroy(); throw new Error('Viewer closed'); }
@@ -277,10 +287,10 @@ export class Globe {
       return { id, tileset, distance, show: this.datasetVisible(id) && distance < SPLAT_RANGE_M };
     });
     const nearest = new Set(blocks.filter(b => b.show && b.distance < FULL_DETAIL_M)
-      .sort((a, b) => a.distance - b.distance).slice(0, FULL_DETAIL_MAX_BLOCKS).map(b => b.tileset));
+      .sort((a, b) => a.distance - b.distance).slice(0, this.profile.fullDetailBlocks).map(b => b.tileset));
     for (const { tileset, show } of blocks) {
       const full = nearest.has(tileset);
-      const sse = full ? FULL_DETAIL_SSE : tileOptions.maximumScreenSpaceError;
+      const sse = full ? FULL_DETAIL_SSE : this.profile.maximumScreenSpaceError;
       const cache = full ? Math.max(FULL_DETAIL_CACHE_BYTES, this.cacheBudget) : this.cacheBudget;
       if (tileset.show !== show || tileset.maximumScreenSpaceError !== sse || tileset.cacheBytes !== cache) {
         tileset.show = show;

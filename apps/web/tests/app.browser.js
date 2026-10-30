@@ -17,6 +17,8 @@ test('offline globe, footprint navigation, actual splat fragments and release su
   });
   await page.goto('/');
   await expect(page.getByRole('status')).toContainText('Ready');
+  // SwiftShader is a software renderer, so the app picks the reduced-quality profile and says so.
+  await expect(page.getByRole('note')).toContainText('Reduced quality');
   await expect.poll(() => page.evaluate(() => window.terra?.viewer.imageryLayers.length)).toBe(1);
   expect(await page.evaluate(() => window.terra.stats().height)).toBeGreaterThan(20_000_000);
   // Natural Earth must have reached the canvas, rather than merely being configured.

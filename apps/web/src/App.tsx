@@ -122,6 +122,8 @@ export function App() {
       {dataset && <ReleasePanel dataset={dataset} release={release} manifest={manifest} busy={busy} onChange={r => { void switchRelease(r); }} />}
       <JobsPanel />
       <label className="debug-toggle"><input type="checkbox" checked={reveal} onChange={e => { setReveal(e.target.checked); globe.current?.setReveal(e.target.checked); }} /> Reveal effects</label>
+      {globe.current?.quality === 'reduced' && <p className="quality-note" role="note">
+        Reduced quality for this graphics chip: lower resolution while moving, fewer detailed blocks. Add ?quality=full to the address to override.</p>}
       <label className="debug-toggle"><input type="checkbox" checked={debug} onChange={e => { setDebug(e.target.checked); globe.current?.setDebug(e.target.checked); }} /> Tile diagnostics</label>
       {debug && <output data-testid="tile-stats">Loaded {stats.loaded} · visible {stats.visible} · {formatBytes(stats.bytes)} in memory</output>}
       <p role="status">{busy ? 'Loading release…' : ready ? 'Ready · tiles stream as you explore' : 'Loading globe and catalogue…'}</p>
