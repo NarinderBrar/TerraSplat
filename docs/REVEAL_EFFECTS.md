@@ -1,22 +1,25 @@
 # Splat reveal effects (design, option A)
 
-Status: design, agreed 2026-10-30; not implemented. Inspired by Spark's
+Status: implemented 2026-10-30 in `apps/web/src/reveal.ts` (design below, as revised after the first build). Inspired by Spark's
 [splat-reveal-effects](https://github.com/sparkjsdev/spark/blob/main/examples/splat-reveal-effects/index.html)
 example, implemented inside our existing Cesium renderer.
 
 ## Behaviour
 
-1. **Coarse levels render as a point cloud.** Splats in non-leaf (merged parent) tiles are drawn as small round
-   points of their own colour, not as blurry Gaussians.
-2. **The finest level (LOD0, leaf tiles) is unchanged.** It is the final tile a user sees. When its reveal has
-   finished, it renders exactly as today: same shape, colour and opacity. Any reveal effect must end on this state.
-3. **Two-stage reveal**, played per tile as it arrives:
-   - **Stage 1 (points):** a coarse tile's points appear behind a sweep that spreads from the block centre, with a
-     brief glowing edge at the sweep front.
-   - **Stage 2 (splats):** when a leaf tile arrives, its splats start as points and grow into their full Gaussian
-     shape, with colour easing from the point tint to the true colour.
-   Under REPLACE refinement Cesium swaps a parent for its children in one frame, so stage 2 starting from points
-   makes that swap look continuous.
+1. **Points only while revealing.** A tile that appears where nothing was shown before plays two stages and then
+   renders exactly as today:
+   - **Stage 1 (points):** its splats appear as small glowing points behind a sweep that spreads from the block
+     centre (250 m/s);
+   - **Stage 2 (splats):** the points grow into the tile's normal splats, while the glow and the point opacity boost
+     fade out.
+2. **The finest level (LOD0) is unchanged.** It is the final tile a user sees, at its current shape, colour and
+   opacity. Coarse tiles also end at their current look.
+3. **Refinement is instant.** When finer tiles replace an ancestor that is already on screen (zooming in), they swap
+   immediately as before. Replaying the point stage would briefly turn a finished model back into dust.
+
+The first build kept coarse tiles as points permanently (the original request). Views mixing levels then looked like
+a patchwork of crisp splats beside sparse dust, and the app's coverage test failed. Points-while-revealing was chosen
+instead (2026-10-30).
 
 Effects change size, opacity and colour only, not splat positions (see *Performance*). Spark's spiral, rain and
 unroll effects move splats and are out of scope.
@@ -41,7 +44,7 @@ Findings from the Cesium 1.146 source (`@cesium/engine/Source/Scene/GaussianSpla
 **Per-splat reveal data.** A second texture alongside Cesium's splat attribute texture, using the same row layout
 (`u_splatRowMask`, `u_splatRowShift`), with per splat:
 - `arrival` — the tile's first-visible time in seconds (shared app clock);
-- `leaf` — 1 for leaf tiles, 0 for merged parents.
+- `animate` — 1 if no ancestor of the tile had appeared before (first appearance), 0 for refinement.
 
 The order is recorded by wrapping `transformTile` (grouped per tileset and per merge), then expanded with each
 tile's `content.pointsLength`. It is truncated exactly like Cesium's own data when the splat budget trims
@@ -54,16 +57,16 @@ compiled from the original vertex/fragment sources with our code injected, and e
 Programs come from Cesium's shader cache, so they are compiled once.
 
 **Vertex shader changes** (around `calcCovVectors`), with progress
-`p = clamp((now − arrival − delay(distance from origin)) / duration, 0, 1)`:
-- non-leaf: replace the covariance axes with a fixed screen radius (about 2 px, scaled by `p` for the sweep), bypass
-  the "too small" discard for these points, and add the sweep-edge glow to the colour;
-- leaf: `mix(point axes, true axes, ease(p))` and `mix(point tint, true colour, ease(p))`;
-- **when `p == 1` the leaf path skips every change**, so final output equals the current shader's.
+`p = clamp((now − arrival − |xy| / speed) / duration, 0, 1)` (1 for tiles that do not animate):
+- points `= smoothstep(0, 0.45, p)` scales a 1.6 px point radius; `grow = smoothstep(0.45, 1, p)` mixes the point
+  axes into the true covariance axes; revealing splats bypass Cesium's "too small" discard;
+- colour gets a glow `0.6·exp(−10p)` and a point opacity floor of 0.85 that fades with `grow`;
+- **when `p == 1` every change is skipped**, so the final output equals the current shader's.
 
 **Render loop.** The app uses request-render mode. While any reveal is active it requests a frame each animation
 frame, then stops when every tile has `p == 1`.
 
-**Settings.** A "Reveal effects" toggle in the panel, on by default; reveal duration around 1.2 s. Effects are
+**Settings.** A "Reveal effects" toggle in the panel, on by default; reveal duration 1.8 s. Effects are
 skipped when the user prefers reduced motion (`prefers-reduced-motion`) or the toggle is off.
 
 ## Performance

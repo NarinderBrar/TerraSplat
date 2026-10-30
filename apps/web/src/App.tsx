@@ -19,6 +19,7 @@ export function App() {
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [debug, setDebug] = useState(false);
+  const [reveal, setReveal] = useState(() => !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
   const [layers, setLayers] = useState<Layers>({ pipeline: true, skyfall: true, overlap: 'skyfall' });
   const [error, setError] = useState('');
   const [tooltip, setTooltip] = useState({ text: '', x: 0, y: 0 });
@@ -116,6 +117,7 @@ export function App() {
       </li>)}</ul>}
       {!dataset && <p className="hint">Start with the whole Earth. Enable footprints to discover available 3D blocks, or pan and zoom to explore.</p>}
       {dataset && <ReleasePanel dataset={dataset} release={release} manifest={manifest} busy={busy} onChange={r => { void switchRelease(r); }} />}
+      <label className="debug-toggle"><input type="checkbox" checked={reveal} onChange={e => { setReveal(e.target.checked); globe.current?.setReveal(e.target.checked); }} /> Reveal effects</label>
       <label className="debug-toggle"><input type="checkbox" checked={debug} onChange={e => { setDebug(e.target.checked); globe.current?.setDebug(e.target.checked); }} /> Tile diagnostics</label>
       {debug && <output data-testid="tile-stats">Loaded {stats.loaded} · visible {stats.visible} · {formatBytes(stats.bytes)} in memory</output>}
       <p role="status">{busy ? 'Loading release…' : ready ? 'Ready · tiles stream as you explore' : 'Loading globe and catalogue…'}</p>

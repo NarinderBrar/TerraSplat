@@ -3,6 +3,7 @@ import { apiUrl, type Dataset, type Footprint, type Release, type Manifest } fro
 import { footprintCentre, footprintTooltip } from './format';
 import { controlMapping } from './controls';
 import { groundPatches, heightmap } from './ground';
+import { Reveal } from './reveal';
 
 declare global { interface Window { Cesium: typeof Cesium; terra?: Globe } }
 const C = window.Cesium;
@@ -34,6 +35,7 @@ const tileOptions = {
 };
 export class Globe {
   readonly viewer: Cesium.Viewer;
+  readonly reveal: Reveal;
   private tileUrls = new WeakMap<Cesium.Cesium3DTileset, string>();
   private loadedTiles = new WeakMap<Cesium.Cesium3DTileset, Set<Cesium.Cesium3DTile>>();
   private indexes = new Map<string, Cesium.Cesium3DTileset>();
@@ -64,6 +66,7 @@ export class Globe {
         powerPreference: powerPreference() } },
     });
     const { scene, camera } = this.viewer;
+    this.reveal = new Reveal(C, scene);
     scene.highDynamicRange = false;
     scene.backgroundColor = C.Color.fromCssColorString('#101a24');
     scene.globe.depthTestAgainstTerrain = false;
@@ -108,6 +111,8 @@ export class Globe {
     // Stats feed React state; emitting after every frame re-rendered the whole panel each frame.
     // Emit at most every STATS_INTERVAL_MS, with a trailing update once movement stops.
     this.removeListeners.push(scene.postRender.addEventListener(() => this.queueStats()));
+    // Request-render mode only draws on change; keep drawing while a tile reveal is still playing.
+    this.removeListeners.push(scene.postRender.addEventListener(() => { if (this.reveal.active()) scene.requestRender(); }));
     this.removeListeners.push(camera.changed.addEventListener(() => {
       scene.requestRender();
     }));
@@ -202,6 +207,7 @@ export class Globe {
     this.viewer.scene.globe.translucency.enabled = false;
     this.viewer.scene.requestRender();
   }
+  setReveal(animate: boolean) { this.reveal.animate = animate; this.viewer.scene.requestRender(); }
   showFootprints(show: boolean) { this.footprints.show = show; this.viewer.scene.requestRender(); }
   private async load(url: string, show = true) {
     const tileset = await C.Cesium3DTileset.fromUrl(apiUrl(url), { ...tileOptions, cacheBytes: this.cacheBudget,
