@@ -39,3 +39,18 @@ def test_copy_segments_requires_every_tile_splat_for_splat(tmp_path):
     (tmp_path / 'release3').mkdir()
     with pytest.raises(ValueError, match='changed'):
         copy_segments(tmp_path / 'good', plan, tmp_path / 'release3')
+
+
+def test_withdraw_moves_an_inactive_release_out_of_the_catalogue(tmp_path):
+    from pipeline.publish import catalog, save_catalog, withdraw
+    entry = lambda r: {'release_id': r, 'title': r, 'manifest_path': f'{r}/release.json', 'manifest_sha256': '0' * 64}
+    for r in ('a-r1', 'a-r2'):
+        (tmp_path / r).mkdir()
+        (tmp_path / r / 'release.json').write_text('{}')
+    save_catalog(tmp_path, {'schema_version': 1, 'datasets': [{'dataset_id': 'a', 'title': 'A', 'region': 'x',
+                                                               'active_release_id': None, 'releases': [entry('a-r1'), entry('a-r2')]}]})
+    assert withdraw(tmp_path, 'a-r2') == tmp_path / '.withdrawn' / 'a-r2'
+    assert [r['release_id'] for r in catalog(tmp_path)['datasets'][0]['releases']] == ['a-r1']
+    assert not (tmp_path / 'a-r2').exists() and (tmp_path / '.withdrawn/a-r2/release.json').exists()
+    with pytest.raises(ValueError, match='Unknown release'):
+        withdraw(tmp_path, 'a-r2')

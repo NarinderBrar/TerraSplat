@@ -46,6 +46,11 @@ static, so request-render mode still draws only on change.
 
 ## Current layer
 
-`jax068-2015-19v-r2` (same tiles as r1) carries the semantics v2 classes: buildings are usable (IoU 0.70 against
-DFC2019); trees, grass and ground are experimental (overall accuracy 0.68). See docs/SEMANTICS.md. A better classifier
-(v4/v5) will be published as a new layer on the same tiles.
+Segmentation is planned for the Skyfall-GS authors' scenes only (their models have the best image quality). They are
+RGB only, so the classes will come from an RGB classifier (semantics v4/v5, docs/SEMANTICS.md): tuned on JAX_068, then
+scored blind on the other seven DFC2019 Jacksonville scenes, and published as `skyfall-*-final-r3` layers on the same
+tiles.
+
+The first layer, `jax068-2015-19v-r2` (pipeline 19-view block, semantics v2 classes), proved the format and viewer and
+was then withdrawn from the catalogue (`python -m pipeline.publish --withdraw-release ID`; files kept under
+`artifacts/releases/.withdrawn/`).
