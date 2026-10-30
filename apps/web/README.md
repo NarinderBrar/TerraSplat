@@ -122,3 +122,5 @@ Software rendering verifies correctness; it does not establish the 30 FPS target
 
 Follow-ups: real GPU FPS measurements on a fixed camera route (30 FPS target), jobs endpoint,
 semantic layers/queries, lidar DSM comparison when a delivery layer exists.
+
+Planned visual reveal effects (coarse levels as points, two-stage reveal): [design](../../docs/REVEAL_EFFECTS.md).
