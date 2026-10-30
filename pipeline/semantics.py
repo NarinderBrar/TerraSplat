@@ -202,11 +202,14 @@ def preview(path, classes, truth_classes, scored, mapping):
     Image.fromarray(np.concatenate([ours, truth, disagree], 1)).save(path)
 
 
-def top_surface(depth_points, geo, truth):
-    """Top surface, its gap-filled copy, robust ground and height above ground on the truth grid."""
+def top_surface(depth_points, geo, truth, enu_shift=(0.0, 0.0, 0.0)):
+    """Top surface, its gap-filled copy, robust ground and height above ground on the truth grid.
+
+    enu_shift (metres) is added to the depth points, e.g. to remove a measured placement offset.
+    """
     from scipy.ndimage import distance_transform_edt, percentile_filter
 
-    top = points_dsm(enu_to_utm(np.load(depth_points)['enu'], geo, 32617), truth)
+    top = points_dsm(enu_to_utm(np.load(depth_points)['enu'] + np.asarray(enu_shift), geo, 32617), truth)
     valid = np.isfinite(top)
     nearest = distance_transform_edt(~valid, return_distances=False, return_indices=True)
     filled = top[tuple(nearest)]

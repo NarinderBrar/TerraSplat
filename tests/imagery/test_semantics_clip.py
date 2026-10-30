@@ -50,3 +50,13 @@ def test_v3_rules_use_height_only_for_raised_versus_flat():
     assert clip_only[0, :7].tolist() == [c['vegetation'], c['grass'], c['building'], c['building'], c['ground'],
                                          c['ground'], c['road']]
     assert not known[0, 7]  # one view is not enough
+
+
+def test_v4_parking_follows_the_flat_surface_rule():
+    names = ['building', 'tree', 'grass', 'road', 'parking', 'soil', 'water']
+    probabilities = np.full((1, 2, len(names)), 0.01, np.float32)
+    probabilities[..., names.index('parking')] = 0.9
+    classes, clip_only, _, _ = classify_clip(probabilities, np.full((1, 2), 3), np.array([[0.5, 4.0]]),
+                                             np.ones((1, 2), bool), names, 2.5, 2)
+    assert classes.tolist() == [[CODES['ground'], CODES['unknown']]]
+    assert clip_only.tolist() == [[CODES['ground'], CODES['ground']]]

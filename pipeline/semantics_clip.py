@@ -76,12 +76,12 @@ def classify_clip(probabilities, views, hag, valid, names, raised_m, min_views):
         'grass': (CODES['grass'], CODES['grass']),
         'building': (CODES['building'], CODES['ground']),
         'road': (CODES['unknown'], CODES['road']), 'car': (CODES['unknown'], CODES['road']),
-        'pavement': (CODES['unknown'], CODES['ground']), 'soil': (CODES['unknown'], CODES['ground']),
-        'shadow': (CODES['unknown'], CODES['ground']),
+        'pavement': (CODES['unknown'], CODES['ground']), 'parking': (CODES['unknown'], CODES['ground']),
+        'soil': (CODES['unknown'], CODES['ground']), 'shadow': (CODES['unknown'], CODES['ground']),
         'water': (CODES['unknown'], CODES['water']),
     }
     clip_only_codes = {'tree': 'vegetation', 'grass': 'grass', 'building': 'building', 'road': 'road', 'car': 'road',
-                       'pavement': 'ground', 'soil': 'ground', 'shadow': 'ground', 'water': 'water'}
+                       'pavement': 'ground', 'parking': 'ground', 'soil': 'ground', 'shadow': 'ground', 'water': 'water'}
     classes = np.zeros(hag.shape, np.uint8)
     clip_only = np.zeros(hag.shape, np.uint8)
     for name, (high, low) in rules.items():
@@ -103,14 +103,21 @@ def cell_model_points(truth, filled, geo):
     return (enu - model_to_enu[:3, 3]) @ np.linalg.inv(model_to_enu[:3, :3]).T
 
 
-def view_probabilities(scene, name, features_dir, points, segment_probs_for, level_weights, tolerance):
+def frame_projection(frame, transforms):
+    """3x4 projection of a Skyfall transforms frame (PINHOLE; transform_matrix is camera-to-world, OpenCV axes)."""
+    K = np.array([[frame['fl_x'], 0, frame['cx']], [0, frame['fl_y'], frame['cy']], [0, 0, 1]])
+    w2c = np.linalg.inv(np.asarray(frame['transform_matrix'], np.float64))
+    size = (frame.get('w', transforms.get('w')), frame.get('h', transforms.get('h')))
+    return K @ w2c[:3], size
+
+
+def view_probabilities(scene, frame, transforms, features_dir, points, segment_probs_for, level_weights, tolerance):
     from PIL import Image
 
-    camera = json.loads((scene / 'cameras' / f'{name}.json').read_text())
-    P = (np.asarray(camera['K']).reshape(4, 4) @ np.asarray(camera['W2C']).reshape(4, 4))[:3]
+    name = Path(frame['file_path']).stem
+    P, (width, height) = frame_projection(frame, transforms)
     projected = np.column_stack((points, np.ones(len(points)))) @ P.T
     depth = projected[:, 2]
-    width, height = camera['img_size']
     seg_maps = np.load(features_dir / f'{name}_s.npy').astype(np.int64)
     probabilities = segment_probs_for(np.load(features_dir / f'{name}_f.npy'))
     mask_height, mask_width = seg_maps.shape[1:]
@@ -123,7 +130,18 @@ def view_probabilities(scene, name, features_dir, points, segment_probs_for, lev
     return result
 
 
-def run(config_path, export_dir, depth_points, truth_dir, scene, features_dir, prototypes_path, output):
+def aligned_georeference(geo, registration_path):
+    """Georeference with a measured horizontal placement offset removed (pipeline.dsm_validation output)."""
+    if registration_path is None:
+        return geo, (0.0, 0.0, 0.0)
+    offset = json.loads(Path(registration_path).read_text())['registration']['splats_offset_from_lidar_m']
+    shift = (-offset['east'], -offset['north'], 0.0)
+    model_to_enu = np.asarray(geo['model_to_enu'], np.float64).copy()
+    model_to_enu[:3, 3] += shift
+    return geo | {'model_to_enu': model_to_enu.tolist()}, shift
+
+
+def run(config_path, export_dir, depth_points, truth_dir, scene, features_dir, prototypes_path, output, registration=None):
     import rasterio
 
     config = json.loads(Path(config_path).read_text())
@@ -131,20 +149,22 @@ def run(config_path, export_dir, depth_points, truth_dir, scene, features_dir, p
     if output.exists():
         raise ValueError('Use a new output directory')
     manifest = json.loads((Path(export_dir) / 'export-manifest.json').read_text())
-    geo = manifest['georeference']
+    geo, shift = aligned_georeference(manifest['georeference'], registration)
+    manifest = manifest | {'georeference': geo}
     truth = read_truth(truth_dir, 'JAX_068')
     shape = truth['dsm'].shape
-    top, valid, filled, ground, hag = top_surface(depth_points, geo, truth)
+    top, valid, filled, ground, hag = top_surface(depth_points, geo, truth, shift)
     names, prototypes = load_prototypes(prototypes_path, config)
     points = cell_model_points(truth, filled, geo)
     scoring = config['scoring']
     tolerance = 1.0 / np.asarray(geo['model_to_enu'])[0][0]  # 1.0 m in model units
 
-    frames = json.loads((scene / 'transforms_train.json').read_text())['frames']
+    transforms = json.loads((scene / 'transforms_train.json').read_text())
     per_view, views_used = [], []
-    for frame in frames:
+    for frame in transforms['frames']:
         name = Path(frame['file_path']).stem
-        per_view.append(view_probabilities(scene, name, features_dir, points, lambda f: segment_probabilities(f, prototypes),
+        per_view.append(view_probabilities(scene, frame, transforms, features_dir, points,
+                                           lambda f: segment_probabilities(f, prototypes),
                                            config['features']['level_weights'], tolerance))
         views_used.append({'name': name, 'visible_cells': int(np.isfinite(per_view[-1][:, 0]).sum()),
                            'features_sha256': digest(features_dir / f'{name}_f.npy')})
@@ -183,7 +203,7 @@ def run(config_path, export_dir, depth_points, truth_dir, scene, features_dir, p
         'schema_version': 1, 'config': str(config_path), 'config_sha256': digest(Path(config_path)),
         'export_manifest_sha256': digest(Path(export_dir) / 'export-manifest.json'),
         'depth_points_sha256': digest(Path(depth_points)), 'prototypes_sha256': digest(Path(prototypes_path)),
-        'views': views_used,
+        'views': views_used, 'registration': str(registration) if registration else None, 'enu_shift_m': list(shift),
         'cells': {'total': int(classes.size), 'with_top_surface': int(valid.sum()), 'with_evidence': int(known.sum()),
                   'by_class': counts(classes), 'clip_label': {n: int((known & (label == n)).sum()) for n in names}},
         'splats': {'total': int(len(splat_class)), 'inside_grid': int(inside.sum()), 'surface': int(surface.sum()),
@@ -206,9 +226,11 @@ def main():
     parser.add_argument('--scene', required=True, help='Prepared Skyfall scene (cameras/, masks/, transforms_train.json)')
     parser.add_argument('--features', required=True, help='LangSplat language_features directory')
     parser.add_argument('--prototypes', required=True, help='Output of scripts/clip-prototypes.py')
+    parser.add_argument('--registration', help='dsm-validation.json whose measured horizontal offset is removed first')
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
-    report = run(args.config, args.export, args.points, args.truth, args.scene, args.features, args.prototypes, args.output)
+    report = run(args.config, args.export, args.points, args.truth, args.scene, args.features, args.prototypes, args.output,
+                 args.registration)
     e, d = report['evaluation'], report['clip_only_diagnostic']
     print(json.dumps({'checks': report['checks'], 'passed': report['passed']}, indent=2))
     print(f"v3: overall accuracy {e['overall_accuracy']:.3f}; IoU building {e['building']['iou']}, vegetation {e['vegetation']['iou']}")
