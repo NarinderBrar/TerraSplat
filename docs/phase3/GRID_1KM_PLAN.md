@@ -51,3 +51,21 @@ unmeasured" in their releases.
 Within 1 km, blocks currently refine completely to LOD0 with a 192 MB cache each. With 16 adjacent blocks that could
 load most of the area at full detail at once. Before publishing the grid, limit full detail to the nearest few blocks and
 measure GPU memory with the 16 releases.
+
+## After training
+
+1. **Lidar cells and seams.** Rules and same-area baselines are pre-registered in `configs/grid-1km-decision.json`
+   (training/grid-1km-baseline/). Measure with `pipeline.grid_seams`, which reuses the split experiment's seam
+   measurement and rotates horizontal seams into its vertical frame:
+
+   ```bash
+   .venv-imagery/bin/python -m pipeline.grid_seams --grid configs/jax068-grid-1km.json \
+     --decision configs/grid-1km-decision.json --truth artifacts/reference/dfc2019-jax068 \
+     --inputs <inputs.json: {cell: {export, depth, validation}} for A2, A3, B2, B3> \
+     --output artifacts/validation/grid-1km-seams.json
+   ```
+
+2. **Review catalogue.** Publish all 16 into a separate catalogue first and view them together:
+   `pipeline.job <job> --from publish --publish-to artifacts/releases-grid-review --activate`.
+3. **Live.** After review, publish into `artifacts/releases` with `--activate`. Cells failing a rule are published
+   inactive and discussed first. Retire the central single block (`jax068-2015`) only once the grid is live.

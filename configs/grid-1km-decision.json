@@ -32,7 +32,7 @@
   "justification": {
     "cell_mae": "Same-area comparison with the single-block model (lesson 1 of docs/phase3/SPLIT_RESULT.md); 0.3 m is the existing class-regression budget. The split experiment measured +0.02/+0.04 m for the same comparison.",
     "seam_band": "Unchanged from the split experiment's rule (0.5 m excess over each cell's interior, \u00b110 m band).",
-    "seam_step": "Residual: the model's median height step across the seam minus the lidar's own step over the same 10 m strips (lesson 2). Limits as in the split experiment, which measured 0.33 m (ground) and 0.14 m (all).",
+    "seam_step": "Residual, on unregistered heights (what a viewer sees across the seam): the model's median height step across the seam minus the lidar's own step over the same 10 m strips (lesson 2). Limits as in the split experiment, which measured 0.33 m (ground) and 0.14 m (all).",
     "coverage": "Each cell has about 26% lidar coverage (about 60,000 labelled pixels); below 20% a result is inconclusive, never a pass."
   },
   "outcome": "Report per cell and seam. Passing cells and seams may be activated in the app; failures are published inactive with the measurement and discussed before activation. Thresholds are not changed after training."
