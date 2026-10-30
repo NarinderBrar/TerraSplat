@@ -1,0 +1,35 @@
+RUN select
+  .venv-imagery/bin/python -m pipeline.acquisitions scan artifacts/imagery/catalogue.json --block configs/jax068-block.json --offline --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/select-NEXT.partial/acquisitions.json
+  .venv-imagery/bin/python -m pipeline.acquisitions select /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/select-NEXT.partial/acquisitions.json --approved configs/jax068-pilot-19v.json --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/select-NEXT.partial/selection.json
+RUN sources
+  .venv-imagery/bin/python -m pipeline.sources /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/select-NEXT/selection.json --offline --max-total-gib 30 --destination artifacts/imagery/raw --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/sources-NEXT.partial/sources.json
+RUN block_inputs
+  .venv-imagery/bin/python -m pipeline.block_inputs /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/select-NEXT/selection.json /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/sources-NEXT/sources.json --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/block_inputs-NEXT.partial/inputs
+RUN satellite_sfm
+  .venv-imagery/bin/python -m pipeline.satellite_sfm /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/select-NEXT/selection.json --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/satellite_sfm-NEXT.partial/calibration
+RUN reconstruct
+  .venv-sfm/bin/python -m pipeline.reconstruct --inputs /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/block_inputs-NEXT/inputs --calibration /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/satellite_sfm-NEXT/calibration --approved configs/jax068-pilot-19v.json --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/reconstruct-NEXT.partial/sfm
+RUN skyfall_inputs
+  .venv-sfm/bin/python -m pipeline.skyfall_inputs --reconstruction /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/reconstruct-NEXT/sfm --inputs /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/block_inputs-NEXT/inputs --approved configs/jax068-pilot-19v.json --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/skyfall_inputs-NEXT.partial/scene
+RUN input_check
+  source scripts/stage1-env.sh && .venv-stage1/bin/python scripts/check-skyfall-inputs.py --scene /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/input_check-NEXT.partial/scene
+RUN cpu_preflight
+  source scripts/stage1-env.sh && .venv-stage1/bin/python -m pipeline.phase2 /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/skyfall_inputs-NEXT/scene/phase2-manifest.json --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/cpu_preflight-NEXT.partial/preflight-report.json --skip-environment
+RUN gpu_preflight [GPU]
+  source scripts/stage1-env.sh && .venv-stage1/bin/python -m pipeline.phase2 /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/skyfall_inputs-NEXT/scene/phase2-manifest.json --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/gpu_preflight-NEXT.partial/preflight-report.json
+RUN training [GPU]
+  source scripts/stage1-env.sh && .venv-stage1/bin/python -m pipeline.training --scene /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/skyfall_inputs-NEXT/scene --profile configs/train-2015-pilot-19v-recipe.json --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/training-NEXT.partial/run
+RUN evaluation [GPU]
+  source scripts/stage1-env.sh && .venv-stage1/bin/python -m pipeline.evaluation --run /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/evaluation-NEXT.partial/run
+RUN export [GPU]
+  source scripts/stage1-env.sh && .venv-stage1/bin/python -m pipeline.export --run /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/training-NEXT/run --selection /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/select-NEXT/selection.json --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/export-NEXT.partial/export
+RUN render_depth [GPU]
+  source scripts/stage1-env.sh && .venv-stage1/bin/python -m pipeline.render_depth --run /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/training-NEXT/run --export /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/export-NEXT/export --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/render_depth-NEXT.partial/depth
+RUN dsm_validation
+  .venv-imagery/bin/python -m pipeline.dsm_validation --export /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/export-NEXT/export --points /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/render_depth-NEXT/depth/depth-points.npz --truth artifacts/reference/dfc2019-jax068 --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/dsm_validation-NEXT.partial/validation
+RUN tiling
+  .venv-imagery/bin/python -m pipeline.tiling --export /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/export-NEXT/export --profile configs/tiles-2015-pilot.json --output /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/tiling-NEXT.partial/tiles
+RUN encoding
+  node scripts/encode-tiles.mjs /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/encoding-NEXT.partial/tiles
+RUN publish
+  .venv-sfm/bin/python -m pipeline.publish --recover-identical --config /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/publish-NEXT.partial/release.json --releases /media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/central-19v/attempts/publish-NEXT.partial/releases

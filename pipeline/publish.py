@@ -14,6 +14,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import uuid
 
 import numpy as np
 
@@ -274,7 +275,7 @@ def verify_release(directory, manifest):
             raise ValueError(f'Hash mismatch: {name}')
 
 
-def publish(config_path, directory, make_active=False):
+def publish(config_path, directory, make_active=False, recover_identical=False):
     config_path, directory = Path(config_path), Path(directory)
     config = read(config_path)
     for key in ('dataset_id', 'release_id', 'region'):
@@ -283,7 +284,39 @@ def publish(config_path, directory, make_active=False):
         release_id = config['release_id']
         destination = directory / release_id
         if destination.exists():
-            raise ValueError(f'Immutable release already exists: {release_id}')
+            manifest = read(destination / 'release.json') if recover_identical else None
+            if manifest is None or manifest['source']['config_sha256'] != sha256(config_path):
+                raise ValueError(f'Immutable release already exists: {release_id}')
+            verify_release(destination, manifest)
+            source = ROOT / config['tiles_dir']
+            for name, key in [('tile-plan.json', 'tile_plan_sha256'),
+                              ('tiles-report.json', 'tiles_report_sha256')]:
+                if sha256(source / name) != manifest['source'][key]:
+                    raise ValueError(f'Publication recovery input changed: {name}')
+            for name, expected in manifest['files'].items():
+                if name.startswith('tiles/') or name in ('tile-plan.json', 'tileset.json', 'tiles-report.json'):
+                    if sha256(relative_file(source, name)) != expected:
+                        raise ValueError(f'Publication recovery input changed: {name}')
+            document = catalog(directory)
+            dataset = next((d for d in document['datasets'] if d['dataset_id'] == config['dataset_id']), None)
+            if dataset is None:
+                dataset = {'dataset_id': config['dataset_id'], 'title': config['dataset_title'],
+                           'region': config['region'], 'active_release_id': None, 'releases': []}
+                document['datasets'].append(dataset)
+            if dataset['region'] != config['region']:
+                raise ValueError('Dataset region cannot change')
+            entry = next((r for r in dataset['releases'] if r['release_id'] == release_id), None)
+            manifest_hash = sha256(destination / 'release.json')
+            if entry is not None and entry['manifest_sha256'] != manifest_hash:
+                raise ValueError('Manifest hash mismatch')
+            if entry is None:
+                dataset['releases'].append({'release_id': release_id, 'title': manifest['title'],
+                                           'manifest_path': f'{release_id}/release.json',
+                                           'manifest_sha256': manifest_hash})
+            if make_active:
+                dataset['active_release_id'] = release_id
+            save_catalog(directory, document)
+            return manifest
         source = ROOT / config['tiles_dir']
         report = read(source / 'tiles-report.json')
         hashes = {'tile-plan.json': report['planSha256'], 'tileset.json': report['tilesetSha256']}
@@ -299,7 +332,8 @@ def publish(config_path, directory, make_active=False):
             raise ValueError('Tileset references differ from report')
         if {t['id'] for t in plan['tiles']} != set(report['tiles']):
             raise ValueError('Tile plan differs from report')
-        staging = directory / '.staging' / release_id
+        staging_name = release_id + '-' + uuid.uuid4().hex if recover_identical else release_id
+        staging = directory / '.staging' / staging_name
         staging.mkdir(parents=True, exist_ok=False)
         try:
             for name in [*hashes, 'tiles-report.json']:
@@ -395,9 +429,10 @@ def main():
     group.add_argument('--activate-release', help='Activate an existing release (also supports rollback)')
     group.add_argument('--rebuild-index', action='store_true', help='Repair indexes from the authoritative catalog')
     parser.add_argument('--activate', action='store_true', help='Activate the newly published release')
+    parser.add_argument('--recover-identical', action='store_true', help='Recover a verified identical publication after interruption')
     args = parser.parse_args()
     if args.config:
-        result = publish(args.config, args.releases, args.activate)
+        result = publish(args.config, args.releases, args.activate, args.recover_identical)
         print(json.dumps({k: result[k] for k in ('release_id', 'tile_count', 'bytes')}))
     elif args.activate_release:
         activate(args.releases, args.activate_release)

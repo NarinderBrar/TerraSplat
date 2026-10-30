@@ -211,3 +211,43 @@ def test_job_without_truth_labels_missing_lidar_and_requires_measured_holdout(ti
     config_path.write_text(json.dumps(config))
     with pytest.raises(ValueError, match='quality must be measured'):
         publish(config_path, releases)
+
+
+def test_job_recovers_identical_release_and_missing_catalog_entry(tiled_release):
+    config, releases, _ = tiled_release
+    first = publish(config, releases)
+    manifest_path = releases / first['release_id'] / 'release.json'
+    before = sha256(manifest_path)
+    assert publish(config, releases, recover_identical=True) == first
+    assert sha256(manifest_path) == before
+    # Emulate interruption after release rename and before catalogue replacement.
+    (releases / 'catalog.json').unlink()
+    assert publish(config, releases, recover_identical=True) == first
+    assert catalog(releases)['datasets'][0]['active_release_id'] is None
+    publish(config, releases, True, recover_identical=True)
+    assert catalog(releases)['datasets'][0]['active_release_id'] == first['release_id']
+    changed = read(config)
+    changed['title'] = 'changed'
+    config.write_text(json.dumps(changed))
+    with pytest.raises(ValueError, match='Immutable'):
+        publish(config, releases, recover_identical=True)
+    assert sha256(manifest_path) == before
+
+
+def test_job_recovery_preserves_interrupted_staging(tiled_release):
+    config, releases, _ = tiled_release
+    stale = releases / '.staging' / read(config)['release_id']
+    stale.mkdir(parents=True)
+    (stale / 'keep').write_text('interrupted attempt')
+    publish(config, releases, recover_identical=True)
+    assert (stale / 'keep').read_text() == 'interrupted attempt'
+
+
+@pytest.mark.parametrize('name', ['tiles/r.glb', 'tileset.json'])
+def test_job_recovery_rejects_changed_delivery_input(tiled_release, name):
+    config, releases, source = tiled_release
+    manifest = publish(config, releases)
+    (source / name).write_bytes(b'changed')
+    with pytest.raises(ValueError, match='recovery input changed'):
+        publish(config, releases, recover_identical=True)
+    verify_release(releases / manifest['release_id'], manifest)

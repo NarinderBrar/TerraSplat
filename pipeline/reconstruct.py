@@ -261,6 +261,9 @@ def reconstruct(inputs, calibration, approved, output, source, colmap):
             output,
             "matching",
             report,
+            # Exhaustive matching of 20 views takes about 15 minutes on the 3 threads above, right at the default
+            # limit, and longer when the machine is busy. Only the safety timeout changes; matching settings do not.
+            timeout=3600,
         )
         with sqlite3.connect(db) as conn:
             report["verified_pairs"] = [
