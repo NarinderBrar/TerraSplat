@@ -13,7 +13,7 @@ splats. Sweeps climb bottom to top over the block's height with per-point random
 | --- | --- |
 | 1. A coarse tile appears | its points are revealed bottom to top |
 | 2. A coarse tile is a placeholder (its children are loading) | a glow band rises bottom to top every 1.8 s, plus random sparkles; stops after 20 s if the children never arrive |
-| 3. A leaf tile appears | it grows from points into its splats bottom to top, then renders exactly as before |
+| 3. A leaf tile appears | **scan 1:** its dense points appear behind a glowing scan line climbing bottom to top; a 0.4 s pause; **scan 2:** a softer scan turns the points into its splats bottom to top; it then renders exactly as before |
 | Zooming out (coarse replaces shown leaves) | points, no sweep |
 
 Distances, set in `apps/web/src/globe.ts`:

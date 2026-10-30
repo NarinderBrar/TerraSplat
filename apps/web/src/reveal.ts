@@ -13,7 +13,8 @@ import type * as Cesium from 'cesium';
  * 1. a coarse tile appearing (mode FULL or GROW) reveals its points bottom to top;
  * 2. while a coarse tile is a placeholder (drawn only because its children are loading), a glow band rises bottom to
  *    top with random sparkles, for at most PLACEHOLDER_SECONDS;
- * 3. a leaf tile appearing grows from points into its splats bottom to top, then renders exactly as before.
+ * 3. a leaf tile appearing first reveals its dense points behind a scan line climbing bottom to top, then after a
+ *    pause a second scan grows the points into its splats; it then renders exactly as before.
  * Tiles replacing shown descendants (zooming out) or already shown (mode NONE) appear without a sweep.
  */
 
@@ -34,6 +35,7 @@ uniform highp sampler2D u_revealTexture;
 uniform float u_revealNow;
 uniform float u_revealSweep;
 uniform float u_revealFade;
+uniform float u_revealPause;
 uniform float u_revealPointPx;
 uniform float u_revealAnimate;
 uniform vec2 u_revealHeight;
@@ -51,19 +53,23 @@ const COVARIANCE = /* glsl */ `
     // Height within the block 0..1 and per-point jitter give a bottom-to-top sweep with a noisy edge.
     float revealH = clamp((splatPosition.z - u_revealHeight.x) / max(u_revealHeight.y - u_revealHeight.x, 1.0), 0.0, 1.0);
     float revealJitter = revealHash(splatPosition.xyz);
-    float reveal = 1.0;
+    // Scan 1 (all tiles): points appear behind a scan line climbing the block. Scan 2 (leaf tiles), after a pause:
+    // a second scan turns the points into splats. Both are 1 for tiles that do not animate.
+    float reveal = 1.0, revealGrowScan = 1.0;
     if (u_revealAnimate > 0.5 && revealData.y > 0.5) {
-        reveal = clamp((u_revealNow - revealData.x - revealH * u_revealSweep - 0.3 * revealJitter) / u_revealFade, 0.0, 1.0);
+        float elapsed = u_revealNow - revealData.x, edge = revealH * u_revealSweep + 0.3 * revealJitter;
+        reveal = clamp((elapsed - edge) / u_revealFade, 0.0, 1.0);
+        revealGrowScan = clamp((elapsed - u_revealSweep - u_revealFade - 0.3 - u_revealPause - edge) / u_revealFade, 0.0, 1.0);
     }
     float revealLoading = 0.0;
     if (u_revealAnimate > 0.5 && revealData.z >= 0.0) {
         revealLoading = 1.0 - smoothstep(PLACEHOLDER_SECONDS - 2.0, PLACEHOLDER_SECONDS, u_revealNow - revealData.z);
     }
-    // Coarse tiles are always points; leaf tiles are points until their sweep reaches them, then grow into splats.
-    bool revealing = !revealLeaf || reveal < 1.0;
-    float revealGrow = revealLeaf ? smoothstep(0.0, 1.0, reveal) : 0.0;
+    // Coarse tiles are always points; leaf tiles are points until the second scan grows them into splats.
+    bool revealing = !revealLeaf || revealGrowScan < 1.0;
+    float revealGrow = revealLeaf ? smoothstep(0.0, 1.0, revealGrowScan) : 0.0;
     if (revealing) {
-        float pointPx = u_revealPointPx * (revealLeaf ? 1.0 : reveal);
+        float pointPx = u_revealPointPx * reveal;
         if (pointPx <= 0.0) {
             gl_Position = discardVec;
             return;
@@ -74,8 +80,8 @@ const COVARIANCE = /* glsl */ `
 
 const COLOUR = /* glsl */ `
     if (revealing) {
-        // Appearing points flash briefly; loading points carry a glow band rising bottom to top plus random sparkles.
-        float glow = 0.5 * (1.0 - reveal);
+        // Each scan line glows as it passes; loading points carry a glow band rising bottom to top plus random sparkles.
+        float glow = 0.7 * (1.0 - reveal) + (revealGrowScan > 0.0 ? 0.35 * (1.0 - revealGrowScan) : 0.0);
         if (revealLoading > 0.0) {
             float band = fract((u_revealNow - revealData.z) / 1.8);
             glow += revealLoading * 0.6 * exp(-pow((revealH - band) * 7.0, 2.0));
@@ -152,6 +158,7 @@ export class Reveal {
   animate = !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   sweep = 1.4; // seconds for a sweep to climb from the bottom to the top of the block
   fade = 0.5; // seconds for one point to appear or grow once the sweep reaches it
+  pause = 0.4; // seconds between the point scan and the splat scan
   pointPx = 2.0;
   private readonly start = performance.now() / 1000;
   private readonly states = new WeakMap<Tile, TileState>();
@@ -241,7 +248,9 @@ export class Reveal {
     merge.tiles.push(tile);
     merge.states.push(state);
     merge.counts.push(tile.content.pointsLength);
-    if (state.mode !== Mode.None) this.busyUntil = Math.max(this.busyUntil, state.arrival + this.sweep + this.fade + 0.3);
+    if (state.mode !== Mode.None) {
+      this.busyUntil = Math.max(this.busyUntil, state.arrival + 2 * (this.sweep + this.fade + 0.3) + this.pause);
+    }
     if (placeholder) this.busyUntil = Math.max(this.busyUntil, state.placeholderSince + PLACEHOLDER_SECONDS);
   }
 
@@ -279,6 +288,7 @@ export class Reveal {
       u_revealNow: () => this.now(),
       u_revealSweep: () => this.sweep,
       u_revealFade: () => this.fade,
+      u_revealPause: () => this.pause,
       u_revealHeight: () => this.textures.get(primitive)?.height,
       u_revealPointPx: () => this.pointPx,
       u_revealAnimate: () => (this.animate ? 1 : 0),
