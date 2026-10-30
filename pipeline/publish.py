@@ -275,6 +275,22 @@ def verify_release(directory, manifest):
             raise ValueError(f'Hash mismatch: {name}')
 
 
+def copy_segments(source, plan, staging):
+    """Copy a pipeline.segments layer into a release; it must cover every tile of the plan, splat for splat."""
+    document = read(source / 'segments.json')
+    tiles = {t['id']: t['splats'] for t in plan['tiles']}
+    if {k: v['splats'] for k, v in document['tiles'].items()} != tiles:
+        raise ValueError('Segment layer does not match the tile plan')
+    (staging / 'segments').mkdir()
+    for tile_id, entry in document['tiles'].items():
+        path = source / f'{identifier(tile_id)}.cls'
+        if path.stat().st_size != tiles[tile_id] or sha256(path) != entry['sha256']:
+            raise ValueError(f'Segment layer file changed: {path.name}')
+        shutil.copyfile(path, staging / 'segments' / path.name)
+    shutil.copyfile(source / 'segments.json', staging / 'segments' / 'segments.json')
+    return {'path': 'segments/segments.json', 'label': document['label']}
+
+
 def publish(config_path, directory, make_active=False, recover_identical=False):
     config_path, directory = Path(config_path), Path(directory)
     config = read(config_path)
@@ -340,6 +356,7 @@ def publish(config_path, directory, make_active=False, recover_identical=False):
                 target = staging / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(relative_file(source, name), target)
+            segments = copy_segments(ROOT / config['segments_dir'], plan, staging) if 'segments_dir' in config else None
             evidence = {}
             for name in config['evidence']:
                 path = ROOT / name
@@ -383,6 +400,8 @@ def publish(config_path, directory, make_active=False, recover_identical=False):
             }
             if ground:
                 manifest['ground'] = ground
+            if segments:
+                manifest['segments'] = segments
             for key in ('source_label', 'accuracy_label'):
                 if key in config:
                     manifest[key] = config[key]

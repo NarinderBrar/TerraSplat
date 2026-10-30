@@ -16,6 +16,10 @@ import type * as Cesium from 'cesium';
  * 3. a leaf tile appearing first reveals its dense points behind a scan line climbing bottom to top, then after a
  *    pause a second scan grows the points into its splats; it then renders exactly as before.
  * Tiles replacing shown descendants (zooming out) or already shown (mode NONE) appear without a sweep.
+ *
+ * Segment mode (docs/SEGMENTS.md) reuses the same texture: releases with a segment layer have one class byte per
+ * tile splat (segments/<tile>.cls), stored above the leaf bit. Highlighted classes take their class colour; the rest
+ * fade to grey. Class files load only once segment mode is switched on.
  */
 
 // Exact text from Cesium 1.146 PrimitiveGaussianSplatVS.glsl; injection is skipped if any marker is missing.
@@ -27,6 +31,9 @@ const MARKERS = {
 };
 
 export const PLACEHOLDER_SECONDS = 20;
+/** Class colours by code, as pipeline/semantics.py COLOURS: unknown, ground, road, building, trees, water, grass. */
+export const SEGMENT_COLOURS: [number, number, number][] = [[40, 40, 40], [190, 180, 150], [110, 110, 120],
+  [220, 80, 60], [60, 170, 70], [60, 120, 220], [150, 200, 110]];
 export enum Mode { None = 0, Full = 1, Grow = 2 }
 export interface TileState { arrival: number; mode: Mode; placeholderSince: number; leaf: boolean }
 
@@ -40,6 +47,10 @@ uniform float u_revealPointPx;
 uniform float u_revealAnimate;
 uniform float u_revealLoadingGlow;
 uniform vec2 u_revealHeight;
+uniform float u_segmentMode;
+uniform float u_segmentMask;
+const vec3 SEGMENT_COLOURS[${SEGMENT_COLOURS.length}] = vec3[${SEGMENT_COLOURS.length}](
+    ${SEGMENT_COLOURS.map(c => `vec3(${c.map(v => (v / 255).toFixed(4)).join(', ')})`).join(',\n    ')});
 
 float revealHash(vec3 p) {
   return fract(sin(dot(p, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
@@ -50,7 +61,8 @@ const COVARIANCE = /* glsl */ `
     uint revealRowMask = uint(u_splatRowMask);
     vec4 revealData = texelFetch(u_revealTexture,
         ivec2(int(texIdx & revealRowMask), int(texIdx >> uint(u_splatRowShift))), 0);
-    bool revealLeaf = revealData.w > 0.5;
+    bool revealLeaf = mod(revealData.w, 2.0) > 0.5;
+    int segmentClass = int(revealData.w + 0.5) / 2;
     // Height within the block 0..1 and per-point jitter give a bottom-to-top sweep with a noisy edge.
     float revealH = clamp((splatPosition.z - u_revealHeight.x) / max(u_revealHeight.y - u_revealHeight.x, 1.0), 0.0, 1.0);
     float revealJitter = revealHash(splatPosition.xyz);
@@ -91,6 +103,20 @@ const COLOUR = /* glsl */ `
         v_splatColor.a = mix(max(v_splatColor.a, 0.85), v_splatColor.a, revealGrow);
         v_splatColor.rgb = min(v_splatColor.rgb + glow * vec3(0.55, 0.85, 1.0), vec3(1.0));
     }
+    if (u_segmentMode > 0.5) {
+        vec3 segmentTint = SEGMENT_COLOURS[clamp(segmentClass, 0, ${SEGMENT_COLOURS.length - 1})];
+        float luma = dot(v_splatColor.rgb, vec3(0.299, 0.587, 0.114));
+        int segmentMask = int(u_segmentMask + 0.5);
+        if (segmentMask == 0) {
+            // Overview: labelled splats take on their class colour, unknown ones turn grey.
+            v_splatColor.rgb = segmentClass == 0 ? vec3(0.6 * luma) : mix(v_splatColor.rgb, segmentTint, 0.6);
+        } else if (((segmentMask >> segmentClass) & 1) == 1) {
+            v_splatColor.rgb = min(mix(v_splatColor.rgb, segmentTint, 0.55) + 0.18, vec3(1.0));
+        } else {
+            v_splatColor.rgb = vec3(0.35 * luma);
+            v_splatColor.a *= 0.3;
+        }
+    }
 `;
 
 export function injectRevealShader(source: string): string | undefined {
@@ -103,18 +129,30 @@ export function injectRevealShader(source: string): string | undefined {
     .replace(MARKERS.end, COLOUR + MARKERS.end);
 }
 
-/** Per-splat (arrival, mode, placeholder-since or -1, leaf) in Cesium's row layout, truncated like Cesium's splat budget. */
-export function revealTexels(tiles: (TileState & { count: number })[], numSplats: number, rowWidth: number) {
+/**
+ * Per-splat (arrival, mode, placeholder-since or -1, leaf + 2 * class) in Cesium's row layout, truncated like Cesium's
+ * splat budget. Tiles without class data (or with a mismatched count) get class 0.
+ */
+export function revealTexels(tiles: (TileState & { count: number; classes?: Uint8Array })[], numSplats: number, rowWidth: number) {
   const height = Math.max(1, Math.ceil(numSplats / rowWidth));
   const data = new Float32Array(rowWidth * height * 4);
   let offset = 0;
   for (const tile of tiles) {
     const end = Math.min(offset + tile.count, numSplats);
-    for (let i = offset; i < end; i++) data.set([tile.arrival, tile.mode, tile.placeholderSince, tile.leaf ? 1 : 0], 4 * i);
+    const classes = tile.classes?.length === tile.count ? tile.classes : undefined;
+    for (let i = offset; i < end; i++) {
+      data.set([tile.arrival, tile.mode, tile.placeholderSince, (tile.leaf ? 1 : 0) + 2 * (classes?.[i - offset] ?? 0)], 4 * i);
+    }
     offset += tile.count;
     if (offset >= numSplats) break;
   }
   return { data, width: rowWidth, height };
+}
+
+/** Segment file of a tile's content URL (…/tiles/<id>.glb -> …/segments/<id>.cls) and its release's layer index. */
+export function segmentUrls(contentUrl: string) {
+  const match = /^(.*\/)tiles\/([^/?#]+)\.glb(?:[?#].*)?$/.exec(contentUrl);
+  return match ? { layer: `${match[1]}segments/segments.json`, tile: `${match[1]}segments/${match[2]}.cls` } : undefined;
 }
 
 /** How a tile entering a merge should appear, given the tiles of the previous merge. */
@@ -147,11 +185,11 @@ interface Primitive {
   _numSplats: number; _splatRowMask: number; _drawCommand?: DrawCommand; isDestroyed(): boolean;
 }
 interface Tile {
-  parent?: Tile; children: unknown[]; _screenSpaceError: number; content: { pointsLength: number };
+  parent?: Tile; children: unknown[]; _screenSpaceError: number; content: { pointsLength: number; url?: string };
   tileset: { gaussianSplatPrimitive?: Primitive; memoryAdjustedScreenSpaceError: number };
 }
 // Splat counts are captured at merge time: Cesium may unload a tile's content while its merge is still on screen.
-interface Merge { generation: number; tiles: Tile[]; states: TileState[]; counts: number[] }
+interface Merge { generation: number; tiles: Tile[]; states: TileState[]; counts: number[]; urls: (string | undefined)[] }
 
 export class Reveal {
   /** False when Cesium's internals differ from 1.146; the viewer then renders exactly as before. */
@@ -172,6 +210,12 @@ export class Reveal {
   /** Counts by mode in the latest committed merge, for diagnostics and tests. */
   readonly stats = { merges: 0, full: 0, grow: 0, none: 0, placeholders: 0 };
   private busyUntil = -Infinity;
+  /** Segment mode and the highlighted classes (bit per class code; 0 shows every class). */
+  segmentMode = false;
+  segmentMask = 0;
+  private readonly layers = new Map<string, Promise<boolean>>();
+  private readonly classes = new Map<string, Uint8Array | null>();
+  private segmentsChanged = false;
 
   constructor(private readonly C: typeof Cesium, private readonly scene: Cesium.Scene) {
     const P = (C as unknown as Internals).GaussianSplatPrimitive;
@@ -208,6 +252,13 @@ export class Reveal {
   }
 
   private refreshPlaceholders() {
+    if (this.segmentsChanged) {
+      this.segmentsChanged = false;
+      for (const primitive of this.committed) {
+        const cached = this.textures.get(primitive), merge = cached && this.merges.get(primitive)?.get(cached.generation);
+        if (cached && merge && !primitive.isDestroyed()) this.upload(primitive, merge, cached.context);
+      }
+    }
     if (!this.animate) return;
     const now = this.now();
     for (const primitive of this.committed) {
@@ -238,7 +289,7 @@ export class Reveal {
     this.merges.set(primitive, merges);
     const generation = primitive._splatDataGeneration;
     let merge = merges.get(generation);
-    if (!merge) { merge = { generation, tiles: [], states: [], counts: [] }; merges.set(generation, merge); }
+    if (!merge) { merge = { generation, tiles: [], states: [], counts: [], urls: [] }; merges.set(generation, merge); }
     const previous = [...merges.values()].filter(m => m.generation < generation).at(-1);
     const now = this.now(), prior = this.states.get(tile);
     const mode = appearance(tile, new Set(previous?.tiles ?? []));
@@ -251,6 +302,7 @@ export class Reveal {
     merge.tiles.push(tile);
     merge.states.push(state);
     merge.counts.push(tile.content.pointsLength);
+    merge.urls.push(tile.content.url);
     if (state.mode !== Mode.None) {
       this.busyUntil = Math.max(this.busyUntil, state.arrival + 2 * (this.sweep + this.fade + 0.3) + this.pause);
     }
@@ -271,6 +323,7 @@ export class Reveal {
 
     const R = this.C as unknown as Internals;
     if (this.textures.get(primitive)?.generation !== generation) this.upload(primitive, merge, context);
+    if (this.segmentMode) this.requestClasses(merge);
     this.committed.add(primitive);
     Object.assign(this.stats, {
       merges: this.stats.merges + 1,
@@ -296,13 +349,16 @@ export class Reveal {
       u_revealPointPx: () => this.pointPx,
       u_revealAnimate: () => (this.animate ? 1 : 0),
       u_revealLoadingGlow: () => (this.loadingGlow ? 1 : 0),
+      u_segmentMode: () => (this.segmentMode ? 1 : 0),
+      u_segmentMask: () => this.segmentMask,
     });
     this.scene.requestRender();
   }
 
   private upload(primitive: Primitive, merge: Merge, context: unknown) {
     const C = this.C, R = C as unknown as Internals;
-    const texels = revealTexels(merge.states.map((state, i) => ({ ...state, count: merge.counts[i] })),
+    const texels = revealTexels(merge.states.map((state, i) => ({ ...state, count: merge.counts[i],
+      classes: this.classes.get(merge.urls[i] ?? '') ?? undefined })),
       primitive._numSplats, primitive._splatRowMask + 1);
     this.textures.get(primitive)?.texture.destroy();
     const texture = new R.Texture({
@@ -321,5 +377,37 @@ export class Reveal {
     this.textures.set(primitive, cached);
     this.scene.requestRender();
     return cached;
+  }
+
+  setSegments(mode: boolean, mask: number) {
+    this.segmentMode = mode;
+    this.segmentMask = mask;
+    if (mode) for (const primitive of this.committed) {
+      const cached = this.textures.get(primitive), merge = cached && this.merges.get(primitive)?.get(cached.generation);
+      if (merge) this.requestClasses(merge);
+    }
+    this.scene.requestRender();
+  }
+
+  /** Load the class files of a merge's tiles from releases that publish a segment layer; re-upload when they arrive. */
+  private requestClasses(merge: Merge) {
+    for (const url of merge.urls) {
+      const target = url && segmentUrls(url);
+      if (!url || !target || this.classes.has(url)) continue;
+      this.classes.set(url, null);
+      let layer = this.layers.get(target.layer);
+      if (!layer) {
+        layer = fetch(target.layer).then(r => r.ok, () => false);
+        this.layers.set(target.layer, layer);
+      }
+      void layer.then(async available => {
+        if (!available) return;
+        const response = await fetch(target.tile);
+        if (!response.ok) return;
+        this.classes.set(url, new Uint8Array(await response.arrayBuffer()));
+        this.segmentsChanged = true;
+        this.scene.requestRender();
+      }).catch(() => undefined);
+    }
   }
 }

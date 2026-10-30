@@ -4,6 +4,7 @@ import { footprintTooltip, formatBytes } from './format';
 import { Globe, isSkyfall, type MapStats, type Layers } from './globe';
 import { JobsPanel } from './JobsPanel';
 import { ReleasePanel } from './ReleasePanel';
+import { SegmentPanel } from './SegmentPanel';
 
 export function App() {
   const host = useRef<HTMLDivElement>(null);
@@ -120,6 +121,8 @@ export function App() {
       </li>)}</ul>}
       {!dataset && <p className="hint">Start with the whole Earth. Enable footprints to discover available 3D blocks, or pan and zoom to explore.</p>}
       {dataset && <ReleasePanel dataset={dataset} release={release} manifest={manifest} busy={busy} onChange={r => { void switchRelease(r); }} />}
+      <SegmentPanel manifest={manifest} available={globe.current?.reveal.installed ?? false}
+        onChange={(mode, mask) => globe.current?.setSegments(mode, mask)} />
       <JobsPanel />
       <label className="debug-toggle"><input type="checkbox" checked={reveal} onChange={e => { setReveal(e.target.checked); globe.current?.setReveal(e.target.checked); }} /> Reveal effects</label>
       {globe.current?.quality === 'reduced' && <p className="quality-note" role="note">

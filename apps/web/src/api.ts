@@ -27,6 +27,7 @@ export interface Manifest {
   release_id: string; dataset_id: string; title: string; description: string;
   anchor: { latitude: number; longitude: number; ellipsoidal_height_m: number };
   footprint: Footprint['geometry']; limitations: string; evidence: string[]; source_label?: string;
+  segments?: { path: string; label: string };
 }
 const base = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
 export const apiUrl = (path: string) => `${base}${path}`;
@@ -120,3 +121,18 @@ export function parseJobs(value: unknown): JobStatus[] {
   return value as JobStatus[];
 }
 export const getJobs = async (signal?: AbortSignal) => parseJobs(await getJson('/api/jobs', signal));
+export interface SegmentLayer {
+  label: string; classes: { code: number; name: string; colour: [number, number, number] }[];
+  leaf_splats_by_class: Record<string, number>;
+}
+export async function getSegments(releaseId: string, path: string, signal?: AbortSignal): Promise<SegmentLayer> {
+  const data = object(await getJson(`/releases/${encodeURIComponent(releaseId)}/${path}`, signal));
+  field(data.label, 'string');
+  if (!Array.isArray(data.classes)) throw new Error('Invalid segment classes');
+  for (const c of data.classes) {
+    const entry = object(c); field(entry.code, 'number'); field(entry.name, 'string');
+    if (!Array.isArray(entry.colour) || entry.colour.length !== 3) throw new Error('Invalid segment colour');
+  }
+  object(data.leaf_splats_by_class);
+  return data as unknown as SegmentLayer;
+}

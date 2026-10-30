@@ -229,6 +229,8 @@ export class Globe {
     this.viewer.scene.requestRender();
   }
   setReveal(animate: boolean) { this.reveal.animate = animate; this.viewer.scene.requestRender(); }
+  /** Segment mode for releases with a segment layer; mask has one bit per class code (0 = colour every class). */
+  setSegments(mode: boolean, mask: number) { this.reveal.setSegments(mode, mask); }
   showFootprints(show: boolean) { this.footprints.show = show; this.viewer.scene.requestRender(); }
   private async load(url: string, show = true) {
     const tileset = await C.Cesium3DTileset.fromUrl(apiUrl(url), { ...tileOptions,

@@ -45,6 +45,14 @@ output { display: block; font-variant-numeric: tabular-nums; }
 .class-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; list-style: none; padding: 0; margin: 8px 0; font-size: 12px; }
 .class-legend li { display: flex; align-items: center; gap: 5px; }
 .class-legend span { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.segments { margin-top: 14px; font-size: 13px; }
+.segments ul { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 4px; }
+.segments li button { width: 100%; display: flex; align-items: center; gap: 8px; text-align: left; border: 1px solid #c9d8d2; }
+.segments li button[aria-pressed=true] { background: #d9f2e6; border-color: #15825f; font-weight: 600; }
+.segments li span { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.segments li small { margin-left: auto; color: #7a8b88; }
+.segments-note { font-size: 12px; color: #4f625f; margin: 6px 0; }
+.segments-clear { font-size: 12px; }
 .jobs { margin-top: 18px; font-size: 12px; color: #4f625f; }
 .jobs summary { cursor: pointer; font-weight: 600; }
 .jobs ul { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; max-height: 260px; overflow-y: auto; }

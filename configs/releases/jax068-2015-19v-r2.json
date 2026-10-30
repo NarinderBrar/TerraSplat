@@ -1,0 +1,89 @@
+{
+  "dataset_id": "jax068-2015",
+  "dataset_title": "Jacksonville JAX_068 (2015)",
+  "region": "jacksonville",
+  "release_id": "jax068-2015-19v-r2",
+  "title": "JAX_068 historical 19-view recipe",
+  "description": "Historical 250 m block, 19 training acquisitions (2014–2015), May 2 holdout. Fixed lidar rule passed. r2 adds a segment layer (one class byte per splat, semantics v2: building, road, trees, grass, ground) for the viewer's segment mode; tiles are identical to r1.",
+  "tiles_dir": "artifacts/tiles/pilot-2015-19v-recipe-01-r1",
+  "stage1_run_dir": "artifacts/stage1/pilot-2015-19v-recipe-01",
+  "evidence": [
+    "training/result-2015-19v.json",
+    "training/tiles-2015-19v.json",
+    "training/semantics/v2-jax068-diagnostic.json"
+  ],
+  "capture_dates": {
+    "train": [
+      "2014-10-05T16:01:38.873575Z",
+      "2014-10-05T16:01:49.835975Z",
+      "2014-10-11T15:57:20.047375Z",
+      "2014-10-18T16:07:22.892175Z",
+      "2014-10-30T15:57:32.330775Z",
+      "2014-12-14T16:04:02.890375Z",
+      "2014-12-27T16:11:09.278775Z",
+      "2015-01-21T16:12:53.655775Z",
+      "2015-01-21T16:13:08.106775Z",
+      "2015-01-27T16:08:45.999175Z",
+      "2015-02-15T16:12:08.581175Z",
+      "2015-04-19T16:14:39.732975Z",
+      "2015-04-26T16:24:35.184775Z",
+      "2015-05-01T16:03:57.708375Z",
+      "2015-05-21T16:18:49.488775Z",
+      "2015-06-15T16:12:48.813775Z",
+      "2015-07-05T16:29:54.345175Z",
+      "2015-11-01T16:19:54.224175Z",
+      "2015-12-21T16:11:08.347975Z"
+    ],
+    "holdout": [
+      "2015-05-02T16:19:43.108175Z"
+    ]
+  },
+  "quality_sources": {
+    "registered_lidar_mae_all_m": {
+      "file": "training/result-2015-19v.json",
+      "pointer": "/runs/recipe/lidar_check/rendered_depth/registered/all_labelled/mae_m"
+    },
+    "registered_lidar_mae_ground_m": {
+      "file": "training/result-2015-19v.json",
+      "pointer": "/runs/recipe/lidar_check/rendered_depth/registered/ground/mae_m"
+    },
+    "registered_lidar_mae_buildings_m": {
+      "file": "training/result-2015-19v.json",
+      "pointer": "/runs/recipe/lidar_check/rendered_depth/registered/building/mae_m"
+    },
+    "registered_lidar_mae_vegetation_m": {
+      "file": "training/result-2015-19v.json",
+      "pointer": "/runs/recipe/lidar_check/rendered_depth/registered/vegetation/mae_m"
+    },
+    "registered_lidar_rmse_m": {
+      "file": "training/result-2015-19v.json",
+      "pointer": "/runs/recipe/lidar_check/rendered_depth/registered/all_labelled/rmse_m"
+    },
+    "horizontal_offset_m": {
+      "file": "training/result-2015-19v.json",
+      "pointer": "/runs/recipe/lidar_check/rendered_depth/registration/splats_offset_from_lidar_m/horizontal"
+    },
+    "completeness": {
+      "file": "training/result-2015-19v.json",
+      "pointer": "/runs/recipe/lidar_check/rendered_depth/registered/all_labelled/completeness"
+    },
+    "holdout_psnr_db": {
+      "file": "training/result-2015-19v.json",
+      "pointer": "/runs/recipe/evaluation/final_psnr_db/104001000A22A000/psnr_db"
+    },
+    "splats": {
+      "file": "training/tiles-2015-19v.json",
+      "pointer": "/crop/owned_splats"
+    },
+    "tiles": {
+      "file": "training/tiles-2015-19v.json",
+      "pointer": "/tile_count"
+    },
+    "glb_bytes": {
+      "file": "training/tiles-2015-19v.json",
+      "pointer": "/encoding_totals/glbBytes"
+    }
+  },
+  "ground_points": "artifacts/validation/pilot-2015-19v-recipe-01-depth-r2/depth-points.npz",
+  "segments_dir": "artifacts/segments/jax068-2015-19v-v2"
+}

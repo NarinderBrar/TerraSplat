@@ -22,6 +22,11 @@ class Ground(BaseModel):
     source_sha256: str
 
 
+class Segments(BaseModel):
+    path: str
+    label: str
+
+
 class Polygon(BaseModel):
     type: Literal['Polygon'] = 'Polygon'
     coordinates: list[list[list[float]]]
@@ -75,6 +80,7 @@ class Manifest(BaseModel):
     ground: Ground | None = None
     source_label: str | None = None
     accuracy_label: str | None = None
+    segments: Segments | None = None
 
 
 class ReleaseSummary(BaseModel):

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { appearance, injectRevealShader, Mode, revealProgress, revealTexels } from '../src/reveal';
+import { appearance, injectRevealShader, Mode, revealProgress, revealTexels, SEGMENT_COLOURS, segmentUrls } from '../src/reveal';
 
 const shader = readFileSync(new URL('../../../node_modules/@cesium/engine/Source/Shaders/PrimitiveGaussianSplatVS.glsl', import.meta.url), 'utf8');
 
@@ -42,5 +42,30 @@ describe('splat reveal effects', () => {
     expect(revealProgress(2, 1, 0.5, 1.2)).toBeCloseTo(0.5 / 1.2);
     expect(revealProgress(1.2, 1, 0.5, 1.2)).toBe(0);
     expect(revealProgress(9, 1, 0.5, 1.2)).toBe(1);
+  });
+
+  it('packs segment classes above the leaf bit and ignores class data of the wrong length', () => {
+    const { data } = revealTexels([
+      { count: 2, arrival: 0, mode: Mode.None, placeholderSince: -1, leaf: true, classes: new Uint8Array([3, 4]) },
+      { count: 2, arrival: 0, mode: Mode.None, placeholderSince: -1, leaf: false, classes: new Uint8Array([2, 2]) },
+      { count: 1, arrival: 0, mode: Mode.None, placeholderSince: -1, leaf: true, classes: new Uint8Array([5, 5]) }], 5, 8);
+    expect([3, 7, 11, 15, 19].map(i => data[i])).toEqual([1 + 6, 1 + 8, 4, 4, 1]);
+  });
+
+  it('maps tile content to its segment file and release layer', () => {
+    expect(segmentUrls('http://h/releases/jax-r2/tiles/r01.glb?v=1')).toEqual({
+      layer: 'http://h/releases/jax-r2/segments/segments.json', tile: 'http://h/releases/jax-r2/segments/r01.cls' });
+    expect(segmentUrls('http://h/releases/jax-r2/tileset.json')).toBeUndefined();
+  });
+
+  it('injects segment uniforms and uses the pipeline class colours', () => {
+    const injected = injectRevealShader(shader)!;
+    expect(injected).toContain('uniform float u_segmentMask;');
+    expect(injected).toContain('int segmentClass = int(revealData.w + 0.5) / 2;');
+    expect(injected).toContain('bool revealLeaf = mod(revealData.w, 2.0) > 0.5;');
+    const python = readFileSync(new URL('../../../pipeline/semantics.py', import.meta.url), 'utf8');
+    const colours = /COLOURS = \{([^}]*)\}/.exec(python)![1];
+    const parsed = [...colours.matchAll(/(\d+): \((\d+), (\d+), (\d+)\)/g)].map(m => [Number(m[1]), [m[2], m[3], m[4]].map(Number)]);
+    expect(Object.fromEntries(parsed)).toEqual(Object.fromEntries(SEGMENT_COLOURS.map((c, i) => [i, c])));
   });
 });
