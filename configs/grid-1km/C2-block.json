@@ -1,0 +1,11 @@
+{
+  "longitude": -81.66506058836666,
+  "latitude": 30.345437020126575,
+  "side_m": 250,
+  "halo_m": 20,
+  "ellipsoidal_height_range_m": [
+    -50,
+    300
+  ],
+  "selection_note": "1 km grid cell C2: centre (-125, -375) m in jax068-grid anchor ENU. Same crop and height bracket as the pilot."
+}

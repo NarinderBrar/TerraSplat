@@ -1,0 +1,248 @@
+{
+  "version": 1,
+  "anchor": {
+    "longitude": -81.66376054127814,
+    "latitude": 30.34881972282938,
+    "ellipsoidal_height_m": 0
+  },
+  "enu_to_ecef": [
+    [
+      0.9894342861531981,
+      -0.07325407891764545,
+      0.1251144808023389,
+      798680.0686670588
+    ],
+    [
+      0.1449820450418308,
+      0.49992464419148114,
+      -0.8538475020432569,
+      -5450615.925429766
+    ],
+    [
+      0.0,
+      0.8629653469589311,
+      0.5052631096251256,
+      3203802.61729543
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "id": "jax068-1km",
+  "cell_side_m": 250,
+  "cells": {
+    "A1": {
+      "east_m": [
+        -500,
+        -250
+      ],
+      "north_m": [
+        0,
+        250
+      ],
+      "block": "configs/grid-1km/A1-block.json",
+      "centre_longitude": -81.66766086139876,
+      "centre_latitude": 30.34994722967875
+    },
+    "A2": {
+      "east_m": [
+        -250,
+        0
+      ],
+      "north_m": [
+        0,
+        250
+      ],
+      "block": "configs/grid-1km/A2-block.json",
+      "centre_longitude": -81.66506064798679,
+      "centre_latitude": 30.3499472813906
+    },
+    "A3": {
+      "east_m": [
+        0,
+        250
+      ],
+      "north_m": [
+        0,
+        250
+      ],
+      "block": "configs/grid-1km/A3-block.json",
+      "centre_longitude": -81.66246043456948,
+      "centre_latitude": 30.3499472813906
+    },
+    "A4": {
+      "east_m": [
+        250,
+        500
+      ],
+      "north_m": [
+        0,
+        250
+      ],
+      "block": "configs/grid-1km/A4-block.json",
+      "centre_longitude": -81.65986022115752,
+      "centre_latitude": 30.34994722967875
+    },
+    "B1": {
+      "east_m": [
+        -500,
+        -250
+      ],
+      "north_m": [
+        -250,
+        0
+      ],
+      "block": "configs/grid-1km/B1-block.json",
+      "centre_longitude": -81.6676607719665,
+      "centre_latitude": 30.34769209943891
+    },
+    "B2": {
+      "east_m": [
+        -250,
+        0
+      ],
+      "north_m": [
+        -250,
+        0
+      ],
+      "block": "configs/grid-1km/B2-block.json",
+      "centre_longitude": -81.66506061817603,
+      "centre_latitude": 30.347692151146127
+    },
+    "B3": {
+      "east_m": [
+        0,
+        250
+      ],
+      "north_m": [
+        -250,
+        0
+      ],
+      "block": "configs/grid-1km/B3-block.json",
+      "centre_longitude": -81.66246046438023,
+      "centre_latitude": 30.34769215114612
+    },
+    "B4": {
+      "east_m": [
+        250,
+        500
+      ],
+      "north_m": [
+        -250,
+        0
+      ],
+      "block": "configs/grid-1km/B4-block.json",
+      "centre_longitude": -81.65986031058978,
+      "centre_latitude": 30.34769209943891
+    },
+    "C1": {
+      "east_m": [
+        -500,
+        -250
+      ],
+      "north_m": [
+        -500,
+        -250
+      ],
+      "block": "configs/grid-1km/C1-block.json",
+      "centre_longitude": -81.66766068253833,
+      "centre_latitude": 30.34543696842401
+    },
+    "C2": {
+      "east_m": [
+        -250,
+        0
+      ],
+      "north_m": [
+        -500,
+        -250
+      ],
+      "block": "configs/grid-1km/C2-block.json",
+      "centre_longitude": -81.66506058836666,
+      "centre_latitude": 30.345437020126575
+    },
+    "C3": {
+      "east_m": [
+        0,
+        250
+      ],
+      "north_m": [
+        -500,
+        -250
+      ],
+      "block": "configs/grid-1km/C3-block.json",
+      "centre_longitude": -81.66246049418963,
+      "centre_latitude": 30.345437020126575
+    },
+    "C4": {
+      "east_m": [
+        250,
+        500
+      ],
+      "north_m": [
+        -500,
+        -250
+      ],
+      "block": "configs/grid-1km/C4-block.json",
+      "centre_longitude": -81.65986040001796,
+      "centre_latitude": 30.34543696842401
+    },
+    "D1": {
+      "east_m": [
+        -500,
+        -250
+      ],
+      "north_m": [
+        -750,
+        -500
+      ],
+      "block": "configs/grid-1km/D1-block.json",
+      "centre_longitude": -81.66766059311426,
+      "centre_latitude": 30.34318183664105
+    },
+    "D2": {
+      "east_m": [
+        -250,
+        0
+      ],
+      "north_m": [
+        -750,
+        -500
+      ],
+      "block": "configs/grid-1km/D2-block.json",
+      "centre_longitude": -81.66506055855862,
+      "centre_latitude": 30.343181888338975
+    },
+    "D3": {
+      "east_m": [
+        0,
+        250
+      ],
+      "north_m": [
+        -750,
+        -500
+      ],
+      "block": "configs/grid-1km/D3-block.json",
+      "centre_longitude": -81.66246052399765,
+      "centre_latitude": 30.343181888338975
+    },
+    "D4": {
+      "east_m": [
+        250,
+        500
+      ],
+      "north_m": [
+        -750,
+        -500
+      ],
+      "block": "configs/grid-1km/D4-block.json",
+      "centre_longitude": -81.65986048944202,
+      "centre_latitude": 30.34318183664105
+    }
+  },
+  "ownership": "Half-open shared ENU cells: west <= east < east_max, south <= north < north_max; boundary east=0 belongs to east. No tolerance expansion.",
+  "note": "East -500..500 m, north -750..250 m: shifted one row south so all 20 acquisitions cover every cell plus its 20 m halo (1040010016BADB00 ends north of +250 m; smallest margin 70 px)."
+}
