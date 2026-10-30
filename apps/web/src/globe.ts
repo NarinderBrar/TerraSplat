@@ -18,6 +18,14 @@ function insideRing(lon: number, lat: number, ring: number[][]) {
 }
 export interface MapStats { loaded: number; visible: number; bytes: number; heading: number; height: number }
 export interface Layers { pipeline: boolean; skyfall: boolean; overlap: 'skyfall' | 'pipeline' }
+/** Cesium asks for the discrete GPU; some hybrid-GPU setups (Chrome + NVIDIA offload on Linux) refuse that request
+ * outright, so fall back to the browser's default GPU instead of failing to start. */
+function powerPreference(): WebGLPowerPreference {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl2', { powerPreference: 'high-performance' });
+  gl?.getExtension('WEBGL_lose_context')?.loseContext();
+  return gl ? 'high-performance' : 'default';
+}
 const tileOptions = {
   // 12 stopped at 2-4 m merged parents at 900 m (cars smeared); 8 reaches full-resolution leaves there.
   maximumScreenSpaceError: 8, cacheBytes: 128 * 1024 * 1024,
@@ -52,7 +60,8 @@ export class Globe {
       sceneModePicker: false, navigationHelpButton: false, animation: false, timeline: false,
       fullscreenButton: false, infoBox: false, selectionIndicator: false,
       skyBox: false, skyAtmosphere: false, requestRenderMode: true, maximumRenderTimeChange: Infinity,
-      contextOptions: { webgl: { preserveDrawingBuffer: import.meta.env.VITE_TEST_BRIDGE === 'true' } },
+      contextOptions: { webgl: { preserveDrawingBuffer: import.meta.env.VITE_TEST_BRIDGE === 'true',
+        powerPreference: powerPreference() } },
     });
     const { scene, camera } = this.viewer;
     scene.highDynamicRange = false;
