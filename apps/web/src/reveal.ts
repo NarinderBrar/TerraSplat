@@ -163,6 +163,18 @@ export function appearance<T extends { parent?: T }>(tile: T, previous: Set<T>):
   return Mode.Full;
 }
 
+/** Loaded ancestors to keep drawing under tiles that are still growing in (`growing`), each once and not already selected. */
+export function heldAncestors<T extends { parent?: T; contentReady?: boolean }>(selected: T[], growing: (tile: T) => boolean): T[] {
+  const chosen = new Set(selected), held: T[] = [];
+  for (const tile of selected) {
+    if (!growing(tile)) continue;
+    let a = tile.parent;
+    while (a && !a.contentReady) a = a.parent;
+    if (a && !chosen.has(a)) { chosen.add(a); held.push(a); }
+  }
+  return held;
+}
+
 /** Progress of a splat at `delay` seconds behind the sweep, as in the shader. */
 export function revealProgress(now: number, arrival: number, delay: number, duration: number) {
   return Math.min(1, Math.max(0, (now - arrival - delay) / duration));
@@ -185,7 +197,7 @@ interface Primitive {
   _numSplats: number; _splatRowMask: number; _drawCommand?: DrawCommand; isDestroyed(): boolean;
 }
 interface Tile {
-  parent?: Tile; children: unknown[]; _screenSpaceError: number; content: { pointsLength: number; url?: string };
+  parent?: Tile; children: unknown[]; _screenSpaceError: number; contentReady?: boolean; content: { pointsLength: number; url?: string };
   tileset: { gaussianSplatPrimitive?: Primitive; memoryAdjustedScreenSpaceError: number };
 }
 // Splat counts are captured at merge time: Cesium may unload a tile's content while its merge is still on screen.
@@ -198,7 +210,7 @@ export class Reveal {
   sweep = 1.4; // seconds for a sweep to climb from the bottom to the top of the block
   fade = 0.5; // seconds for one point to appear or grow once the sweep reaches it
   pause = 0.4; // seconds between the point scan and the splat scan
-  pointPx = 2.0;
+  pointPx = 2.3;
   /** The placeholder glow animates continuously; weak GPUs turn it off to avoid rendering every frame. */
   loadingGlow = true;
   private readonly start = performance.now() / 1000;
@@ -222,6 +234,7 @@ export class Reveal {
     const transformTile = P?.transformTile, build = P?.buildGSplatDrawCommand;
     this.installed = typeof transformTile === 'function' && typeof build === 'function';
     if (!this.installed || !P) { console.warn('Reveal effects disabled: unexpected Cesium splat internals'); return; }
+    const reveal = this;
     P.transformTile = (tile: Tile) => {
       this.guard(() => this.record(tile));
       return (transformTile as (t: Tile) => unknown)(tile);
@@ -230,6 +243,16 @@ export class Reveal {
       (build as (p: Primitive, f: unknown) => void)(primitive, frameState);
       this.guard(() => this.decorate(primitive, frameState.context));
     };
+    // Cesium replaces a parent as soon as its children load; keep the parent drawn (as points) under children that are
+    // still growing in, and drop it once their reveal has finished. Runs after traversal, before the splats merge.
+    const prototype = (P as unknown as { prototype?: { update?: (frameState: unknown) => void } }).prototype;
+    const update = prototype?.update;
+    if (prototype && typeof update === 'function') {
+      prototype.update = function (this: Primitive & { _tileset: { _selectedTiles: Tile[] } }, frameState: unknown) {
+        reveal.guard(() => reveal.holdParents(this));
+        return update.call(this, frameState);
+      };
+    }
     // Zooming in keeps the same coarse tiles selected until their children load, so Cesium does not re-merge;
     // placeholder status must be re-checked every frame.
     scene.preRender.addEventListener(() => this.guard(() => this.refreshPlaceholders()));
@@ -249,6 +272,27 @@ export class Reveal {
   private static isPlaceholder(tile: Tile) {
     // Wants more detail (Cesium would refine it) but is drawn because its children are not loaded yet.
     return tile.children.length > 0 && tile._screenSpaceError > tile.tileset.memoryAdjustedScreenSpaceError;
+  }
+
+  /** Seconds from arrival until a growing tile has fully turned into splats (the shader's second scan). */
+  private growSeconds() { return 2 * (this.sweep + this.fade + 0.3) + this.pause; }
+
+  private holdParents(primitive: Primitive & { _tileset: { _selectedTiles: Tile[] } }) {
+    if (!this.animate) return;
+    const selected = primitive._tileset._selectedTiles, now = this.now();
+    const cached = this.textures.get(primitive), shown = new Set(cached ? this.merges.get(primitive)?.get(cached.generation)?.tiles : []);
+    const growing = (tile: Tile) => {
+      const state = this.states.get(tile);
+      if (state) return state.mode === Mode.Grow && now < state.arrival + this.growSeconds();
+      // About to appear for the first time below a tile on screen: it will grow in, so keep that tile until it has.
+      for (let a = tile.parent; a; a = a.parent) if (shown.has(a)) return true;
+      return false;
+    };
+    const held = heldAncestors(selected, growing);
+    if (!held.length) return;
+    selected.push(...held);
+    // Keep rendering until the held tiles can be dropped.
+    this.busyUntil = Math.max(this.busyUntil, now + 0.5);
   }
 
   private refreshPlaceholders() {
@@ -293,9 +337,9 @@ export class Reveal {
     const previous = [...merges.values()].filter(m => m.generation < generation).at(-1);
     const now = this.now(), prior = this.states.get(tile);
     const mode = appearance(tile, new Set(previous?.tiles ?? []));
-    // Kept tiles continue their animation; new appearances restart it.
-    const state: TileState = mode === Mode.None && prior && previous?.tiles.includes(tile)
-      ? { ...prior } : { arrival: now, mode, placeholderSince: -1, leaf: tile.children.length === 0 };
+    // Kept tiles continue their animation and tiles shown before reappear as they were (switching detail back and
+    // forth must not replay the reveal); only first appearances animate.
+    const state: TileState = prior ? { ...prior } : { arrival: now, mode, placeholderSince: -1, leaf: tile.children.length === 0 };
     const placeholder = Reveal.isPlaceholder(tile);
     state.placeholderSince = placeholder ? (prior && prior.placeholderSince >= 0 ? prior.placeholderSince : now) : -1;
     this.states.set(tile, state);

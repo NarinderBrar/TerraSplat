@@ -110,3 +110,14 @@ describe('rendering quality tiers', () => {
     expect(QUALITY_PROFILES.reduced.fullDetailBlocks).toBeLessThan(QUALITY_PROFILES.full.fullDetailBlocks);
   });
 });
+describe('full-detail block selection', () => {
+  it('enters within 2 km, leaves only beyond 2.5 km, and keeps the nearest few', async () => {
+    const { fullDetailBlocks } = await import('../src/quality');
+    const at = (tileset: string, distance: number, show = true) => ({ tileset, distance, show });
+    expect([...fullDetailBlocks([at('a', 1_900), at('b', 2_200)], new Set(), 16)]).toEqual(['a']);
+    expect([...fullDetailBlocks([at('a', 1_900), at('b', 2_200)], new Set(['b']), 16)]).toEqual(['a', 'b']);
+    expect([...fullDetailBlocks([at('b', 2_600)], new Set(['b']), 16)]).toEqual([]);
+    expect([...fullDetailBlocks([at('a', 100, false)], new Set(), 16)]).toEqual([]);
+    expect([...fullDetailBlocks([at('a', 900), at('b', 300), at('c', 600)], new Set(), 2)]).toEqual(['b', 'c']);
+  });
+});

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { appearance, injectRevealShader, Mode, revealProgress, revealTexels, SEGMENT_COLOURS, segmentUrls } from '../src/reveal';
+import { appearance, heldAncestors, injectRevealShader, Mode, revealProgress, revealTexels, SEGMENT_COLOURS, segmentUrls } from '../src/reveal';
 
 const shader = readFileSync(new URL('../../../node_modules/@cesium/engine/Source/Shaders/PrimitiveGaussianSplatVS.glsl', import.meta.url), 'utf8');
 
@@ -67,5 +67,19 @@ describe('splat reveal effects', () => {
     const colours = /COLOURS = \{([^}]*)\}/.exec(python)![1];
     const parsed = [...colours.matchAll(/(\d+): \((\d+), (\d+), (\d+)\)/g)].map(m => [Number(m[1]), [m[2], m[3], m[4]].map(Number)]);
     expect(Object.fromEntries(parsed)).toEqual(Object.fromEntries(SEGMENT_COLOURS.map((c, i) => [i, c])));
+  });
+});
+
+describe('held parents', () => {
+  it('keeps the nearest loaded ancestor of growing tiles once, unless already selected', () => {
+    type T = { name: string; parent?: T; contentReady?: boolean };
+    const root: T = { name: 'root', contentReady: true }, mid: T = { name: 'mid', parent: root, contentReady: false };
+    const a: T = { name: 'a', parent: mid, contentReady: true }, b: T = { name: 'b', parent: mid, contentReady: true };
+    const other: T = { name: 'other', parent: root, contentReady: true };
+    expect(heldAncestors([a, b], () => true)).toEqual([root]);
+    expect(heldAncestors([a, b], t => t === b)).toEqual([root]);
+    expect(heldAncestors([a, b], () => false)).toEqual([]);
+    expect(heldAncestors([a, root], () => true)).toEqual([]);
+    expect(heldAncestors([other], () => true)).toEqual([root]);
   });
 });

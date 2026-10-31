@@ -4,7 +4,7 @@ import { footprintCentre, footprintTooltip } from './format';
 import { controlMapping } from './controls';
 import { groundPatches, heightmap } from './ground';
 import { Reveal } from './reveal';
-import { QUALITY_PROFILES, qualityFor, webglRenderer, type Quality } from './quality';
+import { fullDetailBlocks, QUALITY_PROFILES, qualityFor, webglRenderer, type Quality } from './quality';
 
 declare global { interface Window { Cesium: typeof Cesium; terra?: Globe } }
 const C = window.Cesium;
@@ -29,11 +29,10 @@ function powerPreference(): WebGLPowerPreference {
   return gl ? 'high-performance' : 'default';
 }
 // Splat blocks draw only within SPLAT_RANGE_M of the camera. Coarse levels render as a point cloud (reveal.ts), so
-// within FULL_DETAIL_M the whole block is refined to LOD0; otherwise Cesium would leave parts coarse (points) forever.
+// within FULL_DETAIL_M (quality.ts) the whole block is refined to LOD0; otherwise Cesium would leave parts coarse (points) forever.
 const SPLAT_RANGE_M = 50_000;
-const FULL_DETAIL_M = 1_000;
 const FULL_DETAIL_SSE = 0.05;
-// Over a grid of blocks, full detail is limited to the nearest few (a 2 x 2 neighbourhood); the rest stay points.
+// Over a grid of blocks, full detail is limited to the nearest few (the 1 km grid: all 16); the rest stay points.
 // Full detail needs the whole block resident (largest block: 38 MB of GLB, more once decoded).
 const FULL_DETAIL_CACHE_BYTES = 192 * 1024 * 1024;
 const tileOptions = {
@@ -55,6 +54,7 @@ export class Globe {
   private indexes = new Map<string, Cesium.Cesium3DTileset>();
   private layers: Layers = { pipeline: true, skyfall: true, overlap: 'skyfall' };
   private cacheBudget = 128 * 1024 * 1024;
+  private fullDetail = new Set<Cesium.Cesium3DTileset>();
   private footprints = new C.CustomDataSource('footprints');
   private features = new Map<string, Footprint>();
   private handler: Cesium.ScreenSpaceEventHandler;
@@ -132,9 +132,19 @@ export class Globe {
       scene.requestRender();
     }));
     // Weak GPUs draw at lower resolution while the camera moves and at full resolution once it stops.
+    // Changing the resolution resizes the canvas, which Cesium reports as camera movement; only a real change of view
+    // may lower it, or each moveEnd would start a new move and the resolution would flip every 0.5 s (flicker).
     if (this.profile.movingResolutionScale < 1) {
-      this.removeListeners.push(camera.moveStart.addEventListener(() => { this.viewer.resolutionScale = this.profile.movingResolutionScale; }));
-      this.removeListeners.push(camera.moveEnd.addEventListener(() => { this.viewer.resolutionScale = 1; scene.requestRender(); }));
+      const settled = { position: C.Cartesian3.clone(camera.positionWC), direction: C.Cartesian3.clone(camera.directionWC) };
+      this.removeListeners.push(camera.moveStart.addEventListener(() => {
+        if (C.Cartesian3.equalsEpsilon(camera.positionWC, settled.position, 0, 1e-3)
+          && C.Cartesian3.equalsEpsilon(camera.directionWC, settled.direction, 1e-9)) return;
+        this.viewer.resolutionScale = this.profile.movingResolutionScale;
+      }));
+      this.removeListeners.push(camera.moveEnd.addEventListener(() => {
+        C.Cartesian3.clone(camera.positionWC, settled.position); C.Cartesian3.clone(camera.directionWC, settled.direction);
+        this.viewer.resolutionScale = 1; scene.requestRender();
+      }));
     }
     this.removeListeners.push(camera.moveEnd.addEventListener(() => {
       if (camera.positionCartographic.height > 20_000) return;
@@ -288,8 +298,8 @@ export class Globe {
       const distance = C.Cartesian3.distance(camera, sphere.center) - sphere.radius;
       return { id, tileset, distance, show: this.datasetVisible(id) && distance < SPLAT_RANGE_M };
     });
-    const nearest = new Set(blocks.filter(b => b.show && b.distance < FULL_DETAIL_M)
-      .sort((a, b) => a.distance - b.distance).slice(0, this.profile.fullDetailBlocks).map(b => b.tileset));
+    const nearest = fullDetailBlocks(blocks, this.fullDetail, this.profile.fullDetailBlocks);
+    this.fullDetail = nearest;
     for (const { tileset, show } of blocks) {
       const full = nearest.has(tileset);
       const sse = full ? FULL_DETAIL_SSE : this.profile.maximumScreenSpaceError;
