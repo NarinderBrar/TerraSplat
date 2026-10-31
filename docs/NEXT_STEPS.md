@@ -30,12 +30,16 @@ resuming, or completed stages count as changed and run again.
 
 ## 1. Finish the grid (main track)
 
-1. Check all 16 trainings completed (B3 fixed as above) (no memory-cap stops, exports and depth renders present).
-2. Score A2, A3, B2, B3 and their seams with `pipeline.grid_seams` against the pre-registered
-   `configs/grid-1km-decision.json`; report pass or fail as measured.
-3. Publish all 16 to the review catalogue `artifacts/releases-grid-review` and check them in the browser together
-   (streaming, seams, full-detail switching, performance).
-4. Publish live; then retire the central `jax068-2015` block (needs a dataset-deactivation step; inactive releases
+1. Done: all 16 trainings completed, no memory-cap stops (B3 fixed as above).
+2. Done: scored A2, A3, B2, B3 and their seams (docs/phase3/GRID_1KM_RESULT.md). All four cells pass; seams B2|B3
+   and A3|B3 pass; **A2|A3 and A2|B2 fail** (A2's southern edge: 3.6 m band MAE against 1.2 m inside, ground step
+   2.2 m). Per the decision file the grid stays inactive until discussed.
+3. Done: all 16 published to the review catalogue `artifacts/releases-grid-review` (2026-10-31); the user is checking
+   them in the browser (`TERRASPLAT_RELEASES_DIR=artifacts/releases-grid-review npm run dev:app`). Still to measure:
+   GPU memory with 16 blocks, and limiting full detail to the nearest few blocks.
+4. On hold: diagnose A2's southern edge (render the strip from A2 and B2 against lidar, check camera fit and what is
+   on the ground there) before choosing a fix (retrain A2 with more overlap, fix alignment, or label it).
+5. Then publish live; retire the central `jax068-2015` block (needs a dataset-deactivation step; inactive releases
    can already be withdrawn with `pipeline.publish --withdraw-release`).
 
 ## 2. Semantics and segment mode: authors' scenes only
