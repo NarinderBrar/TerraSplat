@@ -2,7 +2,7 @@
   "version": 1,
   "id": "semantics-v4",
   "declared_on": "2026-10-30",
-  "evaluated": false,
+  "evaluated": true,
   "release": "skyfall-jax-068-final-r2 (Skyfall-GS authors' finished model)",
   "hypothesis": "v3 failed because general-purpose CLIP (ground-level photos) does not read overhead imagery. A CLIP fine-tuned on remote-sensing image-text pairs (RemoteCLIP) inside the same LangSplat SAM + CLIP step may classify the authors' higher-quality model's views.",
   "independence": "Fixed before any v4 score. Not blind: chosen after v3's failure. Changes from v3, all decided from v3's failure mode only: remote-sensing CLIP; prompts in remote-sensing caption style; the 'shadow' and 'car' classes removed ('shadow' absorbed 93% of v3 cells); 'pavement' becomes 'parking lot'. Rules, thresholds, fusion, mapping and targets are v3's.",

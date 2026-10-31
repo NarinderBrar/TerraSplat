@@ -90,3 +90,33 @@ a median of 0.64 against 0.03 on buildings.
 Conclusion: LangSplat's standard CLIP features (trained on ground-level photos) do not classify overhead satellite
 views of this block. Running LangSplat's 3D feature training on top would distil the same features, so it cannot
 fix this. v2 (NDVI + OSM + height) remains the class layer in the app.
+
+## v4: RemoteCLIP features on the authors' JAX_068 model (failed)
+
+`configs/semantics-v4.json` (fixed before scoring) keeps v3's method and swaps the CLIP for RemoteCLIP ViT-L-14
+(remote-sensing image-text pairs), with remote-sensing prompts, no shadow or car class, and the Skyfall-GS authors'
+JAX_068 model (17 training views, lidar offset removed). Features: 12 min on the RTX 3060 laptop GPU, 2.8 GB peak.
+Two LangSplat fixes were needed to run it; neither changes features of images that ran before: CLIP waits on the CPU
+while SAM runs (ViT-L CLIP and SAM did not fit 6 GB together), and a SAM level with no masks in any crop is skipped
+instead of crashing (`safe_preprocess.py`, LangSplat repo).
+
+| | v3 | v4 (pre-registered) | v4 CLIP only (diagnostic) | Target |
+| --- | ---: | ---: | ---: | ---: |
+| Overall accuracy | 0.251 | 0.471 | 0.539 | ≥ 0.80 |
+| Building IoU | 0.001 | 0.311 | 0.371 | ≥ 0.60 |
+| Vegetation (tree) IoU | 0.067 | 0.225 | 0.225 | ≥ 0.50 |
+
+**v4 fails all three targets**, though every score is well above v3. Evidence from `artifacts/semantics/v4-jax068`:
+
+- **"Soil" is the new sink.** CLIP called 100,772 of 246,916 cells bare soil (v3: shadow 93 %). On raised surfaces soil
+  becomes unknown, so most roofs end up unknown: of 112,889 DFC building cells, 35,840 are building, 52,546 unknown
+  and 21,598 ground. Building precision is 0.94; recall is 0.32.
+- **Trees are over-called**: recall 0.57 but precision 0.27 (12,706 DFC ground cells called trees).
+- **Water is false**: 6,999 cells (shaded road edges), and DFC has none in this block.
+- Height costs accuracy here (0.471 against 0.539 CLIP only): roofs the model places lower than 2.5 m become ground.
+
+![v4: ours, DFC2019, disagreement](semantics-v4-jax068.png)
+
+Conclusion: remote-sensing CLIP reads overhead views much better than general CLIP, but zero-shot prompt scoring of
+SAM segments is still far from the targets. Next is v5 (docs/NEXT_STEPS.md): a land-cover segmentation model trained
+on sub-metre imagery, plus height.

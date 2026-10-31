@@ -40,27 +40,9 @@ for up to 20 s after loading finishes.
 Segment mode (docs/SEGMENTS.md) is built and verified; layers will be made for the 12 Skyfall-GS authors' scenes only.
 Their data is RGB, so v2 (NDVI) does not apply.
 
-1. **v4 (pre-registered, `configs/semantics-v4.json`)**: RemoteCLIP features on the authors' JAX_068 model, after
-   the grid run (about 15 min GPU). The weights (`LangSplat/ckpts/remoteclip/RemoteCLIP-ViT-L-14.pt`) are a PyTorch
-   pickle; its pickle globals were checked (tensor data only), but loading it is the user's decision.
-
-   ```bash
-   L=/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/Tools-For-References-Map/LangSplat
-   env -u PYTHONPATH HF_HUB_OFFLINE=1 ../.venv-langsplat/bin/python scripts/clip-prototypes.py \
-     configs/semantics-v4.json artifacts/semantics/v3-inputs/prototypes-v4.npz $L
-   (cd $L && env -u PYTHONPATH HF_HUB_OFFLINE=1 ~/Documents/OrbitWorks/.venv-langsplat/bin/python -u preprocess.py \
-     --dataset_path data/skyfall_jax068_authors_grid --resolution -1 --sam_type vit_b \
-     --sam_ckpt_path ckpts/sam_vit_b_01ec64.pth --points_per_side 32 --points_per_batch 4 --crop_n_layers 1 \
-     --clip_batch_size 4 --offload_sam --memory_safe --max_masks_per_level 512 \
-     --clip_model ViT-L-14 --clip_pretrained ckpts/remoteclip/RemoteCLIP-ViT-L-14.pt --clip_dims 768)
-   .venv-imagery/bin/python -m pipeline.semantics_clip --config configs/semantics-v4.json \
-     --export artifacts/skyfall/JAX_068/final-placed --points artifacts/skyfall/JAX_068/final-depth/depth-points.npz \
-     --truth artifacts/reference/dfc2019-jax068 --scene $L/data/skyfall_jax068_authors_grid \
-     --features $L/data/skyfall_jax068_authors_grid/language_features \
-     --prototypes artifacts/semantics/v3-inputs/prototypes-v4.npz \
-     --registration artifacts/skyfall/JAX_068/lidar-authors/dsm-validation.json --output artifacts/semantics/v4-jax068
-   ```
-2. **v5 if v4 falls short**: a land-cover segmentation model for sub-metre imagery (e.g. trained on OpenEarthMap; not
+1. **v4 failed** (2026-10-31): RemoteCLIP features scored 0.471 accuracy, building IoU 0.31, vegetation IoU 0.22
+   against 0.80 / 0.60 / 0.50 (docs/SEMANTICS.md).
+2. **v5 (next)**: a land-cover segmentation model for sub-metre imagery (e.g. trained on OpenEarthMap; not
    on DFC2019 or US3D Jacksonville) plus height, fused with the same verified multi-view projection. Tune on JAX_068.
 3. **Blind test**: fix the method, then score once on the other seven DFC2019 scenes (JAX_004, 164, 168, 175, 214,
    260, 264). Their lidar DSM/CLS go in `artifacts/reference/dfc2019-jax/` (being downloaded); each scene first
