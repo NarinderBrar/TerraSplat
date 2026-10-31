@@ -35,3 +35,11 @@ along that seam has 3.62 m MAE against 1.22 m in its interior, so the error is c
 
 Per the decision file: every cell passes and may be activated; the A2\|A3 and A2\|B2 seams fail, so the grid is
 published inactive with this measurement and discussed before activation. The other 12 cells stay labelled unmeasured.
+
+## Decision (2026-10-31)
+
+After reviewing all 16 cells in the browser, the user decided to activate the grid with the two failing seams
+(A2|A3, A2|B2) as known issues for this version; investigating and fixing A2's southern edge is deferred. All 16
+releases (`jax068-2015-grid-*-r1`) were published to `artifacts/releases` and activated, and the central single
+block `jax068-2015` was retired with `python -m pipeline.publish --retire-dataset jax068-2015` (its releases
+`jax068-2015-19v-r1` and `jax068-2015-19v-classes-r1` moved to `artifacts/releases/.withdrawn/`).

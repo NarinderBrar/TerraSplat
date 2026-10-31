@@ -28,19 +28,12 @@ training so far (up to about 45 min); training checkpoints are not resumed.
 Do not edit code that a stage hashes (its `-m` module, scripts in its command, `scripts/stage1-env.sh`) before
 resuming, or completed stages count as changed and run again.
 
-## 1. Finish the grid (main track)
+## 1. Grid: live (2026-10-31)
 
-1. Done: all 16 trainings completed, no memory-cap stops (B3 fixed as above).
-2. Done: scored A2, A3, B2, B3 and their seams (docs/phase3/GRID_1KM_RESULT.md). All four cells pass; seams B2|B3
-   and A3|B3 pass; **A2|A3 and A2|B2 fail** (A2's southern edge: 3.6 m band MAE against 1.2 m inside, ground step
-   2.2 m). Per the decision file the grid stays inactive until discussed.
-3. Done: all 16 published to the review catalogue `artifacts/releases-grid-review` (2026-10-31); the user is checking
-   them in the browser (`TERRASPLAT_RELEASES_DIR=artifacts/releases-grid-review npm run dev:app`). Still to measure:
-   GPU memory with 16 blocks, and limiting full detail to the nearest few blocks.
-4. On hold: diagnose A2's southern edge (render the strip from A2 and B2 against lidar, check camera fit and what is
-   on the ground there) before choosing a fix (retrain A2 with more overlap, fix alignment, or label it).
-5. Then publish live; retire the central `jax068-2015` block (needs a dataset-deactivation step; inactive releases
-   can already be withdrawn with `pipeline.publish --withdraw-release`).
+All 16 blocks are published and active in `artifacts/releases`; the central `jax068-2015` block is retired
+(`pipeline.publish --retire-dataset`). The A2|A3 and A2|B2 seam failures are accepted as known issues for this
+version (docs/phase3/GRID_1KM_RESULT.md). Deferred: diagnose and fix A2's southern edge; stop the viewer rendering
+for up to 20 s after loading finishes.
 
 ## 2. Semantics and segment mode: authors' scenes only
 
@@ -74,7 +67,6 @@ Their data is RGB, so v2 (NDVI) does not apply.
    needs its placement offset measured like JAX_068. Do not inspect their labels before the method is fixed.
 4. Build segment layers (`pipeline.segments`) for all 12 authors' scenes and publish `skyfall-*-final-r3` (same tiles
    plus layer). The four NYC scenes get layers without an accuracy number.
-5. Withdraw the recoloured `jax068-2015-19v-classes-r1` once r3 layers exist (decision pending).
 
 ## 3. Parked
 

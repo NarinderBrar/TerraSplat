@@ -54,3 +54,18 @@ def test_withdraw_moves_an_inactive_release_out_of_the_catalogue(tmp_path):
     assert not (tmp_path / 'a-r2').exists() and (tmp_path / '.withdrawn/a-r2/release.json').exists()
     with pytest.raises(ValueError, match='Unknown release'):
         withdraw(tmp_path, 'a-r2')
+
+
+def test_retire_removes_a_dataset_and_keeps_its_files(tmp_path):
+    from pipeline.publish import catalog, retire, save_catalog
+    entry = lambda r: {'release_id': r, 'title': r, 'manifest_path': f'{r}/release.json', 'manifest_sha256': '0' * 64}
+    for r in ('a-r1', 'a-r2', 'b-r1'):
+        (tmp_path / r).mkdir()
+        (tmp_path / r / 'release.json').write_text('{}')
+    dataset = lambda d, rs: {'dataset_id': d, 'title': d, 'region': 'x', 'active_release_id': None, 'releases': [entry(r) for r in rs]}
+    save_catalog(tmp_path, {'schema_version': 1, 'datasets': [dataset('a', ['a-r1', 'a-r2']), dataset('b', ['b-r1'])]})
+    assert retire(tmp_path, 'a') == ['a-r1', 'a-r2']
+    assert [d['dataset_id'] for d in catalog(tmp_path)['datasets']] == ['b']
+    assert (tmp_path / '.withdrawn/a-r1/release.json').exists() and not (tmp_path / 'a-r2').exists()
+    with pytest.raises(ValueError, match='Unknown dataset'):
+        retire(tmp_path, 'a')

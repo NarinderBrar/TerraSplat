@@ -286,6 +286,26 @@ def withdraw(directory, release_id):
         return target
 
 
+def retire(directory, dataset_id):
+    """Remove a dataset and all its releases from the catalogue; release files move to .withdrawn/ and stay restorable."""
+    directory = Path(directory)
+    identifier(dataset_id)
+    with publication_lock(directory):
+        document = catalog(directory)
+        dataset = next((d for d in document['datasets'] if d['dataset_id'] == dataset_id), None)
+        if dataset is None:
+            raise ValueError(f'Unknown dataset: {dataset_id}')
+        releases = [r['release_id'] for r in dataset['releases']]
+        if any((directory / '.withdrawn' / r).exists() for r in releases):
+            raise ValueError('A release of this dataset was already withdrawn once')
+        document['datasets'] = [d for d in document['datasets'] if d['dataset_id'] != dataset_id]
+        (directory / '.withdrawn').mkdir(exist_ok=True)
+        for release_id in releases:
+            (directory / release_id).rename(directory / '.withdrawn' / release_id)
+        save_catalog(directory, document)
+        return releases
+
+
 def verify_release(directory, manifest):
     validate_document(manifest, 'release-manifest')
     actual = {p.relative_to(directory).as_posix() for p in directory.rglob('*') if p.is_file()}
@@ -468,6 +488,7 @@ def main():
     group.add_argument('--config', type=Path)
     group.add_argument('--activate-release', help='Activate an existing release (also supports rollback)')
     group.add_argument('--withdraw-release', help='Remove an inactive release from the catalogue (files kept in .withdrawn/)')
+    group.add_argument('--retire-dataset', help='Remove a dataset and all its releases from the catalogue (files kept in .withdrawn/)')
     group.add_argument('--rebuild-index', action='store_true', help='Repair indexes from the authoritative catalog')
     parser.add_argument('--activate', action='store_true', help='Activate the newly published release')
     parser.add_argument('--recover-identical', action='store_true', help='Recover a verified identical publication after interruption')
@@ -479,6 +500,8 @@ def main():
         activate(args.releases, args.activate_release)
     elif args.withdraw_release:
         print(f'Withdrawn to {withdraw(args.releases, args.withdraw_release)}')
+    elif args.retire_dataset:
+        print(f'Retired; releases moved to .withdrawn/: {retire(args.releases, args.retire_dataset)}')
     else:
         with publication_lock(args.releases):
             build_indexes(args.releases, catalog(args.releases))
