@@ -197,7 +197,7 @@ interface Primitive {
   _numSplats: number; _splatRowMask: number; _drawCommand?: DrawCommand; isDestroyed(): boolean;
 }
 interface Tile {
-  parent?: Tile; children: unknown[]; _screenSpaceError: number; contentReady?: boolean; content: { pointsLength: number; url?: string };
+  parent?: Tile; children: { contentReady?: boolean }[]; _screenSpaceError: number; contentReady?: boolean; content: { pointsLength: number; url?: string };
   tileset: { gaussianSplatPrimitive?: Primitive; memoryAdjustedScreenSpaceError: number };
 }
 // Splat counts are captured at merge time: Cesium may unload a tile's content while its merge is still on screen.
@@ -270,8 +270,10 @@ export class Reveal {
   }
 
   private static isPlaceholder(tile: Tile) {
-    // Wants more detail (Cesium would refine it) but is drawn because its children are not loaded yet.
-    return tile.children.length > 0 && tile._screenSpaceError > tile.tileset.memoryAdjustedScreenSpaceError;
+    // Wants more detail (Cesium would refine it) but is drawn because its children are not loaded yet. A parent held
+    // under growing children (holdParents) has them loaded and must not show the loading glow.
+    return tile.children.length > 0 && tile._screenSpaceError > tile.tileset.memoryAdjustedScreenSpaceError
+      && tile.children.some(child => !child.contentReady);
   }
 
   /** Seconds from arrival until a growing tile has fully turned into splats (the shader's second scan). */
