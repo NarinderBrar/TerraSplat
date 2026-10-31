@@ -151,18 +151,30 @@ def test_verify_run_checks_final_model_and_georeference_hashes(tmp_path):
         verify_run(tmp_path)
 
 
-def test_floater_removal_keeps_boundary_and_vertical_gate():
+def test_floater_removal_keeps_boundary():
     from pipeline.export import floater_removal
 
     geo = {"model_to_enu": np.eye(4)}
-    data = attributes([[0, 0, 0], [350, 0, 251]])
+    data = attributes([[0, 0, 0], [350, 0, 250], [0, 0, -250]])
     keep, report = floater_removal(data, geo)
-    assert keep.tolist() == [True, True]
+    assert keep.tolist() == [True, True, True]
     assert report["removed_count"] == 0
     assert report["removed_opacity_mass_fraction"] == 0
     assert report["removed_radius_range_m"] is None
+    assert report["removed_up_range_m"] is None
     assert report["passed"]
-    assert not enu_bbox_splat_centres(data, geo)["plausible"]
+    assert enu_bbox_splat_centres(data, geo)["plausible"]
+
+
+def test_floater_removal_removes_splats_beyond_vertical_envelope():
+    from pipeline.export import floater_removal
+
+    data = attributes([[0, 0, 0]] * 98 + [[0, 0, 251], [10, 0, -260]])
+    keep, report = floater_removal(data, {"model_to_enu": np.eye(4)})
+    assert keep.tolist() == [True] * 98 + [False, False]
+    assert report["removed_up_range_m"] == [-260, 251]
+    assert report["removed_opacity_mass_fraction"] == pytest.approx(0.02)
+    assert not report["passed"]
 
 
 def test_floater_removal_uses_enu_radius_and_opacity_mass():

@@ -26,7 +26,9 @@ FLOATER_POLICY_NOTE = (
     "activated raw opacity mass to be removed, bounding removal to a small share "
     "of model opacity. Mass is sum(sigmoid(raw opacity)), not splat count or volume. "
     "Remove only ENU horizontal centre radius >350 m before fusion; existing "
-    "extent, vertical and transform gates remain unchanged."
+    "extent, vertical and transform gates remain unchanged. Amended 2026-10-31 after "
+    "grid block B3 failed the vertical gate (30 splats 255-338 m up, 4.5e-5 of mass): "
+    "also remove centres with |ENU up| >250 m, under the same 1% mass cap."
 )
 
 
@@ -38,19 +40,22 @@ def floater_removal(attributes, georeference):
         raise ValueError("Nonfinite opacity before floater removal")
     opacity = np.exp(-np.logaddexp(0, -logits))
     radius = np.hypot(enu[:, 0], enu[:, 1])
-    keep = radius <= FLOATER_ENVELOPE_M
+    keep = (radius <= FLOATER_ENVELOPE_M) & (np.abs(enu[:, 2]) <= VERTICAL_ENVELOPE_M)
     removed = radius[~keep]
+    removed_up = enu[~keep, 2]
     total = float(opacity.sum())
     if total <= 0:
         raise ValueError("No activated opacity mass")
     fraction = float(opacity[~keep].sum() / total)
     return keep, {
         "envelope_m": FLOATER_ENVELOPE_M,
+        "vertical_envelope_m": VERTICAL_ENVELOPE_M,
         "input_count": len(radius),
         "removed_count": int((~keep).sum()),
         "retained_count": int(keep.sum()),
         "removed_opacity_mass_fraction": fraction,
         "removed_radius_range_m": [float(removed.min()), float(removed.max())] if len(removed) else None,
+        "removed_up_range_m": [float(removed_up.min()), float(removed_up.max())] if len(removed) else None,
         "max_removed_opacity_mass_fraction": MAX_REMOVED_OPACITY_MASS_FRACTION,
         "passed": fraction <= MAX_REMOVED_OPACITY_MASS_FRACTION and bool(keep.any()),
         "note": FLOATER_POLICY_NOTE,
@@ -287,6 +292,7 @@ def enu_bbox_splat_centres(attributes, georeference):
         },
         "opacity_weighted_radius": weighted,
         "envelope_m": FLOATER_ENVELOPE_M,
+        "vertical_envelope_m": VERTICAL_ENVELOPE_M,
         "vertical_envelope_m": VERTICAL_ENVELOPE_M,
         "plausible": plausible,
         "note": (

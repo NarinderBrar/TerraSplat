@@ -1,10 +1,14 @@
 # Next steps (as of 2026-10-30)
 
-## Running now: 1 km grid training (16 blocks, overnight)
+## Done: 1 km grid training (16 blocks)
 
-Started 21:58 on 2026-10-30 with the loop in `docs/phase3/GRID_1KM_PLAN.md`; log `artifacts/grid-1km-gpu.log`,
-progress `python scripts/job-progress.py` or the app's Pipeline jobs panel. About 45 min of training per block,
-so 12–14 h in all. While it runs, nothing else may use the GPU (6 GB): no LangSplat/RemoteCLIP runs.
+Ran 21:58 on 2026-10-30 to 12:55 on 2026-10-31 (about 56 min per block); log `artifacts/grid-1km-gpu.log`. 15 blocks
+passed first time. B3 trained but failed export: 30 splats 255-338 m up (4.5e-5 of opacity mass) broke the 250 m
+vertical gate, which the floater removal did not cover. The removal rule was amended after that failure (recorded in
+`FLOATER_POLICY_NOTE`, `pipeline/export.py`): it also removes centres more than 250 m above or below the anchor, under
+the same 1% mass cap. B3 then reran from export with its training reused (31 splats removed, 8.3e-5 of mass). The other
+15 blocks have no splats beyond 250 m, so their exports keep the same splats; their export stage reruns (code hash) the
+next time each job runs.
 
 ### Stopping and resuming
 
@@ -26,7 +30,7 @@ resuming, or completed stages count as changed and run again.
 
 ## 1. Finish the grid (main track)
 
-1. Check all 16 trainings completed (no memory-cap stops, exports and depth renders present).
+1. Check all 16 trainings completed (B3 fixed as above) (no memory-cap stops, exports and depth renders present).
 2. Score A2, A3, B2, B3 and their seams with `pipeline.grid_seams` against the pre-registered
    `configs/grid-1km-decision.json`; report pass or fail as measured.
 3. Publish all 16 to the review catalogue `artifacts/releases-grid-review` and check them in the browser together
