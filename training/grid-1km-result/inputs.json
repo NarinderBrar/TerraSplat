@@ -1,0 +1,22 @@
+{
+ "A2": {
+  "export": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-a2/attempts/export-f68fb2c99aba/export",
+  "depth": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-a2/attempts/render_depth-e246948ac63b/depth/depth-points.npz",
+  "validation": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-a2/attempts/dsm_validation-ae6d7199f774/validation"
+ },
+ "A3": {
+  "export": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-a3/attempts/export-748d623012ce/export",
+  "depth": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-a3/attempts/render_depth-1d8ac9e6839b/depth/depth-points.npz",
+  "validation": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-a3/attempts/dsm_validation-aa4a378834f2/validation"
+ },
+ "B2": {
+  "export": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-b2/attempts/export-1dba8d2d4f95/export",
+  "depth": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-b2/attempts/render_depth-d6f712b9833d/depth/depth-points.npz",
+  "validation": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-b2/attempts/dsm_validation-bd70c51cbfd1/validation"
+ },
+ "B3": {
+  "export": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-b3/attempts/export-837ecd121996/export",
+  "depth": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-b3/attempts/render_depth-1629943bde65/depth/depth-points.npz",
+  "validation": "/media/narinder/Data1/Projects-2/Geo-Spatial-Projects/artifacts/jobs/grid-1km-b3/attempts/dsm_validation-5eb9df2760c7/validation"
+ }
+}

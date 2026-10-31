@@ -1,0 +1,603 @@
+{
+  "schema_version": 1,
+  "status": "measured",
+  "grid_sha256": "7d9517a4833f42d9444b7144508baff048f84f0b9a9c0b42007441a787c6b112",
+  "decision_sha256": "098a18caf83cf17fb6116eb303cb239087a17c7fbda3b4cf4e0d25312718addf",
+  "cells": {
+    "A2": {
+      "provenance": {
+        "export_sha256": "9d7ddf518a46164d2e9980fe8873bcbefe6aaacb9fb705b7d1d671650517ced5",
+        "depth_sha256": "780796bc305adf44b5f63f024afb7630b9c24a7404e20cff475f0040f5c0d4b1",
+        "validation_sha256": "932cff1996d919925f9fa9e04674bc27636659c9d6d11979a105a42ad9b731bb"
+      },
+      "coverage": {
+        "extent_pixels": 64560,
+        "labelled_pixels": 62730,
+        "evaluated_pixels": 61498,
+        "block_area_covered_fraction": 0.25824,
+        "truth_grid_covered_fraction": 0.24627685546875,
+        "labelled_coverage_fraction": 0.9803602741909772
+      },
+      "registered": {
+        "all_labelled": {
+          "pixels": 61498,
+          "completeness": 0.9803602741909772,
+          "bias_m": -0.007256185591643432,
+          "median_m": -0.40038585662841797,
+          "mae_m": 1.4120573939994168,
+          "rmse_m": 2.456178989082362,
+          "nmad_m": 0.8740760476112365
+        },
+        "ground": {
+          "pixels": 27115,
+          "completeness": 0.9648436110023841,
+          "bias_m": 0.45071951007378097,
+          "median_m": -0.13219642639160156,
+          "mae_m": 1.7366489823711835,
+          "rmse_m": 2.9676967975384727,
+          "nmad_m": 1.279165544128418
+        },
+        "building": {
+          "pixels": 28509,
+          "completeness": 1.0,
+          "bias_m": -0.50847426365114,
+          "median_m": -0.5457305908203125,
+          "mae_m": 1.0675999438619137,
+          "rmse_m": 1.9293363072358714,
+          "nmad_m": 0.4938418075561523
+        },
+        "vegetation": {
+          "pixels": 5874,
+          "completeness": 0.9601176855181431,
+          "bias_m": 0.3113027520028758,
+          "median_m": 0.29184579849243164,
+          "mae_m": 1.5855059005145034,
+          "rmse_m": 2.1070286911477263,
+          "nmad_m": 1.753681219768524
+        }
+      },
+      "baseline_mae_m": 1.3947
+    },
+    "A3": {
+      "provenance": {
+        "export_sha256": "8208de2dbdb859e454d66124623b3e2de09fb80c2dced7e9d2a8f7a614569211",
+        "depth_sha256": "1db71465b56f355c87f4463e6bcc4f039d79f8256796788b00eb8a142bf161dc",
+        "validation_sha256": "d72b17119d92b725e92bbbb5f4f911c38ef243c8300ba97da43a95afe52231ea"
+      },
+      "coverage": {
+        "extent_pixels": 65349,
+        "labelled_pixels": 62384,
+        "evaluated_pixels": 62117,
+        "block_area_covered_fraction": 0.261396,
+        "truth_grid_covered_fraction": 0.24928665161132812,
+        "labelled_coverage_fraction": 0.9957200564247243
+      },
+      "registered": {
+        "all_labelled": {
+          "pixels": 62117,
+          "completeness": 0.9957200564247243,
+          "bias_m": -0.10932711728025984,
+          "median_m": -0.18091201782226562,
+          "mae_m": 1.2019740251494804,
+          "rmse_m": 2.031763440978106,
+          "nmad_m": 0.8387457830429077
+        },
+        "ground": {
+          "pixels": 40880,
+          "completeness": 0.9964655697745277,
+          "bias_m": -0.15350249933403298,
+          "median_m": -0.23991966247558594,
+          "mae_m": 1.4737191558117502,
+          "rmse_m": 2.366877952271359,
+          "nmad_m": 1.0572879478454589
+        },
+        "building": {
+          "pixels": 20997,
+          "completeness": 0.9942232113262939,
+          "bias_m": -0.04247367986697336,
+          "median_m": -0.12151241302490234,
+          "mae_m": 0.661884773298179,
+          "rmse_m": 1.1075834779313278,
+          "nmad_m": 0.5492009210586547
+        },
+        "vegetation": {
+          "pixels": 240,
+          "completeness": 1.0,
+          "bias_m": 1.5663728535175323,
+          "median_m": 1.826265811920166,
+          "mae_m": 2.165778523683548,
+          "rmse_m": 2.6225606290054944,
+          "nmad_m": 2.1815962941169738
+        }
+      },
+      "baseline_mae_m": 1.0828
+    },
+    "B2": {
+      "provenance": {
+        "export_sha256": "b82c1faeb827fa8917b7caa097fd344f96f5387f393fa49af37f9d7bff8c5ef6",
+        "depth_sha256": "0d38c8fc2c97574b34d826a16fa31196766cec9e34c2bc00bd5b6a8d84534343",
+        "validation_sha256": "6be315b7041925308e9cc8e2ebfeb47710798b50b39bef8b19cf07d89a173bc3"
+      },
+      "coverage": {
+        "extent_pixels": 65692,
+        "labelled_pixels": 59517,
+        "evaluated_pixels": 59234,
+        "block_area_covered_fraction": 0.262768,
+        "truth_grid_covered_fraction": 0.2505950927734375,
+        "labelled_coverage_fraction": 0.9952450560344104
+      },
+      "registered": {
+        "all_labelled": {
+          "pixels": 59234,
+          "completeness": 0.9952450560344104,
+          "bias_m": -0.2922724804060728,
+          "median_m": -0.4909939765930176,
+          "mae_m": 2.042394588741569,
+          "rmse_m": 3.8305167636016884,
+          "nmad_m": 1.0604607788085938
+        },
+        "ground": {
+          "pixels": 15678,
+          "completeness": 0.9889610799217814,
+          "bias_m": -0.44279694436316414,
+          "median_m": -0.6365652084350586,
+          "mae_m": 1.6962965807980486,
+          "rmse_m": 3.43311950445724,
+          "nmad_m": 1.0500925214767456
+        },
+        "building": {
+          "pixels": 43131,
+          "completeness": 0.9975022549087629,
+          "bias_m": -0.2337843840273838,
+          "median_m": -0.4492812156677246,
+          "mae_m": 2.174063387174928,
+          "rmse_m": 3.9788599010051917,
+          "nmad_m": 1.051111249065399
+        },
+        "vegetation": {
+          "pixels": 425,
+          "completeness": 1.0,
+          "bias_m": -0.6751608074412626,
+          "median_m": -0.5736780166625977,
+          "mae_m": 1.4473772318222944,
+          "rmse_m": 1.8945267656300513,
+          "nmad_m": 1.5954263780593871
+        }
+      },
+      "baseline_mae_m": 1.8789
+    },
+    "B3": {
+      "provenance": {
+        "export_sha256": "94cd25b437c8668fa6474534937081b4080dcf7c84bfa69ef50aae39d0a6f06a",
+        "depth_sha256": "eaab5c834b103121593513e8845fcfc0e0783155cd00c389814a4bf075f6917e",
+        "validation_sha256": "243d3e00b8681429b9da9a369013b81015d8ee2f1f44ce9f71faf6073f715688"
+      },
+      "coverage": {
+        "extent_pixels": 66543,
+        "labelled_pixels": 63346,
+        "evaluated_pixels": 63346,
+        "block_area_covered_fraction": 0.266172,
+        "truth_grid_covered_fraction": 0.2538414001464844,
+        "labelled_coverage_fraction": 1.0
+      },
+      "registered": {
+        "all_labelled": {
+          "pixels": 63346,
+          "completeness": 1.0,
+          "bias_m": 0.05883049816330709,
+          "median_m": -0.13745784759521484,
+          "mae_m": 1.0967472061739267,
+          "rmse_m": 1.7981632156957885,
+          "nmad_m": 0.794994579076767
+        },
+        "ground": {
+          "pixels": 40163,
+          "completeness": 1.0,
+          "bias_m": 0.1603979547936238,
+          "median_m": -0.06731414794921875,
+          "mae_m": 1.17579294364089,
+          "rmse_m": 1.8909015916977632,
+          "nmad_m": 0.9043982162475586
+        },
+        "building": {
+          "pixels": 20022,
+          "completeness": 1.0,
+          "bias_m": -0.2624472904789997,
+          "median_m": -0.2642824649810791,
+          "mae_m": 0.850085370408561,
+          "rmse_m": 1.5140473748971743,
+          "nmad_m": 0.5457590922832489
+        },
+        "vegetation": {
+          "pixels": 3161,
+          "completeness": 1.0,
+          "bias_m": 0.8033322772056534,
+          "median_m": 0.6830902099609375,
+          "mae_m": 1.6547824234496336,
+          "rmse_m": 2.201635919423428,
+          "nmad_m": 1.7948665168762206
+        }
+      },
+      "baseline_mae_m": 1.0915
+    }
+  },
+  "seams": {
+    "A2|A3": {
+      "west_or_south": "A2",
+      "east_or_north": "A3",
+      "axis": "east",
+      "boundary_m": 0,
+      "doubled_centres": 0,
+      "centres_within_1m": 1093,
+      "metrics": {
+        "lidar_error_by_distance": {
+          "west": {
+            "seam": {
+              "pixels": 4464,
+              "completeness": 0.986737400530504,
+              "bias_m": 0.10205416205108807,
+              "median_m": -0.3410067558288574,
+              "mae_m": 1.2827489232931513,
+              "rmse_m": 1.969706175564055,
+              "nmad_m": 0.8614928884506226
+            },
+            "interior": {
+              "pixels": 57034,
+              "completeness": 0.9798646187678246,
+              "bias_m": -0.015811808410964422,
+              "median_m": -0.40431976318359375,
+              "mae_m": 1.4221782519654154,
+              "rmse_m": 2.490247839681683,
+              "nmad_m": 0.8759063638687133
+            }
+          },
+          "east": {
+            "seam": {
+              "pixels": 4923,
+              "completeness": 0.9959538741654865,
+              "bias_m": -0.18394725215694127,
+              "median_m": -0.37651634216308594,
+              "mae_m": 1.7828891047272961,
+              "rmse_m": 2.8352929922817447,
+              "nmad_m": 1.1873372554779051
+            },
+            "interior": {
+              "pixels": 57194,
+              "completeness": 0.9956999355860796,
+              "bias_m": -0.10290415466184002,
+              "median_m": -0.16887474060058594,
+              "mae_m": 1.1519714910241947,
+              "rmse_m": 1.9471611961841078,
+              "nmad_m": 0.8145168920516968
+            }
+          }
+        },
+        "height_continuity": {
+          "ground": {
+            "unregistered": {
+              "west_pixels": 2511,
+              "east_pixels": 4197,
+              "step_m": -0.8498153686523438,
+              "lidar_step_m": -0.4330425262451172,
+              "residual_step_m": -0.6087150573730469
+            },
+            "registered": {
+              "west_pixels": 2451,
+              "east_pixels": 4177,
+              "step_m": -0.480072021484375,
+              "lidar_step_m": -0.4391632080078125,
+              "residual_step_m": -0.25279998779296875
+            }
+          },
+          "all": {
+            "unregistered": {
+              "west_pixels": 5078,
+              "east_pixels": 5077,
+              "step_m": -4.088128566741943,
+              "lidar_step_m": -2.3789615631103516,
+              "residual_step_m": -0.35196876525878906
+            },
+            "registered": {
+              "west_pixels": 5018,
+              "east_pixels": 5057,
+              "step_m": -4.078616142272949,
+              "lidar_step_m": -2.854389190673828,
+              "residual_step_m": -0.06213951110839844
+            }
+          }
+        }
+      }
+    },
+    "B2|B3": {
+      "west_or_south": "B2",
+      "east_or_north": "B3",
+      "axis": "east",
+      "boundary_m": 0,
+      "doubled_centres": 0,
+      "centres_within_1m": 936,
+      "metrics": {
+        "lidar_error_by_distance": {
+          "west": {
+            "seam": {
+              "pixels": 4926,
+              "completeness": 1.0,
+              "bias_m": -0.5835279657547424,
+              "median_m": -0.5287694931030273,
+              "mae_m": 0.8165441634836015,
+              "rmse_m": 1.1300774585429472,
+              "nmad_m": 0.3954695550441742
+            },
+            "interior": {
+              "pixels": 54308,
+              "completeness": 0.9948159953105823,
+              "bias_m": -0.2658541898995627,
+              "median_m": -0.4811115264892578,
+              "mae_m": 2.153585190399166,
+              "rmse_m": 3.9859655627914954,
+              "nmad_m": 1.1383223899841308
+            }
+          },
+          "east": {
+            "seam": {
+              "pixels": 4758,
+              "completeness": 1.0,
+              "bias_m": 0.06860364216272949,
+              "median_m": -0.16453170776367188,
+              "mae_m": 0.7073308307741709,
+              "rmse_m": 1.1585460209867915,
+              "nmad_m": 0.4120867976903915
+            },
+            "interior": {
+              "pixels": 58588,
+              "completeness": 1.0,
+              "bias_m": 0.05803680970919957,
+              "median_m": -0.1326436996459961,
+              "mae_m": 1.1283721654514587,
+              "rmse_m": 1.8403734494779056,
+              "nmad_m": 0.831636605644226
+            }
+          }
+        },
+        "height_continuity": {
+          "ground": {
+            "unregistered": {
+              "west_pixels": 532,
+              "east_pixels": 917,
+              "step_m": 0.7832698822021484,
+              "lidar_step_m": 0.09596061706542969,
+              "residual_step_m": 0.34732818603515625
+            },
+            "registered": {
+              "west_pixels": 532,
+              "east_pixels": 917,
+              "step_m": 1.1643705368041992,
+              "lidar_step_m": 0.09596061706542969,
+              "residual_step_m": 0.7134904861450195
+            }
+          },
+          "all": {
+            "unregistered": {
+              "west_pixels": 5158,
+              "east_pixels": 5159,
+              "step_m": -2.167097806930542,
+              "lidar_step_m": -2.978928565979004,
+              "residual_step_m": -0.04297780990600586
+            },
+            "registered": {
+              "west_pixels": 5158,
+              "east_pixels": 5159,
+              "step_m": -2.1569764614105225,
+              "lidar_step_m": -2.978928565979004,
+              "residual_step_m": 0.3736569881439209
+            }
+          }
+        }
+      }
+    },
+    "A2|B2": {
+      "west_or_south": "B2",
+      "east_or_north": "A2",
+      "axis": "north",
+      "boundary_m": 0,
+      "doubled_centres": 0,
+      "centres_within_1m": 809,
+      "metrics": {
+        "lidar_error_by_distance": {
+          "west": {
+            "seam": {
+              "pixels": 4690,
+              "completeness": 0.9968119022316685,
+              "bias_m": 0.5757835938017378,
+              "median_m": -0.10386800765991211,
+              "mae_m": 2.3609680677194205,
+              "rmse_m": 4.516853913441555,
+              "nmad_m": 1.3034159973621369
+            },
+            "interior": {
+              "pixels": 54544,
+              "completeness": 0.9951105597314457,
+              "bias_m": -0.36691282559591276,
+              "median_m": -0.503239631652832,
+              "mae_m": 2.0150018486343875,
+              "rmse_m": 3.7656656135828013,
+              "nmad_m": 1.0199555760383605
+            }
+          },
+          "east": {
+            "seam": {
+              "pixels": 4832,
+              "completeness": 0.9979347377116894,
+              "bias_m": 1.8526732613369576,
+              "median_m": 0.09924507141113281,
+              "mae_m": 3.6242540626854494,
+              "rmse_m": 5.925506055964834,
+              "nmad_m": 2.4755306631088256
+            },
+            "interior": {
+              "pixels": 56666,
+              "completeness": 0.9788902708678828,
+              "bias_m": -0.16585532947967152,
+              "median_m": -0.41559743881225586,
+              "mae_m": 1.223419863503336,
+              "rmse_m": 1.8849984334959755,
+              "nmad_m": 0.8068668911933898
+            }
+          }
+        },
+        "height_continuity": {
+          "ground": {
+            "unregistered": {
+              "west_pixels": 142,
+              "east_pixels": 1275,
+              "step_m": -8.834047853946686,
+              "lidar_step_m": -0.6490516662597656,
+              "residual_step_m": -2.186093330383301
+            },
+            "registered": {
+              "west_pixels": 127,
+              "east_pixels": 1265,
+              "step_m": -8.60593032836914,
+              "lidar_step_m": -1.9010810852050781,
+              "residual_step_m": -1.784165382385254
+            }
+          },
+          "all": {
+            "unregistered": {
+              "west_pixels": 5078,
+              "east_pixels": 5083,
+              "step_m": -6.643892586231232,
+              "lidar_step_m": -12.687076568603516,
+              "residual_step_m": 0.5477752685546875
+            },
+            "registered": {
+              "west_pixels": 5058,
+              "east_pixels": 5043,
+              "step_m": -9.911858558654785,
+              "lidar_step_m": -12.692648887634277,
+              "residual_step_m": 0.25978589057922363
+            }
+          }
+        }
+      }
+    },
+    "A3|B3": {
+      "west_or_south": "B3",
+      "east_or_north": "A3",
+      "axis": "north",
+      "boundary_m": 0,
+      "doubled_centres": 0,
+      "centres_within_1m": 816,
+      "metrics": {
+        "lidar_error_by_distance": {
+          "west": {
+            "seam": {
+              "pixels": 5136,
+              "completeness": 1.0,
+              "bias_m": 0.11293554264251317,
+              "median_m": -0.018541336059570312,
+              "mae_m": 1.1708562887067735,
+              "rmse_m": 1.9069259375759622,
+              "nmad_m": 0.9272471237182617
+            },
+            "interior": {
+              "pixels": 58210,
+              "completeness": 1.0,
+              "bias_m": 0.054056687676359794,
+              "median_m": -0.14605331420898438,
+              "mae_m": 1.0902083941504137,
+              "rmse_m": 1.7882492843638842,
+              "nmad_m": 0.7841303901672363
+            }
+          },
+          "east": {
+            "seam": {
+              "pixels": 5128,
+              "completeness": 0.9986368062317429,
+              "bias_m": 0.28657521965351196,
+              "median_m": -0.07483386993408203,
+              "mae_m": 1.4801427989779694,
+              "rmse_m": 2.3974410117932523,
+              "nmad_m": 1.1273249393463134
+            },
+            "interior": {
+              "pixels": 56989,
+              "completeness": 0.9954584359552132,
+              "bias_m": -0.14495131113866025,
+              "median_m": -0.1888103485107422,
+              "mae_m": 1.1769437654117678,
+              "rmse_m": 1.9955755860508468,
+              "nmad_m": 0.8168880317687988
+            }
+          }
+        },
+        "height_continuity": {
+          "ground": {
+            "unregistered": {
+              "west_pixels": 3268,
+              "east_pixels": 4626,
+              "step_m": 0.3661212921142578,
+              "lidar_step_m": -0.0045146942138671875,
+              "residual_step_m": 0.14147377014160156
+            },
+            "registered": {
+              "west_pixels": 3268,
+              "east_pixels": 4626,
+              "step_m": 0.12312698364257812,
+              "lidar_step_m": -0.0045146942138671875,
+              "residual_step_m": -0.08185958862304688
+            }
+          },
+          "all": {
+            "unregistered": {
+              "west_pixels": 5159,
+              "east_pixels": 5147,
+              "step_m": -1.064859390258789,
+              "lidar_step_m": -0.3873138427734375,
+              "residual_step_m": 0.16384315490722656
+            },
+            "registered": {
+              "west_pixels": 5159,
+              "east_pixels": 5147,
+              "step_m": -1.2555618286132812,
+              "lidar_step_m": -0.3873138427734375,
+              "residual_step_m": -0.050507545471191406
+            }
+          }
+        }
+      }
+    }
+  },
+  "decision": {
+    "passed": false,
+    "checks": {
+      "A2_coverage": true,
+      "A2_mae": true,
+      "A3_coverage": true,
+      "A3_mae": true,
+      "B2_coverage": true,
+      "B2_mae": true,
+      "B3_coverage": true,
+      "B3_mae": true,
+      "A2|A3_ownership": true,
+      "A2|A3_west_band": true,
+      "A2|A3_east_band": false,
+      "A2|A3_step_ground": false,
+      "A2|A3_step_all": true,
+      "B2|B3_ownership": true,
+      "B2|B3_west_band": true,
+      "B2|B3_east_band": true,
+      "B2|B3_step_ground": true,
+      "B2|B3_step_all": true,
+      "A2|B2_ownership": true,
+      "A2|B2_west_band": true,
+      "A2|B2_east_band": false,
+      "A2|B2_step_ground": false,
+      "A2|B2_step_all": true,
+      "A3|B3_ownership": true,
+      "A3|B3_west_band": true,
+      "A3|B3_east_band": true,
+      "A3|B3_step_ground": true,
+      "A3|B3_step_all": true
+    }
+  }
+}
