@@ -52,8 +52,32 @@ uniform float u_segmentMask;
 const vec3 SEGMENT_COLOURS[${SEGMENT_COLOURS.length}] = vec3[${SEGMENT_COLOURS.length}](
     ${SEGMENT_COLOURS.map(c => `vec3(${c.map(v => (v / 255).toFixed(4)).join(', ')})`).join(',\n    ')});
 
+uniform float u_segmentMotion;
+
 float revealHash(vec3 p) {
   return fract(sin(dot(p, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
+}
+
+// TerraScope's segment hologram (apps/web/src/splat/SegmentDrawAnimation.ts): a metric grid, an upward scan band and
+// trails, and a per-class pulse, on the class colour. metres is the splat centre in the block's ENU frame.
+vec3 segmentHologram(vec3 tint, vec3 metres, int segmentClass) {
+    vec3 spacing = segmentClass == 3 ? vec3(4.0, 4.0, 3.0) : vec3(2.0, 2.0, 1.5);
+    vec3 phase = fract(metres / spacing);
+    vec3 lineDistance = min(phase, vec3(1.0) - phase) * spacing;
+    float verticalLine = 1.0 - smoothstep(0.12, 0.42, min(lineDistance.x, lineDistance.y));
+    float floorLine = 1.0 - smoothstep(0.12, 0.42, lineDistance.z);
+    float scanTime = u_revealNow * u_segmentMotion;
+    float pulse = mix(0.8, 0.7 + 0.3 * cos(u_revealNow * 3.4906585 + float(segmentClass) * 1.2566371), u_segmentMotion);
+    float scanDistance = abs(fract(metres.z / 24.0 - scanTime * 0.28) - 0.5) * 24.0;
+    float scan = 1.0 - smoothstep(0.25, 2.2, scanDistance);
+    float scanCore = 1.0 - smoothstep(0.15, 0.65, scanDistance);
+    float columnOffset = dot(floor(metres.xy / spacing.xy), vec2(0.17, 0.11));
+    float travel = fract(metres.z / 18.0 - scanTime * 0.22 + columnOffset);
+    float trail = verticalLine * smoothstep(0.55, 1.0, travel);
+    float stripes = 0.5 + 0.5 * cos(metres.z * 10.4719755);
+    float energy = clamp(max(verticalLine, floorLine) * 0.55 + scan * 0.55 + scanCore * 0.45 + trail * 0.45, 0.0, 1.0);
+    vec3 neon = mix(tint, vec3(1.0), 0.18);
+    return tint * pulse * 0.65 + neon * pulse * (0.12 + energy * 0.95 + stripes * 0.08);
 }
 `;
 
@@ -105,17 +129,10 @@ const COLOUR = /* glsl */ `
     }
     if (u_segmentMode > 0.5) {
         vec3 segmentTint = SEGMENT_COLOURS[clamp(segmentClass, 0, ${SEGMENT_COLOURS.length - 1})];
-        float luma = dot(v_splatColor.rgb, vec3(0.299, 0.587, 0.114));
         int segmentMask = int(u_segmentMask + 0.5);
-        if (segmentMask == 0) {
-            // Overview: labelled splats take on their class colour, unknown ones turn grey.
-            v_splatColor.rgb = segmentClass == 0 ? vec3(0.6 * luma) : mix(v_splatColor.rgb, segmentTint, 0.6);
-        } else if (((segmentMask >> segmentClass) & 1) == 1) {
-            v_splatColor.rgb = min(mix(v_splatColor.rgb, segmentTint, 0.55) + 0.18, vec3(1.0));
-        } else {
-            v_splatColor.rgb = vec3(0.35 * luma);
-            v_splatColor.a *= 0.3;
-        }
+        // Labelled splats (all, or only the highlighted classes) become holograms; the rest keep their real colours.
+        bool segmentLit = segmentClass != 0 && (segmentMask == 0 || ((segmentMask >> segmentClass) & 1) == 1);
+        if (segmentLit) v_splatColor.rgb = segmentHologram(segmentTint, splatPosition.xyz, segmentClass);
     }
 `;
 
@@ -326,7 +343,9 @@ export class Reveal {
 
   now() { return performance.now() / 1000 - this.start; }
   /** True while any tile's sweep or growth is still playing; the caller keeps requesting frames. */
-  active() { return this.installed && this.animate && this.now() < this.busyUntil; }
+  active() { return this.installed && this.animate && (this.now() < this.busyUntil || this.segmentMotion()); }
+  /** The segment hologram scans and pulses continuously, so it is still on weak GPUs and with reduced motion. */
+  segmentMotion() { return this.segmentMode && this.animate && this.loadingGlow; }
 
   private record(tile: Tile) {
     const primitive = tile.tileset.gaussianSplatPrimitive;
@@ -396,6 +415,7 @@ export class Reveal {
       u_revealAnimate: () => (this.animate ? 1 : 0),
       u_revealLoadingGlow: () => (this.loadingGlow ? 1 : 0),
       u_segmentMode: () => (this.segmentMode ? 1 : 0),
+      u_segmentMotion: () => (this.segmentMotion() ? 1 : 0),
       u_segmentMask: () => this.segmentMask,
     });
     this.scene.requestRender();

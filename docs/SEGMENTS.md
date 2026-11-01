@@ -40,9 +40,13 @@ time, leaf flag). The class is stored in the same texel above the leaf bit (`lea
 no extra texture or draw pass. Class files are fetched per tile when segment mode is on (one `segments.json` probe per
 release; releases without a layer are skipped) and the texture is re-uploaded when they arrive.
 
-In the shader, with no class chosen every labelled splat is tinted its class colour and unknown splats turn grey; with
-classes chosen (one bit per code), those are tinted and brightened and the rest fade to dim grey. The highlight is
-static, so request-render mode still draws only on change.
+The side panel always lists the classes of a release with a segment layer (no mode switch). With none selected the
+scene shows its real colours. Selected classes (one bit per code) become holograms in the shader, ported from
+TerraScope's segmented view (`SegmentDrawAnimation.ts`): the class colour with a metric grid (4 m on buildings, 2 m
+otherwise), an upward scan band and trails, and a pulse phased per class. Every other splat keeps its real colour and
+alpha. Colour is set per splat from its centre, so with this pipeline's 1-3 m splats the grid reads as texture rather
+than crisp lines. While a class is selected the scan and pulse redraw every frame; reduced motion and the reduced-quality
+(weak GPU) profile keep the hologram still, so request-render mode draws only on change.
 
 ## Current layer
 

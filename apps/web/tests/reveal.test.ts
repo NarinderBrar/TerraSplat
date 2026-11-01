@@ -63,6 +63,8 @@ describe('splat reveal effects', () => {
     expect(injected).toContain('uniform float u_segmentMask;');
     expect(injected).toContain('int segmentClass = int(revealData.w + 0.5) / 2;');
     expect(injected).toContain('bool revealLeaf = mod(revealData.w, 2.0) > 0.5;');
+    expect(injected).toContain('uniform float u_segmentMotion;');
+    expect(injected).toContain('segmentHologram(segmentTint, splatPosition.xyz, segmentClass)');
     const python = readFileSync(new URL('../../../pipeline/semantics.py', import.meta.url), 'utf8');
     const colours = /COLOURS = \{([^}]*)\}/.exec(python)![1];
     const parsed = [...colours.matchAll(/(\d+): \((\d+), (\d+), (\d+)\)/g)].map(m => [Number(m[1]), [m[2], m[3], m[4]].map(Number)]);

@@ -46,6 +46,7 @@ output { display: block; font-variant-numeric: tabular-nums; }
 .class-legend li { display: flex; align-items: center; gap: 5px; }
 .class-legend span { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 .segments { margin-top: 14px; font-size: 13px; }
+.segments-title { font-size: 13px; margin: 0; }
 .segments ul { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 4px; }
 .segments li button { width: 100%; display: flex; align-items: center; gap: 8px; text-align: left; border: 1px solid #c9d8d2; }
 .segments li button[aria-pressed=true] { background: #d9f2e6; border-color: #15825f; font-weight: 600; }
