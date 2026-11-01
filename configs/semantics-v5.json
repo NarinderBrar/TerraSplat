@@ -2,7 +2,7 @@
   "version": 1,
   "id": "semantics-v5",
   "declared_on": "2026-11-01",
-  "evaluated": false,
+  "evaluated": true,
   "release": "skyfall-jax-068-final-r2 (Skyfall-GS authors' finished model)",
   "hypothesis": "v3/v4 failed because zero-shot CLIP prompt scoring of SAM segments does not classify overhead views ('shadow' and then 'soil' absorbed most cells). A segmentation model trained on sub-metre land-cover labels (OpenEarthMap) labels each pixel directly and may classify the authors' model's views.",
   "independence": "Fixed before the model is run on any JAX_068 view. Not blind: chosen after v3/v4 failed on JAX_068. The model never saw Jacksonville, DFC2019 or US3D (OpenEarthMap regions, open-earth-map.org/attribution.html; xBD images not used). Only the source of per-pixel class probabilities changes from v4; views, projection, visibility, fusion, height rules, mapping and targets are v4's.",

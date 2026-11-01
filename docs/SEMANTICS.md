@@ -172,3 +172,36 @@ CPU tests use synthetic TIFFs and a tiny random SegFormer without downloads:
 ```bash
 env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv-landcover/bin/python -m pytest tests/landcover -q
 ```
+
+## v5: OpenEarthMap SegFormer on the authors' JAX_068 model (failed, closest yet)
+
+`configs/semantics-v5.json` (committed in `36af12d` before any JAX_068 prediction) keeps v4's views, projection,
+visibility, fusion, height rules, mapping and targets, and replaces SAM + CLIP with per-pixel probabilities from the
+SegFormer-B2 trained on OpenEarthMap (Kaggle run v2, step 36,000; OpenEarthMap validation mIoU 0.680, pixel accuracy
+0.811). `pipeline.landcover_predict` labels the 17 views (10 s on the RTX 3060); `pipeline.semantics_landcover`
+projects and scores them.
+
+| | v3 | v4 | v5 (pre-registered) | v5 model only (diagnostic) | Target |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Overall accuracy | 0.251 | 0.471 | 0.724 | 0.857 | ≥ 0.80 |
+| Building IoU | 0.001 | 0.311 | **0.690** | 0.806 | ≥ 0.60 |
+| Vegetation (tree) IoU | 0.067 | 0.225 | 0.366 | 0.366 | ≥ 0.50 |
+
+**v5 fails** overall accuracy and tree IoU; building IoU passes. Evidence from `artifacts/semantics/v5-jax068`:
+
+- **The height rule costs 13 points of accuracy**, as in v4 but larger. 15.7 % of DFC building cells have a
+  model height above ground under 2.5 m, so 17,961 of them become ground; raised non-building surfaces become unknown
+  (20,987 DFC ground cells, 11,589 DFC building cells). Without height the same predictions score 0.857 / 0.806.
+- **Trees: recall 0.84, precision 0.40.** Of 21,147 cells the model calls tree, 10,115 are DFC ground. They are
+  raised in our model (median 5.6 m above ground; only 13 % under 2.5 m), and the preview shows rows of round crowns
+  along streets and in car parks that DFC2019 labels ground. A post-hoc rule requiring trees to be raised moves tree
+  IoU only to 0.384. So most of the tree loss is crowns that are raised in the model but ground in DFC2019, not low
+  vegetation called tree.
+- No water and no unknown sink: the model labels every visible cell (8.3 % unknown before the height rule).
+
+![v5: ours, DFC2019, disagreement](semantics-v5-jax068.png)
+
+Conclusion: a trained land-cover model solves what CLIP could not; buildings pass and the model alone reaches 0.857
+accuracy. The pre-registered height rule hurts on this model's geometry, and tree IoU is limited by crowns that DFC2019
+labels ground. Both are findings on the tuning scene; any change (e.g. dropping the building height rule) needs a
+new pre-registered version and the blind test on the other seven scenes.

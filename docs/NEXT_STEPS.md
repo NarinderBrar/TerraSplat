@@ -1,4 +1,4 @@
-# Next steps (as of 2026-10-30)
+# Next steps (as of 2026-11-01)
 
 ## Done: 1 km grid training (16 blocks)
 
@@ -35,39 +35,24 @@ All 16 blocks are published and active in `artifacts/releases`; the central `jax
 version (docs/phase3/GRID_1KM_RESULT.md). Deferred: diagnose and fix A2's southern edge; stop the viewer rendering
 for up to 20 s after loading finishes.
 
-## 2. Semantics and segment mode: authors' scenes only
+## 2. Semantics: paused at v5 (2026-11-01)
 
-Segment mode (docs/SEGMENTS.md) is built and verified; layers will be made for the 12 Skyfall-GS authors' scenes only.
-Their data is RGB, so v2 (NDVI) does not apply.
+Stopped here by decision: v5 is good enough to build on, and the remaining gaps are known. Full record in
+docs/SEMANTICS.md (v1-v5).
 
-1. **v4 failed** (2026-10-31): RemoteCLIP features scored 0.471 accuracy, building IoU 0.31, vegetation IoU 0.22
-   against 0.80 / 0.60 / 0.50 (docs/SEMANTICS.md).
-2. **v5 (in progress)**: a land-cover segmentation model for sub-metre imagery plus height, fused with the same
-   verified multi-view projection. Tune on JAX_068. The model is SegFormer-B2 trained on OpenEarthMap (no
-   Jacksonville, no DFC2019/US3D; labels mostly CC BY-NC-SA, so non-commercial).
-
-   **Active run (started 2026-11-01): Kaggle notebook `npsbrar1986/terrasplat-landcover-v5`, version 2, T4 GPU**
-   (https://www.kaggle.com/code/npsbrar1986/terrasplat-landcover-v5). Settings `configs/landcover-v5-kaggle.json`
-   (batch 8, 40,000 steps, validation every 4,000). Inputs: the private dataset
-   `npsbrar1986/terrasplat-landcover-bundle` (code, mit-b2 weights, split lists, checksums of our Zenodo download;
-   built by `scripts/kaggle-landcover-bundle.py`) and the public copy `aletbm/global-land-cover-mapping-openearthmap`,
-   whose 5,374 train/val files are checked against those checksums before training. Version 1 stopped at that check
-   (the copy omits the 813 xBD labels that have no images; fixed). The notebook stops itself at 11 h and keeps its
-   checkpoints. Check and collect it:
-
-   ```bash
-   env -u PYTHONPATH kaggle kernels status npsbrar1986/terrasplat-landcover-v5
-   env -u PYTHONPATH kaggle kernels output npsbrar1986/terrasplat-landcover-v5 -p artifacts/landcover/kaggle-v2
-   ```
-
-   If it stopped at 11 h before step 40,000, attach that version's output to the notebook and push again: it resumes
-   from `last.pt`. Then: write `configs/semantics-v5.json` (class mapping, height rules, targets as v3/v4) before any
-   JAX_068 prediction, predict the 17 views with `pipeline.landcover_predict`, project and score.
-3. **Blind test**: fix the method, then score once on the other seven DFC2019 scenes (JAX_004, 164, 168, 175, 214,
-   260, 264). Their lidar DSM/CLS go in `artifacts/reference/dfc2019-jax/` (being downloaded); each scene first
-   needs its placement offset measured like JAX_068. Do not inspect their labels before the method is fixed.
-4. Build segment layers (`pipeline.segments`) for all 12 authors' scenes and publish `skyfall-*-final-r3` (same tiles
-   plus layer). The four NYC scenes get layers without an accuracy number.
+- **Status**: v5 (OpenEarthMap SegFormer-B2, Kaggle run v2) failed its pre-registered targets on JAX_068 but is the
+  best by far: accuracy 0.724, building IoU 0.690 (passes), tree IoU 0.366 against 0.80 / 0.60 / 0.50. Without the
+  building height rule the same predictions score 0.857 / 0.806 / 0.366 (diagnostic, not a pass).
+- **Known gaps**: the 2.5 m height rule turns low-placed roofs into ground; many tree crowns that are raised in our
+  model are ground in DFC2019's labels, which caps tree IoU.
+- **Assets**: model `artifacts/landcover/kaggle-v2/v5-oem-segformer-b2/best.safetensors` (sha256 in
+  `configs/semantics-v5.json`; labels CC BY-NC-SA, non-commercial); JAX_068 run `artifacts/semantics/v5-jax068`;
+  code `pipeline/landcover_*.py`, `pipeline/semantics_landcover.py`.
+- **When resumed**: (1) pre-register v6 without the building height rule; (2) decide whether the tree target can be
+  met against DFC2019's tree labels or needs another reference; (3) blind test once on the other seven DFC2019 scenes
+  (JAX_004, 164, 168, 175, 214, 260, 264; lidar in `artifacts/reference/dfc2019-jax/`, placement offsets measured
+  first; do not inspect their labels before the method is fixed); (4) build segment layers (`pipeline.segments`) for
+  the 12 authors' scenes and publish `skyfall-*-final-r3`, labelled experimental with v5's numbers.
 
 ## 3. Parked
 

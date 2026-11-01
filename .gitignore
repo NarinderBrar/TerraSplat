@@ -41,3 +41,4 @@ apps/web/public/cesium/
 
 # Kaggle upload bundle (scripts/kaggle-landcover-bundle.py)
 /kaggle/landcover/bundle/
+MOVE-REPO.md
