@@ -62,6 +62,32 @@ def view_probabilities(scene, frame, transforms, probs_dir, points, tolerance):
     return result
 
 
+def check_prediction(probs_dir, config):
+    prediction = json.loads((Path(probs_dir) / 'report.json').read_text())
+    if prediction['weights_sha256'] != config['model']['weights_sha256']:
+        raise ValueError('Probabilities come from different model weights than the config')
+    settings = config['prediction']
+    if (prediction['classes'] != NAMES or prediction['window'] != settings['window']
+            or prediction['overlap'] != settings['overlap'] or prediction['flip_tta'] != settings['flip_tta']):
+        raise ValueError('Prediction settings differ from the config')
+    return prediction
+
+
+def fuse_views(scene, probs_dir, points, tolerance):
+    """Median over visible training views of each point's class probabilities, and the visible-view count."""
+    transforms = json.loads((scene / 'transforms_train.json').read_text())
+    per_view, views_used = [], []
+    for frame in transforms['frames']:
+        name = Path(frame['file_path']).stem
+        per_view.append(view_probabilities(scene, frame, transforms, probs_dir, points, tolerance))
+        views_used.append({'name': name, 'visible_cells': int(np.isfinite(per_view[-1][:, 0]).sum()),
+                           'probabilities_sha256': digest(probs_dir / f'{name}_probs.npy')})
+    stack = np.stack(per_view)
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', RuntimeWarning)  # cells no view sees stay NaN
+        return np.nanmedian(stack, axis=0), np.isfinite(stack[..., 0]).sum(axis=0), views_used
+
+
 def run(config_path, export_dir, depth_points, truth_dir, scene, probs_dir, output, registration=None):
     import rasterio
 
@@ -69,13 +95,7 @@ def run(config_path, export_dir, depth_points, truth_dir, scene, probs_dir, outp
     output, scene, probs_dir = Path(output), Path(scene), Path(probs_dir)
     if output.exists():
         raise ValueError('Use a new output directory')
-    prediction = json.loads((probs_dir / 'report.json').read_text())
-    if prediction['weights_sha256'] != config['model']['weights_sha256']:
-        raise ValueError('Probabilities come from different model weights than the config')
-    settings = config['prediction']
-    if (prediction['classes'] != NAMES or prediction['window'] != settings['window']
-            or prediction['overlap'] != settings['overlap'] or prediction['flip_tta'] != settings['flip_tta']):
-        raise ValueError('Prediction settings differ from the config')
+    prediction = check_prediction(probs_dir, config)
     manifest = json.loads((Path(export_dir) / 'export-manifest.json').read_text())
     geo, shift = aligned_georeference(manifest['georeference'], registration)
     manifest = manifest | {'georeference': geo}
@@ -85,18 +105,8 @@ def run(config_path, export_dir, depth_points, truth_dir, scene, probs_dir, outp
     points = cell_model_points(truth, filled, geo)
     tolerance = 1.0 / np.asarray(geo['model_to_enu'])[0][0]  # 1.0 m in model units
 
-    transforms = json.loads((scene / 'transforms_train.json').read_text())
-    per_view, views_used = [], []
-    for frame in transforms['frames']:
-        name = Path(frame['file_path']).stem
-        per_view.append(view_probabilities(scene, frame, transforms, probs_dir, points, tolerance))
-        views_used.append({'name': name, 'visible_cells': int(np.isfinite(per_view[-1][:, 0]).sum()),
-                           'probabilities_sha256': digest(probs_dir / f'{name}_probs.npy')})
-    stack = np.stack(per_view)
-    views = np.isfinite(stack[..., 0]).sum(axis=0).reshape(shape)
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore', RuntimeWarning)  # cells no view sees stay NaN
-        probabilities = np.nanmedian(stack, axis=0).reshape(shape + (len(NAMES),))
+    probabilities, views, views_used = fuse_views(scene, probs_dir, points, tolerance)
+    probabilities, views = probabilities.reshape(shape + (len(NAMES),)), views.reshape(shape)
 
     classes, model_only, label, known = classify(probabilities, views, hag, valid, config['classes']['raised_hag_m'],
                                                  config['scoring']['min_views'])

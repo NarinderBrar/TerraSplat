@@ -205,3 +205,26 @@ Conclusion: a trained land-cover model solves what CLIP could not; buildings pas
 accuracy. The pre-registered height rule hurts on this model's geometry, and tree IoU is limited by crowns that DFC2019
 labels ground. Both are findings on the tuning scene; any change (e.g. dropping the building height rule) needs a
 new pre-registered version and the blind test on the other seven scenes.
+
+## v5 classes on the 1 km grid (2026-11-01)
+
+`pipeline.semantics_grid` applies v5 unchanged (same model, prediction settings, projection, fusion, height rules) to
+each of the 16 grid blocks, using the job runner's own outputs (scene, export, rendered depth, tiles). Each block's class
+grid is its owned 250 m cell plus 20 m, on the DFC2019 JAX_068 0.5 m lattice. The four central blocks (A2, A3, B2,
+B3) overlap the lidar; their owned cells tile it exactly (247,977 scored cells) and their measured placement offsets
+are removed as in v5. The other 12 blocks get classes without a score. Outputs: `artifacts/semantics/v5-grid`.
+
+| Lidar-covered cells | Grid (our pipeline) | Authors' JAX_068 (v5) | Target |
+| --- | ---: | ---: | ---: |
+| Overall accuracy | 0.596 | 0.724 | ≥ 0.80 |
+| Building IoU | 0.602 | 0.690 | ≥ 0.60 |
+| Vegetation (tree) IoU | 0.334 | 0.366 | ≥ 0.50 |
+| Without the height rule (diagnostic) | 0.782 / 0.676 / 0.334 | 0.857 / 0.806 / 0.366 | |
+
+Per block: A2 0.576 / 0.525 / 0.681, A3 0.605 / 0.818 / 0.081, B2 0.605 / 0.586 / 0.091, B3 0.600 / 0.515 / 0.207
+(accuracy / building / tree). Our pipeline's surface is noisier than the authors' model, so the 2.5 m height rule
+misfires more (about a quarter of owned cells unknown). About 25-40 % of each block's tile splats are unknown, mostly
+splats more than 1.5 m below the top surface that are not walls (the v1-v5 splat rule).
+
+Segment layers `artifacts/segments/grid-1km-*-v5` are published as `jax068-2015-grid-*-r2` (tiles identical to r1)
+in the review catalogue `artifacts/releases-grid-review` only, for a visual check before the live catalogue.

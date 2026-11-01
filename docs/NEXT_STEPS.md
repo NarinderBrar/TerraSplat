@@ -48,11 +48,15 @@ docs/SEMANTICS.md (v1-v5).
 - **Assets**: model `artifacts/landcover/kaggle-v2/v5-oem-segformer-b2/best.safetensors` (sha256 in
   `configs/semantics-v5.json`; labels CC BY-NC-SA, non-commercial); JAX_068 run `artifacts/semantics/v5-jax068`;
   code `pipeline/landcover_*.py`, `pipeline/semantics_landcover.py`.
+- **Grid classes (2026-11-01)**: v5 applied to all 16 grid blocks; lidar-covered cells score 0.596 / 0.602 / 0.334
+  (docs/SEMANTICS.md). Segment releases `jax068-2015-grid-*-r2` are active in the review catalogue only, waiting
+  for a visual check before going live (`pipeline.publish --config artifacts/semantics/v5-grid/<block>/release-r2.json
+  --activate`). The authors' scenes are not getting layers.
 - **When resumed**: (1) pre-register v6 without the building height rule; (2) decide whether the tree target can be
   met against DFC2019's tree labels or needs another reference; (3) blind test once on the other seven DFC2019 scenes
   (JAX_004, 164, 168, 175, 214, 260, 264; lidar in `artifacts/reference/dfc2019-jax/`, placement offsets measured
   first; do not inspect their labels before the method is fixed); (4) build segment layers (`pipeline.segments`) for
-  the 12 authors' scenes and publish `skyfall-*-final-r3`, labelled experimental with v5's numbers.
+  the 12 authors' scenes (decided 2026-11-01: not for now).
 
 ## 3. Parked
 
