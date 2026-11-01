@@ -37,3 +37,4 @@ tasks.md
 .venv-api/
 
 apps/web/public/cesium/
+.venv-landcover/

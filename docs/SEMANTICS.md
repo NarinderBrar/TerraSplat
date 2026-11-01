@@ -120,3 +120,55 @@ instead of crashing (`safe_preprocess.py`, LangSplat repo).
 Conclusion: remote-sensing CLIP reads overhead views much better than general CLIP, but zero-shot prompt scoring of
 SAM segments is still far from the targets. Next is v5 (docs/NEXT_STEPS.md): a land-cover segmentation model trained
 on sub-metre imagery, plus height.
+
+## v5 training: OpenEarthMap land cover
+
+`pipeline/landcover_train.py` trains an eight-class SegFormer on OpenEarthMap RGB images. This stage only trains
+and predicts image probabilities; projection and scoring on JAX_068 are future work. No v5 results are claimed.
+
+Use the existing `.venv-landcover` (torch 2.7.1+cu128, torchvision 0.22.1, transformers 4.53.3, rasterio 1.4.4,
+safetensors, numpy, pytest). Always unset `PYTHONPATH` to avoid ROS imports. No packages or weights are downloaded
+by these scripts. Before training, place the `nvidia/mit-b2` Hugging Face `config.json` and `pytorch_model.bin`
+in `artifacts/landcover/pretrained/mit-b2`, or set `pretrained_dir` to another local directory. Torch >= 2.6 reads
+the bin weights with `weights_only=True`; trained model weights are saved only as safetensors.
+
+Review `configs/landcover-v5-train.json` before the GPU run. Defaults: 512-pixel crops, ImageNet normalisation,
+random horizontal/vertical flips and quarter turns, AdamW (lr 6e-5, weight decay 0.01), 40,000 optimiser steps,
+linear warmup for 1,500 steps from 1e-6 of the base lr, then polynomial decay (power 1). Batch size 8 without
+accumulation (SegFormer's standard ADE20K batch); validation every 4,000 steps. These are proposed starting settings, not measured memory
+or accuracy results. On the RTX 3060 laptop's 6 GB, lower `batch_size` if needed and adjust `accumulation` to
+retain the effective batch. Training uses fp16 autocast and GradScaler on CUDA; validation also uses fp16
+inference. The validation window batch is separately configurable. Split files are relative to `data_root`;
+other config paths are relative to the working directory. Test images are unused.
+
+```bash
+env -u PYTHONPATH .venv-landcover/bin/python -m pipeline.landcover_train \
+  --config configs/landcover-v5-train.json
+# Optional short run; resume to the configured total without changing the schedule:
+env -u PYTHONPATH .venv-landcover/bin/python -m pipeline.landcover_train \
+  --config configs/landcover-v5-train.json --max-steps 2
+env -u PYTHONPATH .venv-landcover/bin/python -m pipeline.landcover_train \
+  --config configs/landcover-v5-train.json --resume
+```
+
+Use either a full run or the short-run/resume sequence with a new output directory. `--max-steps` is an absolute
+stop step. The default output is `artifacts/landcover/v5-oem-segformer-b2`: `best.safetensors` selected by validation
+mIoU, `last.safetensors` plus `last.pt` (optimiser, scaler, step, RNG and report), model `config.json`,
+`train-log.jsonl` and `report.json`. Resume requires the same config and restores the last checkpoint; a finished
+output directory is never overwritten. The report records split counts (including missing xBD images), per-class
+IoU, mIoU over classes with nonzero union, valid-pixel accuracy, digests and software versions. Code 0 is ignored;
+output channels 0..7 correspond to OpenEarthMap codes 1..8: bareland, rangeland, developed space, road, tree, water,
+agriculture land, building. Classes absent from both truth and predictions have null IoU.
+
+```bash
+env -u PYTHONPATH .venv-landcover/bin/python -m pipeline.landcover_predict \
+  --model artifacts/landcover/v5-oem-segformer-b2 --images /path/to/images --output /path/to/new-probs
+```
+
+Prediction writes float16 `(H, W, 8)` `<name>_probs.npy` arrays and a digest report. Validation reuses the same
+512-pixel sliding windows, 128-pixel overlap and smooth blending; horizontal flip TTA is optional and off by default.
+CPU tests use synthetic TIFFs and a tiny random SegFormer without downloads:
+
+```bash
+env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv-landcover/bin/python -m pytest tests/landcover -q
+```
