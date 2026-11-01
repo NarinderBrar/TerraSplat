@@ -1,0 +1,16 @@
+{
+  "id": "npsbrar1986/terrasplat-landcover-v5",
+  "title": "terrasplat-landcover-v5",
+  "code_file": "train.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [
+    "npsbrar1986/terrasplat-landcover-bundle",
+    "aletbm/global-land-cover-mapping-openearthmap"
+  ],
+  "competition_sources": [],
+  "kernel_sources": []
+}

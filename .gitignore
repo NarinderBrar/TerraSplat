@@ -38,3 +38,6 @@ tasks.md
 
 apps/web/public/cesium/
 .venv-landcover/
+
+# Kaggle upload bundle (scripts/kaggle-landcover-bundle.py)
+/kaggle/landcover/bundle/

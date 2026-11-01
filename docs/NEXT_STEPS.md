@@ -42,8 +42,27 @@ Their data is RGB, so v2 (NDVI) does not apply.
 
 1. **v4 failed** (2026-10-31): RemoteCLIP features scored 0.471 accuracy, building IoU 0.31, vegetation IoU 0.22
    against 0.80 / 0.60 / 0.50 (docs/SEMANTICS.md).
-2. **v5 (next)**: a land-cover segmentation model for sub-metre imagery (e.g. trained on OpenEarthMap; not
-   on DFC2019 or US3D Jacksonville) plus height, fused with the same verified multi-view projection. Tune on JAX_068.
+2. **v5 (in progress)**: a land-cover segmentation model for sub-metre imagery plus height, fused with the same
+   verified multi-view projection. Tune on JAX_068. The model is SegFormer-B2 trained on OpenEarthMap (no
+   Jacksonville, no DFC2019/US3D; labels mostly CC BY-NC-SA, so non-commercial).
+
+   **Active run (started 2026-11-01): Kaggle notebook `npsbrar1986/terrasplat-landcover-v5`, version 2, T4 GPU**
+   (https://www.kaggle.com/code/npsbrar1986/terrasplat-landcover-v5). Settings `configs/landcover-v5-kaggle.json`
+   (batch 8, 40,000 steps, validation every 4,000). Inputs: the private dataset
+   `npsbrar1986/terrasplat-landcover-bundle` (code, mit-b2 weights, split lists, checksums of our Zenodo download;
+   built by `scripts/kaggle-landcover-bundle.py`) and the public copy `aletbm/global-land-cover-mapping-openearthmap`,
+   whose 5,374 train/val files are checked against those checksums before training. Version 1 stopped at that check
+   (the copy omits the 813 xBD labels that have no images; fixed). The notebook stops itself at 11 h and keeps its
+   checkpoints. Check and collect it:
+
+   ```bash
+   env -u PYTHONPATH kaggle kernels status npsbrar1986/terrasplat-landcover-v5
+   env -u PYTHONPATH kaggle kernels output npsbrar1986/terrasplat-landcover-v5 -p artifacts/landcover/kaggle-v2
+   ```
+
+   If it stopped at 11 h before step 40,000, attach that version's output to the notebook and push again: it resumes
+   from `last.pt`. Then: write `configs/semantics-v5.json` (class mapping, height rules, targets as v3/v4) before any
+   JAX_068 prediction, predict the 17 views with `pipeline.landcover_predict`, project and score.
 3. **Blind test**: fix the method, then score once on the other seven DFC2019 scenes (JAX_004, 164, 168, 175, 214,
    260, 264). Their lidar DSM/CLS go in `artifacts/reference/dfc2019-jax/` (being downloaded); each scene first
    needs its placement offset measured like JAX_068. Do not inspect their labels before the method is fixed.
