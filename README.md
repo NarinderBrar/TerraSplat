@@ -12,6 +12,11 @@ unmeasured areas are labelled. Experiments use pass/fail rules fixed before thei
 > scenes. Experimental v5 segmentation is complete for all 28 datasets in a separate review catalogue; the default
 > catalogue still serves releases without segment layers. See [Results](#results) and [Limitations](#limitations).
 
+[![TerraSplat web globe showing the Jacksonville reconstruction and semantic class controls](public/photo.png)](https://www.youtube.com/watch?v=HKcTSGbMY7Q)
+
+**[Watch the demo on YouTube](https://www.youtube.com/watch?v=HKcTSGbMY7Q)** — satellite imagery to streamed 3D
+Gaussian splats, with semantic segmentation and interactive class highlighting.
+
 ---
 
 ## Contents
