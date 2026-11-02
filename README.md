@@ -4,12 +4,13 @@
 
 TerraSplat turns multi-view satellite images into metric, geographically placed 3D Gaussian splats. It tiles them as
 3D Tiles 1.1 (SPZ-compressed `KHR_gaussian_splatting`) and serves them to a CesiumJS web app through immutable,
-hash-verified releases. Every published height claim is measured against independent airborne lidar, and every
-experiment is decided by rules fixed before its result is seen.
+hash-verified releases. Where independent airborne lidar is available, height errors are measured and published;
+unmeasured areas are labelled. Experiments use pass/fail rules fixed before their results are seen.
 
-> **Status (2026-11-01): research prototype.** A 1 km × 1 km block of Jacksonville, FL, built end to end from raw
-> 2015 WorldView-3 imagery, is live in the app as 16 tiles, next to 12 scenes from the Skyfall-GS authors.
-> Semantic classes (segment mode) are in development. See [Results](#results) and [Limitations](#limitations).
+> **Status (2026-11-02): research prototype.** A 1 km × 1 km area of Jacksonville, FL, built end to end from raw
+> historical WorldView-3 imagery, is published as 16 trained blocks alongside 12 externally trained Skyfall-GS authors'
+> scenes. Experimental v5 segmentation is complete for all 28 datasets in a separate review catalogue; the default
+> catalogue still serves releases without segment layers. See [Results](#results) and [Limitations](#limitations).
 
 ---
 
@@ -40,6 +41,7 @@ experiment is decided by rules fixed before its result is seen.
 | **Tiled streaming** | Splats are cropped to an owned cell of a shared grid, merged into a LOD hierarchy (REPLACE refinement) and encoded as SPZ inside glTF in 3D Tiles 1.1. |
 | **Immutable releases** | Releases are content-hashed and never overwritten; activation and rollback only move a catalogue pointer. A regional 3D Tiles index links all active blocks. |
 | **Web globe** | React + Vite + CesiumJS 1.146 app: dataset and release selection, footprints, quality panels, reveal effects, GPU-aware quality profiles, segment mode. |
+| **Semantic segmentation** | SegFormer-B2 trained on OpenEarthMap, multi-view projection and median fusion, height-based class rules, and per-tile labels. Selected classes receive animated holograms blended with their original colours. |
 | **Resumable jobs** | One command runs a block from imagery selection to publication; every stage records its inputs, outputs and hashes and is reused only when nothing changed. |
 | **Validation** | Registered DSM comparison with DFC2019 lidar (MAE per class), holdout PSNR, seam checks between neighbouring cells, and pre-registered pass/fail rules. |
 
@@ -108,10 +110,15 @@ tables, hashes and commands are in the linked documents.
 | Same block, first model (3 views, basic recipe) | 3.32 m MAE; more views and the authors' recipe brought it to 1.36 m | [TRAINING_FINDINGS](docs/TRAINING_FINDINGS.md) |
 | 1 km grid (16 blocks, about 56 min per block on an RTX 3060 laptop GPU) | the 4 cells with lidar: 1.10–2.04 m, each within +0.16 m of a single-block model | [GRID_1KM_RESULT](docs/phase3/GRID_1KM_RESULT.md) |
 | Grid seams | 2 of 4 pass; A2\|A3 and A2\|B2 fail (accepted as known issues) | [GRID_1KM_RESULT](docs/phase3/GRID_1KM_RESULT.md) |
-| Semantics v1–v4 | none meet all three targets (overall accuracy ≥ 0.80, building IoU ≥ 0.60, tree IoU ≥ 0.50) | [SEMANTICS](docs/SEMANTICS.md) |
+| Semantics v5, authors' JAX_068 tuning scene | accuracy **0.724**, building IoU **0.690** (passes), tree IoU **0.366**; overall accuracy and tree IoU miss their targets | [SEMANTICS](docs/SEMANTICS.md) |
+| Semantics v5, lidar-covered grid cells | accuracy **0.596**, building IoU **0.602**, tree IoU **0.334**; does not meet all targets | [SEMANTICS](docs/SEMANTICS.md) |
 
-The live catalogue has 28 datasets: the 16 grid blocks (`jax068-2015-grid-*`) and 12 Skyfall-GS authors' scenes
-(8 Jacksonville, 4 New York).
+The default catalogue has 28 datasets: the 16 grid blocks (`jax068-2015-grid-*`) and 12 Skyfall-GS authors' scenes
+(8 Jacksonville, 4 New York). The authors' finished models were trained externally; our integration places, tiles,
+compresses, and serves them. They demonstrate higher-detail source-model delivery, not our own training quality.
+
+The review catalogue contains segment layers for all 28 datasets, including all four NYC scenes (004, 010, 219,
+336). Completion means the layers are generated and published for review; it does not establish accuracy on every scene.
 
 ## Getting started
 
@@ -147,6 +154,13 @@ npm --prefix apps/web ci
 npm run dev:app            # API on :8000, web app on http://127.0.0.1:5173
 ```
 
+To view the experimental segment layers, serve the review catalogue:
+
+```bash
+TERRASPLAT_RELEASES_DIR=artifacts/releases-grid-review npm run dev:app
+```
+
+The default command serves `artifacts/releases`; review releases have not been promoted there.
 `TERRASPLAT_RELEASES_DIR=<dir> npm run dev:app` serves another catalogue. On hybrid Intel/NVIDIA laptops, start
 Chrome on the NVIDIA GPU for full quality ([apps/web/README.md](apps/web/README.md#running-chrome-on-the-nvidia-gpu-linux-hybrid-graphics-laptops)):
 
@@ -204,15 +218,18 @@ index; OpenAPI docs are at `/docs`. Details: [docs/RELEASES.md](docs/RELEASES.md
 - reveal effects: coarse tiles as points, leaves revealed by scan lines, parents held until the reveal ends
   ([docs/REVEAL_EFFECTS.md](docs/REVEAL_EFFECTS.md));
 - GPU-aware quality profiles (integrated GPUs get a reduced profile; override with `?quality=full|reduced`);
-- segment mode: colour or highlight splats by class from a per-release sidecar layer ([docs/SEGMENTS.md](docs/SEGMENTS.md));
+- class selection: highlight splats from a per-release sidecar layer; buildings use TerraScope's blue holographic
+  grid, scans and trails, blended at 20%–40% with the base colour (steady 30% with reduced motion or reduced quality)
+  ([docs/SEGMENTS.md](docs/SEGMENTS.md));
 - base imagery: bundled Natural Earth II plus Esri World Imagery (disable with `VITE_REMOTE_IMAGERY=false`); no
   Cesium ion services.
 
 ## Semantics (segment mode)
 
-Segment mode colours splats as ground, road, building, trees, grass or water using a sidecar class layer (one byte per
-splat), so tiles stay byte-identical. The layer format and viewer are done. The classifier is still being developed
-([docs/SEMANTICS.md](docs/SEMANTICS.md)):
+Segment mode labels splats as ground, road, building, trees, grass or water using a sidecar class layer (one byte per
+splat), so geometry tiles stay byte-identical. With no classes selected, the scene keeps its original colours;
+selected classes receive a holographic blend. The v5 model, projection/fusion pipeline, tile layers, and viewer are
+implemented, but the classifier has not met all accuracy targets ([docs/SEMANTICS.md](docs/SEMANTICS.md)):
 
 | Version | Method | Outcome |
 | --- | --- | --- |
@@ -220,9 +237,40 @@ splat), so tiles stay byte-identical. The layer format and viewer are done. The 
 | v2 | v1 with corrected class rules (diagnostic) | accuracy 0.68, building 0.70, tree 0.29; needs multispectral imagery, so not usable for RGB-only scenes |
 | v3 | LangSplat SAM + CLIP features | failed (accuracy 0.25) |
 | v4 | SAM + RemoteCLIP | failed (accuracy 0.47, building 0.31, tree 0.22) |
-| **v5** | SegFormer-B2 trained on [OpenEarthMap](https://open-earth-map.org/) plus height | **training** (Kaggle notebook) |
+| **v5** | SegFormer-B2 trained on [OpenEarthMap](https://open-earth-map.org/) plus height | trained; JAX_068 accuracy 0.724, building IoU 0.690, tree IoU 0.366; building target passes, overall and tree targets fail |
 
-Each version is scored on JAX_068, then once, blind, on seven further DFC2019 Jacksonville scenes.
+The v5 model was trained using the Kaggle workflow, then applied to the training views of each scene. Pixel
+probabilities are projected through the cameras with visibility checks, fused by median, combined with height rules,
+and assigned to splats. The authors' scene layers cover the central 700 m square. Disk-backed, chunked fusion keeps
+the 60-view NYC scenes from requiring the full probability stack in RAM; saved predictions can be fused on CPU.
+
+All 16 grid blocks and 12 authors' scenes have v5 layers in `artifacts/releases-grid-review`. JAX_068 is the tuning
+scene. A blind accuracy evaluation on the other seven DFC2019 Jacksonville scenes remains outstanding; generating
+their layers is not an independent accuracy evaluation.
+
+### Download the trained segmentation model
+
+The training script and saved outputs are public on
+[Kaggle: TerraSplat landcover v5](https://www.kaggle.com/code/npsbrar1986/terrasplat-landcover-v5).
+Open the **Output** tab and select version **2**. The inference files are
+`v5-oem-segformer-b2/best.safetensors` (about 105 MiB) and `v5-oem-segformer-b2/config.json`;
+`report.json` records training and validation results. The best checkpoint was selected at step 36,000:
+OpenEarthMap validation mIoU **0.680**, pixel accuracy **0.811**. These are image-space segmentation metrics, separate
+from the projected 3D scene scores above.
+
+With the Kaggle CLI installed and configured, download the version used by TerraSplat:
+
+```bash
+kaggle kernels output npsbrar1986/terrasplat-landcover-v5/2 \
+  --file-pattern '^v5-oem-segformer-b2/(best\.safetensors|config\.json|report\.json)$' \
+  -p artifacts/landcover/kaggle-v2
+```
+
+Checkpoint SHA-256: `c4967d6c7a71a42679c04ad164cb36b150450b30d1b9277cffb3cfc97fc0b15a`.
+Use the downloaded directory with `pipeline.landcover_predict --model artifacts/landcover/kaggle-v2/v5-oem-segformer-b2`.
+Weights stay outside Git. The model is documented for
+non-commercial research/evaluation under its training-data terms; the repository's MIT code licence does not
+relicense the weights or datasets.
 
 ## Testing
 
@@ -268,8 +316,12 @@ artifacts/       generated data, models and releases (not in Git)
 
 ## Limitations
 
-- **Historical imagery:** the reconstructions use 2015 imagery; a current-city release needs newly qualified imagery
-  and date-compatible validation.
+- **Historical imagery:** the 19-view reconstruction uses October 2014–December 2015 acquisitions. We do not yet
+  have a qualified recent multi-view imagery set; a current-city release needs suitable source images, camera
+  metadata, and date-compatible validation.
+- **Training hardware:** local training uses a 6 GB RTX 3060 Laptop GPU, resolution factor 2, a configured 200,000
+  splat cap, and a 4.5 GiB allocated-tensor budget. Higher-resolution training and full Stage 2 refinement have not
+  been demonstrated locally; larger-GPU trials are needed to measure their quality and memory trade-offs.
 - **Limited validation coverage:** lidar comparisons cover JAX_068 and the four lidar-covered grid cells; the other
   12 grid cells are unmeasured. The lidar flight date is unknown, and there is no ground control.
 - **Seams:** two seams of the 1 km grid exceed their thresholds, concentrated at cell A2's southern edge.
@@ -287,7 +339,10 @@ artifacts/       generated data, models and releases (not in Git)
 | [OpenEarthMap](https://open-earth-map.org/) | Land-cover training (v5) | Labels mostly CC BY-NC-SA 4.0: non-commercial |
 | Esri World Imagery | Optional base map in the app | Esri terms; review before commercial use |
 
-No licence has yet been chosen for TerraSplat's own code; until one is added, all rights are reserved.
+TerraSplat's original code is available under the [MIT License](LICENSE). Third-party code and dependencies retain
+their own licences, including the upstream Gaussian-splatting research-use terms; MIT does not relicense those
+components. Satellite imagery, datasets, pretrained and trained weights, and scene assets have separate source
+and redistribution terms. They are not included in the Git repository or automatically licensed under MIT.
 
 ## Documentation
 
