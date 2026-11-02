@@ -2,13 +2,16 @@
 
 Each block's class grid covers its owned 250 m cell plus a margin, on the DFC2019 JAX_068 0.5 m lattice. Blocks that
 overlap the JAX_068 lidar are scored there (owned cells only) and their measured placement offset is removed, as in v5;
-the others get classes without a score. Probabilities come from pipeline.landcover_predict (.venv-landcover).
+the others get classes without a score. A Skyfall authors' scene gets a 700 m grid around its centre and no score (its
+DFC2019 labels are kept for the blind test). Probabilities come from pipeline.landcover_predict (.venv-landcover).
 
     .venv-imagery/bin/python -m pipeline.semantics_grid block --job artifacts/jobs/grid-1km-a2 \
         --probabilities <landcover_predict output> --output <new dir>
     .venv-imagery/bin/python -m pipeline.semantics_grid summary --blocks <block outputs...> --output summary.json
+    .venv-imagery/bin/python -m pipeline.semantics_grid scene --scene artifacts/skyfall/JAX_004/scene \
+        --export artifacts/skyfall/JAX_004/final-placed --points <render_depth --half-extent 350 output> --probabilities <dir> --output <new dir>
     .venv-imagery/bin/python -m pipeline.semantics_grid release --job artifacts/jobs/grid-1km-a2 \
-        --segments <pipeline.segments output> --output release.json
+        --segments <pipeline.segments output> --output release.json   (--job also takes a release config file)
 """
 
 import argparse
@@ -27,6 +30,7 @@ from pipeline.semantics_landcover import NAMES, check_prediction, classify, fuse
 TRUTH = 'artifacts/reference/dfc2019-jax068'
 MARGIN_M = 20.0
 UNSCORED = 65
+HALF_EXTENT_M = 350.0  # authors' scenes: their training photos see 97 % of the ground out to ±350 m (JAX_004)
 
 
 def stages(job):
@@ -104,6 +108,43 @@ def truth_on_grid(grid, truth):
 
 
 def run_block(config_path, job, probs_dir, output, truth_dir=TRUTH):
+    inputs = block_inputs(job)
+    truth = read_truth(truth_dir, 'JAX_068')
+    grid = block_grid(inputs['plan'], truth)
+    truth_classes = truth_on_grid(grid, truth)
+    owned = owned_mask(grid, inputs['plan'])
+    if not (owned & (truth_classes != UNSCORED)).any():
+        inputs = inputs | {'registration': None}  # only blocks the lidar measured
+    return run_grid(config_path, inputs, grid, owned, truth_classes, probs_dir, output,
+                    {'job': str(job), 'cell': inputs['plan']['crop']['ownership_cell']})
+
+
+def scene_grid(export_dir, half_extent_m=HALF_EXTENT_M, resolution=0.5):
+    """Square grid centred on the scene's ENU origin, as pipeline.render_depth's nadir render."""
+    from pyproj import Transformer
+
+    geo = json.loads((Path(export_dir) / 'export-manifest.json').read_text())['georeference']
+    lon, lat = enu_to_lonlat(np.zeros((1, 3)), geo['enu_to_ecef'])
+    east, north = Transformer.from_crs(4326, 32617, always_xy=True).transform(lon[0], lat[0])
+    size = math.ceil(2 * half_extent_m / resolution)
+    return {'dsm': np.zeros((size, size)), 'resolution': resolution,
+            'west': math.floor((east - half_extent_m) / resolution) * resolution,
+            'north': math.floor((north + half_extent_m) / resolution) * resolution}
+
+
+def run_scene(config_path, scene, export_dir, depth_points, probs_dir, output, half_extent_m=HALF_EXTENT_M):
+    """Classes for a Skyfall authors' scene; no truth is read (its DFC2019 labels are kept for the blind test)."""
+    rendered = json.loads((Path(depth_points).parent / 'depth-report.json').read_text())['camera']['half_extent_m']
+    if rendered < half_extent_m:
+        raise ValueError(f'Depth was rendered for ±{rendered} m; render with --half-extent {half_extent_m}')
+    grid = scene_grid(export_dir, half_extent_m)
+    shape = grid['dsm'].shape
+    inputs = {'scene': Path(scene), 'export': Path(export_dir), 'depth_points': Path(depth_points), 'registration': None}
+    return run_grid(config_path, inputs, grid, np.ones(shape, bool), np.full(shape, UNSCORED, np.uint8), probs_dir,
+                    output, {'scene': str(scene), 'cell': Path(export_dir).parent.name})
+
+
+def run_grid(config_path, inputs, grid, owned, truth_classes, probs_dir, output, source):
     import rasterio
 
     config = json.loads(Path(config_path).read_text())
@@ -111,13 +152,8 @@ def run_block(config_path, job, probs_dir, output, truth_dir=TRUTH):
     if output.exists():
         raise ValueError('Use a new output directory')
     prediction = check_prediction(probs_dir, config)
-    inputs = block_inputs(job)
-    truth = read_truth(truth_dir, 'JAX_068')
-    grid = block_grid(inputs['plan'], truth)
-    truth_classes = truth_on_grid(grid, truth)
-    owned = owned_mask(grid, inputs['plan'])
     scored = owned & (truth_classes != UNSCORED) & (truth_classes != 17)
-    registration = inputs['registration'] if scored.any() else None  # only blocks the lidar measured
+    registration = inputs['registration']
 
     manifest = json.loads((inputs['export'] / 'export-manifest.json').read_text())
     geo, shift = aligned_georeference(manifest['georeference'], registration)
@@ -152,7 +188,7 @@ def run_block(config_path, job, probs_dir, output, truth_dir=TRUTH):
     counts = lambda array: {name: int((array == code).sum()) for name, code in CODES.items()}
     report = {
         'schema_version': 1, 'config': str(config_path), 'config_sha256': digest(Path(config_path)),
-        'job': str(job), 'cell': inputs['plan']['crop']['ownership_cell'],
+        **source,
         'export_manifest_sha256': digest(inputs['export'] / 'export-manifest.json'),
         'depth_points_sha256': digest(inputs['depth_points']), 'weights_sha256': prediction['weights_sha256'],
         'grid': {'west': grid['west'], 'north': grid['north'], 'resolution': grid['resolution'], 'size': shape[0],
@@ -199,15 +235,15 @@ def summary(config_path, blocks, output):
     return document
 
 
-def release_config(job, segments_dir, output, release_suffix='r2'):
-    """The block's published release config with a segment layer and a new release id."""
-    inputs = block_inputs(job)
-    config = json.loads((inputs['publish'] / 'release.json').read_text())
-    base = config['release_id'].rsplit('-r', 1)[0]
+def release_config(base, segments_dir, output, release_suffix='r2'):
+    """A published release config (a grid job, or a release config file) with a segment layer and a new release id."""
+    path = Path(base)
+    config = json.loads((path if path.is_file() else block_inputs(path)['publish'] / 'release.json').read_text())
+    previous = config['release_id']
     layer = json.loads((Path(segments_dir) / 'segments.json').read_text())
-    config.update(release_id=f'{base}-{release_suffix}', segments_dir=str(Path(segments_dir).absolute()),
+    config.update(release_id=f"{previous.rsplit('-r', 1)[0]}-{release_suffix}", segments_dir=str(Path(segments_dir).absolute()),
                   description=config['description'] + f" {release_suffix} adds a segment layer ({layer['label']}); "
-                  'tiles are identical to r1.')
+                  f'tiles are identical to {previous}.')
     Path(output).write_text(json.dumps(config, indent=2) + '\n')
     return config
 
@@ -225,9 +261,18 @@ def main():
     total.add_argument('--config', default='configs/semantics-v5.json')
     total.add_argument('--blocks', nargs='+', required=True)
     total.add_argument('--output', required=True)
+    scene = commands.add_parser('scene')
+    scene.add_argument('--config', default='configs/semantics-v5.json')
+    scene.add_argument('--scene', required=True, help='Prepared Skyfall scene (masks/, transforms_train.json)')
+    scene.add_argument('--export', required=True)
+    scene.add_argument('--points', required=True, help='pipeline.render_depth depth-points.npz')
+    scene.add_argument('--probabilities', required=True)
+    scene.add_argument('--half-extent', type=float, default=HALF_EXTENT_M)
+    scene.add_argument('--output', required=True)
     release = commands.add_parser('release')
-    release.add_argument('--job', required=True)
+    release.add_argument('--job', required=True, help='Grid job directory, or a release config file')
     release.add_argument('--segments', required=True)
+    release.add_argument('--suffix', default='r2', help='New release revision')
     release.add_argument('--output', required=True)
     args = parser.parse_args()
     if args.command == 'block':
@@ -236,10 +281,13 @@ def main():
         print(f"{report['cell']}: {report['splats']['by_class']}" + (
             f"; scored {s['cells']} cells, accuracy {s['evaluation']['overall_accuracy']:.3f}, building IoU "
             f"{s['evaluation']['building']['iou']:.3f}, vegetation IoU {s['evaluation']['vegetation']['iou']:.3f}" if s else ''))
+    elif args.command == 'scene':
+        report = run_scene(args.config, args.scene, args.export, args.points, args.probabilities, args.output, args.half_extent)
+        print(f"{report['cell']}: {report['splats']['by_class']}")
     elif args.command == 'summary':
         print(json.dumps(summary(args.config, args.blocks, args.output), indent=2))
     else:
-        print(json.dumps(release_config(args.job, args.segments, args.output), indent=2))
+        print(json.dumps(release_config(args.job, args.segments, args.output, args.suffix), indent=2))
 
 
 if __name__ == '__main__':

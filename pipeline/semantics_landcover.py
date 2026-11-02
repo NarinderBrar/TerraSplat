@@ -11,6 +11,7 @@ training view (see docs/SEMANTICS.md). Projection, visibility, fusion and scorin
 import argparse
 import json
 from pathlib import Path
+import tempfile
 import warnings
 
 import numpy as np
@@ -50,6 +51,8 @@ def view_probabilities(scene, frame, transforms, probs_dir, points, tolerance):
     name = Path(frame['file_path']).stem
     P, (width, height) = frame_projection(frame, transforms)
     probs = np.load(probs_dir / f'{name}_probs.npy', mmap_mode='r')
+    if width is None and height is None:  # some Skyfall scenes omit the size; the probabilities are at image size
+        height, width = probs.shape[:2]
     if probs.shape[:2] != (height, width) or probs.shape[2] != len(NAMES):
         raise ValueError(f'{name}: probabilities {probs.shape} do not match the {width} x {height} view')
     projected = np.column_stack((points, np.ones(len(points)))) @ P.T
@@ -76,16 +79,32 @@ def check_prediction(probs_dir, config):
 def fuse_views(scene, probs_dir, points, tolerance):
     """Median over visible training views of each point's class probabilities, and the visible-view count."""
     transforms = json.loads((scene / 'transforms_train.json').read_text())
-    per_view, views_used = [], []
-    for frame in transforms['frames']:
-        name = Path(frame['file_path']).stem
-        per_view.append(view_probabilities(scene, frame, transforms, probs_dir, points, tolerance))
-        views_used.append({'name': name, 'visible_cells': int(np.isfinite(per_view[-1][:, 0]).sum()),
-                           'probabilities_sha256': digest(probs_dir / f'{name}_probs.npy')})
-    stack = np.stack(per_view)
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore', RuntimeWarning)  # cells no view sees stay NaN
-        return np.nanmedian(stack, axis=0), np.isfinite(stack[..., 0]).sum(axis=0), views_used
+    # Keep the full view stack on disk; NYC's 60 views exceed comfortable laptop RAM.
+    frames = transforms['frames']
+    views = np.zeros(len(points), np.int64)
+    median = np.empty((len(points), len(NAMES)), np.float32)
+    views_used = []
+    with tempfile.TemporaryFile(prefix='terrasplat-fusion-') as scratch:
+        for frame in frames:
+            name = Path(frame['file_path']).stem
+            probabilities = view_probabilities(scene, frame, transforms, probs_dir, points, tolerance)
+            visible = np.isfinite(probabilities[:, 0])
+            views += visible
+            probabilities.tofile(scratch)
+            del probabilities
+            views_used.append({'name': name, 'visible_cells': int(visible.sum()),
+                               'probabilities_sha256': digest(probs_dir / f'{name}_probs.npy')})
+            print(f'Fusion projected {name} ({len(views_used)}/{len(frames)})', flush=True)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', RuntimeWarning)  # cells no view sees stay NaN
+            for start in range(0, len(points), 16384):
+                size = min(16384, len(points) - start)
+                chunk = np.empty((len(frames), size, len(NAMES)), np.float32)
+                for index in range(len(frames)):
+                    scratch.seek((index * len(points) + start) * len(NAMES) * 4)
+                    chunk[index] = np.fromfile(scratch, np.float32, size * len(NAMES)).reshape(size, len(NAMES))
+                median[start:start + size] = np.nanmedian(chunk, axis=0, overwrite_input=True)
+    return median, views, views_used
 
 
 def run(config_path, export_dir, depth_points, truth_dir, scene, probs_dir, output, registration=None):
