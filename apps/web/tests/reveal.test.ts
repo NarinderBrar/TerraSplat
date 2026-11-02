@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { appearance, heldAncestors, injectRevealShader, Mode, revealProgress, revealTexels, SEGMENT_COLOURS, segmentUrls } from '../src/reveal';
+import { appearance, buildingHologramScale, BUILDING_HOLOGRAM_COLOUR, heldAncestors, injectRevealShader, Mode, revealProgress, revealTexels, SEGMENT_COLOURS, segmentUrls } from '../src/reveal';
 
 const shader = readFileSync(new URL('../../../node_modules/@cesium/engine/Source/Shaders/PrimitiveGaussianSplatVS.glsl', import.meta.url), 'utf8');
 
@@ -69,6 +69,13 @@ describe('splat reveal effects', () => {
     const colours = /COLOURS = \{([^}]*)\}/.exec(python)![1];
     const parsed = [...colours.matchAll(/(\d+): \((\d+), (\d+), (\d+)\)/g)].map(m => [Number(m[1]), [m[2], m[3], m[4]].map(Number)]);
     expect(Object.fromEntries(parsed)).toEqual(Object.fromEntries(SEGMENT_COLOURS.map((c, i) => [i, c])));
+  });
+
+  it('uses TerraScope building blue and its JAX_068 grid scale across release revisions', () => {
+    expect(BUILDING_HOLOGRAM_COLOUR).toEqual([0.1, 0.65, 1]);
+    expect(buildingHologramScale('http://h/releases/skyfall-jax-068-final-r3/tiles/r01.glb')).toBe(1.5);
+    expect(buildingHologramScale('http://h/releases/skyfall-nyc-004-final-r2/tiles/r01.glb')).toBe(1);
+    expect(buildingHologramScale('http://h/releases/jax068-2015-grid-a2-r2/tiles/r01.glb')).toBe(1);
   });
 });
 

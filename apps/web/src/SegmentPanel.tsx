@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getSegments, type Manifest, type SegmentLayer } from './api';
+import { BUILDING_HOLOGRAM_COLOUR } from './reveal';
 
 const NAMES: Record<string, string> = { building: 'Buildings', road: 'Roads', vegetation: 'Trees', grass: 'Grass',
   water: 'Water', ground: 'Ground', unknown: 'Unlabelled' };
@@ -33,8 +34,9 @@ export function SegmentPanel({ manifest, available, onChange }: {
       <p className="segments-note">{mask ? 'Selected classes glow; everything else keeps its colours.' : 'Choose classes to highlight.'}</p>
       <ul aria-label="Segment classes">{classes.map(c => {
         const bit = 1 << c.code, on = (mask & bit) !== 0;
+        const colour = c.code === 3 ? BUILDING_HOLOGRAM_COLOUR.map(v => v * 255) : c.colour;
         return <li key={c.code}><button aria-pressed={on} onClick={() => update(mask ^ bit)}>
-          <span style={{ background: `rgb(${c.colour.join(' ')})` }} />{NAMES[c.name] ?? c.name}
+          <span style={{ background: `rgb(${colour.join(' ')})` }} />{NAMES[c.name] ?? c.name}
           <small>{(layer.leaf_splats_by_class[c.name] ?? 0).toLocaleString()}</small></button></li>;
       })}</ul>
       {mask !== 0 && <button className="segments-clear" onClick={() => update(0)}>Clear</button>}

@@ -18,8 +18,8 @@ import type * as Cesium from 'cesium';
  * Tiles replacing shown descendants (zooming out) or already shown (mode NONE) appear without a sweep.
  *
  * Segment mode (docs/SEGMENTS.md) reuses the same texture: releases with a segment layer have one class byte per
- * tile splat (segments/<tile>.cls), stored above the leaf bit. Highlighted classes take their class colour; the rest
- * fade to grey. Class files load only once segment mode is switched on.
+ * tile splat (segments/<tile>.cls), stored above the leaf bit. Highlighted classes become holograms; the rest keep
+ * their original colours. Class files load only once segment mode is switched on.
  */
 
 // Exact text from Cesium 1.146 PrimitiveGaussianSplatVS.glsl; injection is skipped if any marker is missing.
@@ -34,6 +34,12 @@ export const PLACEHOLDER_SECONDS = 20;
 /** Class colours by code, as pipeline/semantics.py COLOURS: unknown, ground, road, building, trees, water, grass. */
 export const SEGMENT_COLOURS: [number, number, number][] = [[40, 40, 40], [190, 180, 150], [110, 110, 120],
   [220, 80, 60], [60, 170, 70], [60, 120, 220], [150, 200, 110]];
+/** TerraScope SegmentDrawAnimation.ts building tint, in shader RGB. */
+export const BUILDING_HOLOGRAM_COLOUR = [0.1, 0.65, 1.0] as const;
+
+export function buildingHologramScale(contentUrl: string) {
+  return /\/skyfall-jax-068(?:-|\/)/.test(contentUrl) ? 1.5 : 1;
+}
 export enum Mode { None = 0, Full = 1, Grow = 2 }
 export interface TileState { arrival: number; mode: Mode; placeholderSince: number; leaf: boolean }
 
@@ -53,6 +59,7 @@ const vec3 SEGMENT_COLOURS[${SEGMENT_COLOURS.length}] = vec3[${SEGMENT_COLOURS.l
     ${SEGMENT_COLOURS.map(c => `vec3(${c.map(v => (v / 255).toFixed(4)).join(', ')})`).join(',\n    ')});
 
 uniform float u_segmentMotion;
+uniform float u_buildingHologramScale;
 
 float revealHash(vec3 p) {
   return fract(sin(dot(p, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
@@ -61,13 +68,16 @@ float revealHash(vec3 p) {
 // TerraScope's segment hologram (apps/web/src/splat/SegmentDrawAnimation.ts): a metric grid, an upward scan band and
 // trails, and a per-class pulse, on the class colour. metres is the splat centre in the block's ENU frame.
 vec3 segmentHologram(vec3 tint, vec3 metres, int segmentClass) {
-    vec3 spacing = segmentClass == 3 ? vec3(4.0, 4.0, 3.0) : vec3(2.0, 2.0, 1.5);
+    float gridScale = segmentClass == 3 ? u_buildingHologramScale : 1.0;
+    vec3 spacing = (segmentClass == 3 ? vec3(4.0, 4.0, 3.0) : vec3(2.0, 2.0, 1.5)) * gridScale;
     vec3 phase = fract(metres / spacing);
     vec3 lineDistance = min(phase, vec3(1.0) - phase) * spacing;
-    float verticalLine = 1.0 - smoothstep(0.12, 0.42, min(lineDistance.x, lineDistance.y));
-    float floorLine = 1.0 - smoothstep(0.12, 0.42, lineDistance.z);
+    float verticalLine = 1.0 - smoothstep(0.12 * gridScale, 0.42 * gridScale, min(lineDistance.x, lineDistance.y));
+    float floorLine = 1.0 - smoothstep(0.12 * gridScale, 0.42 * gridScale, lineDistance.z);
     float scanTime = u_revealNow * u_segmentMotion;
-    float pulse = mix(0.8, 0.7 + 0.3 * cos(u_revealNow * 3.4906585 + float(segmentClass) * 1.2566371), u_segmentMotion);
+    // TerraScope's building class is 1; TerraSplat's stored building class is 3.
+    float pulseClass = segmentClass == 3 ? 1.0 : float(segmentClass);
+    float pulse = mix(0.8, 0.7 + 0.3 * cos(u_revealNow * 3.4906585 + pulseClass * 1.2566371), u_segmentMotion);
     float scanDistance = abs(fract(metres.z / 24.0 - scanTime * 0.28) - 0.5) * 24.0;
     float scan = 1.0 - smoothstep(0.25, 2.2, scanDistance);
     float scanCore = 1.0 - smoothstep(0.15, 0.65, scanDistance);
@@ -129,6 +139,7 @@ const COLOUR = /* glsl */ `
     }
     if (u_segmentMode > 0.5) {
         vec3 segmentTint = SEGMENT_COLOURS[clamp(segmentClass, 0, ${SEGMENT_COLOURS.length - 1})];
+        if (segmentClass == 3) segmentTint = vec3(${BUILDING_HOLOGRAM_COLOUR.map(v => v.toFixed(4)).join(', ')});
         int segmentMask = int(u_segmentMask + 0.5);
         // Labelled splats (all, or only the highlighted classes) become holograms; the rest keep their real colours.
         bool segmentLit = segmentClass != 0 && (segmentMask == 0 || ((segmentMask >> segmentClass) & 1) == 1);
@@ -416,6 +427,7 @@ export class Reveal {
       u_revealLoadingGlow: () => (this.loadingGlow ? 1 : 0),
       u_segmentMode: () => (this.segmentMode ? 1 : 0),
       u_segmentMotion: () => (this.segmentMotion() ? 1 : 0),
+      u_buildingHologramScale: () => buildingHologramScale(merge.urls[0] ?? ''),
       u_segmentMask: () => this.segmentMask,
     });
     this.scene.requestRender();

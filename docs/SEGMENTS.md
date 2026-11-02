@@ -48,6 +48,11 @@ alpha. Colour is set per splat from its centre, so with this pipeline's 1-3 m sp
 than crisp lines. While a class is selected the scan and pulse redraw every frame; reduced motion and the reduced-quality
 (weak GPU) profile keep the hologram still, so request-render mode draws only on change.
 
+Buildings use TerraScope's segmented-view blue (shader RGB 0.1, 0.65, 1.0), building pulse phase, and line widths.
+The JAX_068 authors' scene also uses TerraScope's 1.5 grid scale (6 m XY, 4.5 m vertical); other scenes use 4 m XY
+and 3 m vertical. The Buildings swatch shows the highlight blue. Stored class codes and diagnostic raster palettes
+remain the pipeline's palette.
+
 ## Current layer
 
 Segmentation is planned for the Skyfall-GS authors' scenes only (their models have the best image quality). They are
