@@ -88,7 +88,7 @@ vec3 segmentHologram(vec3 baseColour, vec3 tint, vec3 metres, int segmentClass) 
     float energy = clamp(max(verticalLine, floorLine) * 0.55 + scan * 0.55 + scanCore * 0.45 + trail * 0.45, 0.0, 1.0);
     vec3 neon = mix(tint, vec3(1.0), 0.18);
     vec3 hologram = tint * pulse * 0.65 + neon * pulse * (0.12 + energy * 0.95 + stripes * 0.08);
-    float blend = mix(0.25, mix(0.20, 0.30, clamp((pulse - 0.4) / 0.6, 0.0, 1.0)), u_segmentMotion);
+    float blend = mix(0.30, mix(0.20, 0.40, clamp((pulse - 0.4) / 0.6, 0.0, 1.0)), u_segmentMotion);
     return mix(baseColour, hologram, blend);
 }
 `;
