@@ -53,6 +53,9 @@ The JAX_068 authors' scene also uses TerraScope's 1.5 grid scale (6 m XY, 4.5 m 
 and 3 m vertical. The Buildings swatch shows the highlight blue. Stored class codes and diagnostic raster palettes
 remain the pipeline's palette.
 
+The hologram blends with the original splat colour: its contribution pulses from 20% to 30%, retaining at least
+70% of the base colour. Reduced motion and reduced quality use a steady 25% blend.
+
 ## Current layer
 
 Segmentation is planned for the Skyfall-GS authors' scenes only (their models have the best image quality). They are

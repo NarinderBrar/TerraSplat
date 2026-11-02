@@ -67,7 +67,7 @@ float revealHash(vec3 p) {
 
 // TerraScope's segment hologram (apps/web/src/splat/SegmentDrawAnimation.ts): a metric grid, an upward scan band and
 // trails, and a per-class pulse, on the class colour. metres is the splat centre in the block's ENU frame.
-vec3 segmentHologram(vec3 tint, vec3 metres, int segmentClass) {
+vec3 segmentHologram(vec3 baseColour, vec3 tint, vec3 metres, int segmentClass) {
     float gridScale = segmentClass == 3 ? u_buildingHologramScale : 1.0;
     vec3 spacing = (segmentClass == 3 ? vec3(4.0, 4.0, 3.0) : vec3(2.0, 2.0, 1.5)) * gridScale;
     vec3 phase = fract(metres / spacing);
@@ -87,7 +87,9 @@ vec3 segmentHologram(vec3 tint, vec3 metres, int segmentClass) {
     float stripes = 0.5 + 0.5 * cos(metres.z * 10.4719755);
     float energy = clamp(max(verticalLine, floorLine) * 0.55 + scan * 0.55 + scanCore * 0.45 + trail * 0.45, 0.0, 1.0);
     vec3 neon = mix(tint, vec3(1.0), 0.18);
-    return tint * pulse * 0.65 + neon * pulse * (0.12 + energy * 0.95 + stripes * 0.08);
+    vec3 hologram = tint * pulse * 0.65 + neon * pulse * (0.12 + energy * 0.95 + stripes * 0.08);
+    float blend = mix(0.25, mix(0.20, 0.30, clamp((pulse - 0.4) / 0.6, 0.0, 1.0)), u_segmentMotion);
+    return mix(baseColour, hologram, blend);
 }
 `;
 
@@ -143,7 +145,7 @@ const COLOUR = /* glsl */ `
         int segmentMask = int(u_segmentMask + 0.5);
         // Labelled splats (all, or only the highlighted classes) become holograms; the rest keep their real colours.
         bool segmentLit = segmentClass != 0 && (segmentMask == 0 || ((segmentMask >> segmentClass) & 1) == 1);
-        if (segmentLit) v_splatColor.rgb = segmentHologram(segmentTint, splatPosition.xyz, segmentClass);
+        if (segmentLit) v_splatColor.rgb = segmentHologram(v_splatColor.rgb, segmentTint, splatPosition.xyz, segmentClass);
     }
 `;
 
